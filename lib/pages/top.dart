@@ -76,7 +76,11 @@ class _TopScreenState extends State<TopScreen> {
           IconButton(
             icon: Icon(Icons.settings),
             onPressed: () async {
-              Navigator.of(context).pushNamed('/setting');
+              //Navigator.of(context).pushNamed('/setting');
+              
+              // temporary change on  branch feature/#4
+              // TODO: create link for game-play page.
+              Navigator.of(context).pushNamed('/play');
             },
           ),
         ],
