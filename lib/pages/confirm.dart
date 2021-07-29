@@ -10,8 +10,7 @@ class Confirm extends StatefulWidget {
 class _ConfirmState extends State<Confirm> {
   @override
   Widget build(BuildContext context) {
-var DotImage = ModalRoute.of(context).settings.arguments;
-
+    var DotImage = ModalRoute.of(context).settings.arguments;
     return Scaffold(
       appBar: AppBar(
         // backgroundColor: Colors.blue[900],
