@@ -1,12 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:image_cropper/image_cropper.dart';
 import 'package:provider/provider.dart';
 import 'play.dart';
 import 'dart:async';
 import 'dart:io';
-
-// import './CreatePicture.dart';
 
 void main() => runApp(
       MyApp(),
@@ -34,31 +33,33 @@ class TopScreen extends StatefulWidget {
 List<Widget> containerChild = [];
 
 class ImagePickerUtil {
-  static Future<PickedFile> getImage({
-    ImageSource source
-  }) async {
+  static Future<PickedFile> getImage({ImageSource source}) async {
     final ImagePicker picker = ImagePicker();
     final file = await picker.getImage(source: source);
+    // var croppedFile = CropImage(file);
+    // return croppedFile;
     return file;
   }
 }
 
+CameraCrop() async {
+  PickedFile imageFile = await ImagePicker().getImage(
+    source: ImageSource.gallery,
+  );
+  File tmpImage = File(imageFile.path);
+  File croppedFile = await ImageCropper.cropImage(
+    sourcePath: tmpImage.path,
+    aspectRatio: CropAspectRatio(
+      ratioX: 1.0,
+      ratioY: 1.0,
+    ),
+  );
+  return croppedFile;
+}
+
 class _TopScreenState extends State<TopScreen> {
   int cnt = 0;
-  var ExsampleImage = AssetImage('lib/image/example.jpeg');
   final picker = ImagePicker();
-
-  // Future _getImage() async {
-  //   final pickedFile = await picker.getImage(source: ImageSource.gallery);
-
-  //   setState(() {
-  //     if (pickedFile != null) {
-  //       _image = pickedFile;
-  //     } else {
-  //       Navigator.pop(context);
-  //     }
-  //   });
-  // }
 
   @override
   void initState() {
@@ -70,7 +71,6 @@ class _TopScreenState extends State<TopScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        // backgroundColor: Colors.blue[900],
         title: Text(
           'Top',
           style: TextStyle(fontSize: 20),
@@ -111,24 +111,27 @@ class _TopScreenState extends State<TopScreen> {
                   CupertinoDialogAction(
                     child: const Text('カメラ'),
                     onPressed: () async {
-                      final _image = await picker.getImage(source: ImageSource.camera);
-                      File _fileImage = File(_image.path);
-                      Navigator.of(context).pushNamed(
-                        '/create',
-                        arguments: _fileImage,
-                      );
+                      final _image =
+                          await picker.pickImage(source: ImageSource.camera);
+                      if (_image != null) {
+                        File _fileImage = File(_image.path);
+                        Navigator.of(context).pushNamed(
+                          '/create',
+                          arguments: _fileImage,
+                        );
+                      } else {
+                        print('object');
+                      }
                     },
                   ),
                   CupertinoDialogAction(
                     child: const Text('カメラロール'),
                     onPressed: () async {
-                      final _image = await ImagePickerUtil.getImage(source: ImageSource.gallery);
-                      // final _image = await picker.getImage(source: ImageSource.gallery);
-                      File _fileImage = File(_image.path);
-                      Navigator.of(context).pushNamed(
-                        '/create',
-                        arguments: _fileImage,
-                      );
+                      final _coppedImage = await CameraCrop();
+                      if (_coppedImage != null) {
+                        Navigator.of(context).pushNamed('/create',
+                            arguments: _coppedImage);
+                      }
                     },
                   ),
                   CupertinoDialogAction(
