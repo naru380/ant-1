@@ -1,8 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
+import 'play.dart';
 import 'dart:async';
 import 'dart:io';
+
 // import './CreatePicture.dart';
 
 void main() => runApp(
@@ -80,6 +83,7 @@ class _TopScreenState extends State<TopScreen> {
               
               // temporary change on  branch feature/#4
               // TODO: create link for game-play page.
+              context.read<PuzzleProvider>().init();
               Navigator.of(context).pushNamed('/play');
             },
           ),

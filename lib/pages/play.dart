@@ -104,6 +104,7 @@ class Puzzle extends StatelessWidget{
 
   @override
   Widget build(BuildContext context) {
+    //context.read<PuzzleProvider>().checkedList.removeWhere((_) => true);
     context.read<PuzzleProvider>().isCorrect = isCorrect;
     return Stack(
       fit: StackFit.loose,
@@ -365,6 +366,9 @@ class PuzzleProvider extends ChangeNotifier {
   double scale = 0.9;
   Function isCorrect;
   final List<int> checkedList = [];
+  void init() {
+    checkedList.removeWhere((_) => true);
+  }
   void checked(int index) {
     checkedList.add(index);
   }
