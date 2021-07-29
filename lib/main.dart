@@ -1,11 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'pages/top.dart';
 import 'pages/settings.dart';
 import 'pages/Confirm.dart';
-import 'pages/Create.dart';
+import 'pages/Create.dart' as DotImage;
+import 'pages/play.dart';
 
-void main() => runApp(MyApp());
+void main() {
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (_) => PuzzleProvider(),
+        ),
+      ],
+      child: MyApp(),
+    )
+  );
+}
 
+/*
 class RouteGenerator {
   static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
@@ -26,6 +40,7 @@ class RouteGenerator {
     }
   }
 }
+*/
 
 class MyApp extends StatelessWidget {
   @override
@@ -39,9 +54,10 @@ class MyApp extends StatelessWidget {
         initialRoute: '/',
         routes: {
           '/': (context) => TopScreen(),
-          '/create': (context) => Create(),
+          '/create': (context) => DotImage.Create(),
           '/settings': (context) => SettingScreen(),
           '/confirm': (context) => Confirm(),
+          '/play': (context) => PlayScreen(),
         }
         // onGenerateRoute: RouteGenerator.generateRoute,
         );

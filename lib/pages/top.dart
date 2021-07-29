@@ -2,6 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:image_cropper/image_cropper.dart';
+import 'package:provider/provider.dart';
+import 'play.dart';
 import 'dart:async';
 import 'dart:io';
 
@@ -77,7 +79,12 @@ class _TopScreenState extends State<TopScreen> {
           IconButton(
             icon: Icon(Icons.settings),
             onPressed: () async {
-              Navigator.of(context).pushNamed('/test');
+              //Navigator.of(context).pushNamed('/setting');
+              
+              // temporary change on  branch feature/#4
+              // TODO: create link for game-play page.
+              context.read<PuzzleProvider>().init();
+              Navigator.of(context).pushNamed('/play');
             },
           ),
         ],
