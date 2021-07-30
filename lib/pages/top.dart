@@ -67,6 +67,13 @@ class _TopScreenState extends State<TopScreen> {
 
   @override
   Widget build(BuildContext context) {
+    var tmp = ModalRoute.of(context).settings.arguments;
+    if (tmp != null) {
+      setState(() {
+        containerChild.add(ActionContainer(cnt));
+      });
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -104,10 +111,13 @@ class _TopScreenState extends State<TopScreen> {
                   CupertinoDialogAction(
                     child: const Text('カメラ'),
                     onPressed: () async {
-                      final _image =
-                          await picker.pickImage(source: ImageSource.camera);
+                      final _image = await picker.pickImage(
+                        source: ImageSource.camera,
+                      );
                       if (_image != null) {
-                        File _fileImage = File(_image.path);
+                        File _fileImage = File(
+                          _image.path,
+                        );
                         Navigator.of(context).pushNamed(
                           '/create',
                           arguments: _fileImage,
@@ -122,8 +132,23 @@ class _TopScreenState extends State<TopScreen> {
                     onPressed: () async {
                       final _coppedImage = await CameraCrop();
                       if (_coppedImage != null) {
-                        Navigator.of(context).pushNamed('/create',
-                            arguments: _coppedImage);
+                        Navigator.of(context).pushNamed(
+                          '/create',
+                          arguments: _coppedImage,
+                        );
+                        // if (tmp == null){
+                        //   print('nulll');
+                        // }
+                        // print(tmp);
+                        // final result =
+                        //     ModalRoute.of(context).settings.arguments;
+                        // print('object');
+                        // if (result != null) {
+                        //   print(result);
+                        //   print('aa');
+                        // } else {
+                        //   print('null');
+                        // }
                       }
                     },
                   ),

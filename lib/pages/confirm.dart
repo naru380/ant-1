@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:ant_1/pages/top.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class Confirm extends StatefulWidget {
@@ -10,7 +11,7 @@ class Confirm extends StatefulWidget {
 class _ConfirmState extends State<Confirm> {
   @override
   Widget build(BuildContext context) {
-    var DotImage = ModalRoute.of(context).settings.arguments;
+    var dotImage = ModalRoute.of(context).settings.arguments;
     return Scaffold(
       appBar: AppBar(
         // backgroundColor: Colors.blue[900],
@@ -24,7 +25,7 @@ class _ConfirmState extends State<Confirm> {
         children: [
           Center(
             child: Image.file(
-              DotImage,
+              dotImage,
               width: 300,
             ),
           ),
@@ -37,8 +38,11 @@ class _ConfirmState extends State<Confirm> {
                   borderRadius: const BorderRadius.all(Radius.circular(100))),
               child: GestureDetector(
                 onTap: () {
-                  Navigator.of(context)
-                      .pushNamedAndRemoveUntil('/', (_) => false);
+                  Navigator.of(context).pushNamedAndRemoveUntil(
+                    '/',
+                    (_) => false,
+                    arguments: 'OK',
+                  );
                 },
                 child: Center(
                   child: Text(
