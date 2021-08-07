@@ -134,7 +134,7 @@ class Puzzle extends StatelessWidget{
   }
 
   List<int> get answer => logicPuzzle.dots;
-  int get boardColumnsNum => 10;//logicPuzzle.width;
+  int get boardColumnsNum => logicPuzzle.width;
   int get boardRowsNum => answer.length ~/ boardColumnsNum;
   List<int> get hintsInEachRow => _hintsInEachRow();
   int get maxNumOfHintsInEachRow => hintsInEachRow.length ~/ boardRowsNum;
