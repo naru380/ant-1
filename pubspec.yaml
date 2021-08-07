@@ -32,6 +32,8 @@ dependencies:
   image_cropper: ^1.4.1
   provider: ^5.0.0
   camera: ^0.8.1+7
+  sqflite: any
+  path: any
 
 dev_dependencies:
   flutter_test:
