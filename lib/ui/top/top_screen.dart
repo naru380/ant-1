@@ -5,13 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:provider/provider.dart';
-import 'package:camera/camera.dart';
 import 'dart:async';
 import 'dart:io';
-
-void main() => runApp(
-      MyApp(),
-    );
 
 class MyApp extends StatelessWidget {
   @override
@@ -114,17 +109,6 @@ class _TopScreenState extends State<TopScreen> {
           }
         );
       }),
-      /*
-      SingleChildScrollView(
-        child: Column(
-            children: List.generate(
-          containerChild.length,
-          (int index) {
-            return containerChild[index];
-          },
-        )),
-      ),
-      */
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
         onPressed: () {
@@ -172,61 +156,6 @@ class _TopScreenState extends State<TopScreen> {
             },
           );
         },
-      ),
-    );
-  }
-}
-
-class ActionContainer extends StatefulWidget {
-  ActionContainer(int cnt);
-
-  @override
-  _ActionContainerState createState() => _ActionContainerState();
-}
-
-class _ActionContainerState extends State<ActionContainer> {
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      key: UniqueKey(),
-      child: GestureDetector(
-        onTap: () {
-          setState(
-            () {
-              print(this.widget);
-              print(containerChild);
-              // print(containerChild[ind]);
-              // var del = this;
-              containerChild.remove(this);
-            },
-          );
-        },
-        child: Container(
-          alignment: Alignment.center,
-          margin: EdgeInsets.all(10.0),
-          child: FractionallySizedBox(
-            widthFactor: 0.9,
-            child: SizedBox(
-              height: MediaQuery.of(context).size.height * 0.1,
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  color: Colors.black12,
-                  borderRadius: const BorderRadius.all(Radius.circular(10)),
-                ),
-                child: Align(
-                  alignment: Alignment.center,
-                  child: Text(
-                    '$widget.cnt',
-                    style: TextStyle(
-                      // color: Colors.blue,
-                      fontSize: 20,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
       ),
     );
   }
