@@ -1,12 +1,11 @@
-import 'package:ant_1/models/play_controller.dart';
-import 'package:ant_1/models/top_model.dart';
+import 'package:ant_1/ui/play/play_view_model.dart';
+import 'package:ant_1/ui/top/top_view_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:provider/provider.dart';
 import 'package:camera/camera.dart';
-import 'play.dart';
 import 'dart:async';
 import 'dart:io';
 
@@ -72,7 +71,7 @@ class _TopScreenState extends State<TopScreen> {
 
   @override
   Widget build(BuildContext context) {
-    context.read<TopModel>().init();
+    context.read<TopViewModel>().init();
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -88,13 +87,13 @@ class _TopScreenState extends State<TopScreen> {
           ),
         ],
       ),
-      body: Consumer<TopModel>(builder: (context, model, _) {
+      body: Consumer<TopViewModel>(builder: (context, model, _) {
         return ListView.builder(
           itemCount: model.numLogicPuzzle,
           itemBuilder: (BuildContext context, int index) {
             return GestureDetector(
               onTap: () {
-                context.read<PlayController>().init();
+                context.read<PlayViewModel>().init();
                 Navigator.of(context).pushNamed(
                   '/play',
                   arguments: {

@@ -1,7 +1,7 @@
 import 'dart:math';
 
-import 'package:ant_1/entities/logic_puzzle.dart';
-import 'package:ant_1/models/play_controller.dart';
+import 'package:ant_1/domain/entities/logic_puzzle.dart';
+import 'package:ant_1/ui/play/play_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/foundation.dart';
@@ -14,13 +14,13 @@ class PlayScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     Map<String, dynamic> args = ModalRoute.of(context).settings.arguments;
     LogicPuzzle logicPuzzle = args['logicPuzzle'];
-    context.read<PlayController>().logicPuzzle = logicPuzzle;
+    context.read<PlayViewModel>().logicPuzzle = logicPuzzle;
 
     return Scaffold(
       appBar: AppBar(
         title: Text('Puzzle Title')
       ),
-      body: Consumer<PlayController>(builder: (context, model, _) {
+      body: Consumer<PlayViewModel>(builder: (context, model, _) {
         return GestureDetector(
           onScaleStart: (details) {
             model.initialFocalPoint = details.focalPoint;
@@ -120,7 +120,7 @@ class Puzzle extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
     //context.read<PlayController>().checkedList.removeWhere((_) => true);
-    context.read<PlayController>().isCorrect = isCorrect;
+    context.read<PlayViewModel>().isCorrect = isCorrect;
     return Stack(
       fit: StackFit.loose,
       children: <Widget>[
@@ -274,7 +274,7 @@ class Puzzle extends StatelessWidget{
   double get viewAreaWidth => maxNumOfHintsInEachRow.toDouble() * _squareSize * ratioOfScreenToPuzzle;
   double get viewAreaHeight => maxNumOfHintsInEachColumn.toDouble() * _squareSize * ratioOfScreenToPuzzle;
   Widget buildViewArea() {
-    return Consumer<PlayController>(builder: (context, model, _) {
+    return Consumer<PlayViewModel>(builder: (context, model, _) {
       return Positioned(
         left: viewAreaLeftOffset,
         top: viewAreaTopOffset,
@@ -396,7 +396,7 @@ class Puzzle extends StatelessWidget{
   double get boardAreaWidth => boardColumnsNum.toDouble() * _squareSize * ratioOfScreenToPuzzle;
   double get boardAreaHeight => boardRowsNum.toDouble() * _squareSize * ratioOfScreenToPuzzle;
   Widget buildBoardArea() {
-    return Consumer<PlayController>(builder: (context, model, _) {
+    return Consumer<PlayViewModel>(builder: (context, model, _) {
       return Positioned(
         left: boardAreaLeftOffset,
         top: boardAreaTopOffset,
@@ -445,7 +445,7 @@ class Puzzle extends StatelessWidget{
 
   bool isCorrect() {
     List<int> answerCheckedList = answer.asMap().entries.where((e) => (e.value == 1)).toList().map((e) => e.key).toList();
-    List<int> userCheckedList = context.read<PlayController>().checkedList;
+    List<int> userCheckedList = context.read<PlayViewModel>().checkedList;
     answerCheckedList.sort((a, b) => a - b);
     userCheckedList.sort((a, b) => a - b);
     //print('answer: $answerCheckedList');

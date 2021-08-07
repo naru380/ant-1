@@ -1,13 +1,12 @@
 import 'dart:ui';
-import 'package:ant_1/pages/top.dart';
 import 'package:flutter/material.dart';
 
-class Confirm extends StatefulWidget {
+class ConfirmScreen extends StatefulWidget {
   @override
   _ConfirmState createState() => _ConfirmState();
 }
 
-class _ConfirmState extends State<Confirm> {
+class _ConfirmState extends State<ConfirmScreen> {
   @override
   Widget build(BuildContext context) {
     var DotImage = ModalRoute.of(context).settings.arguments;

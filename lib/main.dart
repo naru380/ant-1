@@ -1,22 +1,22 @@
-import 'package:ant_1/models/top_model.dart';
+import 'package:ant_1/ui/create/confirm_screen.dart';
+import 'package:ant_1/ui/play/play_screen.dart';
+import 'package:ant_1/ui/top/top_screen.dart';
+import 'package:ant_1/ui/top/top_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'models/play_controller.dart';
-import 'pages/top.dart';
-import 'pages/settings.dart';
-import 'pages/Confirm.dart';
-import 'pages/Create.dart' as DotImage;
-import 'pages/play.dart';
+import 'ui/create/create_screen.dart';
+import 'ui/play/play_view_model.dart';
+import 'ui/setting/setting_screen.dart';
 
 void main() {
   runApp(
     MultiProvider(
       providers: [
           ChangeNotifierProvider(
-          create: (_) => TopModel(),
+          create: (_) => TopViewModel(),
         ),
         ChangeNotifierProvider(
-          create: (_) => PlayController(),
+          create: (_) => PlayViewModel(),
         ),
       ],
       child: MyApp(),
@@ -59,9 +59,9 @@ class MyApp extends StatelessWidget {
         initialRoute: '/',
         routes: {
           '/': (context) => TopScreen(),
-          '/create': (context) => DotImage.Create(),
-          '/settings': (context) => SettingScreen(),
-          '/confirm': (context) => Confirm(),
+          '/create': (context) => CreateScreen(),
+          '/setting': (context) => SettingScreen(),
+          '/confirm': (context) => ConfirmScreen(),
           '/play': (context) => PlayScreen(),
         }
         // onGenerateRoute: RouteGenerator.generateRoute,

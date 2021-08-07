@@ -1,5 +1,5 @@
-import 'package:ant_1/entities/logic_puzzle.dart';
-import 'package:ant_1/utils/db_provider.dart';
+import 'package:ant_1/domain/entities/logic_puzzle.dart';
+import 'package:ant_1/providers/db_provider.dart';
 import 'package:sqflite/sqflite.dart';
 
 class LogicPuzzleDao {

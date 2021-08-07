@@ -1,7 +1,5 @@
 import 'dart:convert';
 
-import 'package:ant_1/dao/logic_puzzle_dao.dart';
-
 class LogicPuzzle {
   int id;
   String name;

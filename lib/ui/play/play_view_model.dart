@@ -1,8 +1,8 @@
-import 'package:ant_1/entities/logic_puzzle.dart';
+import 'package:ant_1/domain/entities/logic_puzzle.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
-class PlayController with ChangeNotifier {
+class PlayViewModel with ChangeNotifier {
   LogicPuzzle logicPuzzle;
   Offset offset;
   Offset initialFocalPoint;

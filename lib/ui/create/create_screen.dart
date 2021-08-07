@@ -1,12 +1,12 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 
-class Create extends StatefulWidget {
+class CreateScreen extends StatefulWidget {
   @override
   _CreateState createState() => _CreateState();
 }
 
-class _CreateState extends State<Create> {
+class _CreateState extends State<CreateScreen> {
   @override
   double _dot = 50.0;
   double _thr = 50.0;
