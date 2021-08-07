@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/foundation.dart';
@@ -119,7 +121,7 @@ class Puzzle extends StatelessWidget{
   }
 
   final PuzzleData puzzleData = PuzzleData();
-  List<bool> get answer => puzzleData.answer;
+  List<int> get answer => puzzleData.answer;
   int get boardRowsNum => answer.length ~/ boardColumnsNum;
   int get boardColumnsNum => puzzleData.boardColumnsNum;
   List<int> get hintsInEachRow => puzzleData.hintsInEachRow;
@@ -349,7 +351,7 @@ class Puzzle extends StatelessWidget{
   }
 
   bool isCorrect() {
-    List<int> answerCheckedList = answer.asMap().entries.where((e) => e.value).toList().map((e) => e.key).toList();
+    List<int> answerCheckedList = answer.asMap().entries.where((e) => (e.value == 1)).toList().map((e) => e.key).toList();
     List<int> userCheckedList = context.read<PuzzleProvider>().checkedList;
     answerCheckedList.sort((a, b) => a - b);
     userCheckedList.sort((a, b) => a - b);
@@ -381,48 +383,103 @@ class PuzzleProvider extends ChangeNotifier {
 }
 
 class PuzzleData {
-  // TODO: decide answer format
-  // List<int> answer = [10, 11, 12, 13, 14, 16, 15, 17, 18, 19, 93, 73, 63, 43, 23, 33, 3, 90, 91, 92, 95, 94, 97, 98, 99, 96, 86, 77, 67, 57, 47, 37, 7, 88, 78, 68, 58, 48, 8, 28, 89, 79, 69, 70, 72, 74, 75, 60, 62, 64, 65, 45, 35, 5, 4, 34, 44, 6, 2, 1, 29, 26, 36, 46, 56, 32, 42, 21, 81, 51, 41, 80, 20, 50];
-  List<bool> answer = [
-    false, true, true, true, true, true, true, true, true, false,
-    true, true, true, true, true, true, true, true, true, true,
-    true, true, false, true, false, false, true, false, true, true,
-    false, false, true, true, true, true, true, true, false, false,
-    false, true, true, true, true, true, true, true, true, false,
-    false, true, false, false, false, false, true, true, true, false,
-    true, false, true, true, true, true, false, true, true, true,
-    true, false, true, true, true, true, false, true, true, true,
-    true, true, false, false, false, false, true, false, true, true, 
-    true, true, true, true, true, true, true, true, true, true, 
+  List<int> answer = [
+    0, 1, 1, 1, 1, 1, 1, 1, 1, 0,
+    1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+    1, 1, 0, 1, 0, 0, 1, 0, 1, 1,
+    0, 0, 1, 1, 1, 1, 1, 1, 0, 0,
+    0, 1, 1, 1, 1, 1, 1, 1, 1, 0,
+    0, 1, 0, 0, 0, 0, 1, 1, 1, 0,
+    1, 0, 1, 1, 1, 1, 0, 1, 1, 1,
+    1, 0, 1, 1, 1, 1, 0, 1, 1, 1,
+    1, 1, 0, 0, 0, 0, 1, 0, 1, 1, 
+    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 
   ];
   int boardColumnsNum = 10;
+  int get boardRowsNum => answer.length~/boardColumnsNum;
+  List<int> get hintsInEachRow {
+    List<List<int>> hints = [];
 
-  // TODO: create from answer
-  List<int> hintsInEachRow = [
-    0, 0, 0, 8,
-    0, 0, 0, 10,
-    2, 1, 1, 2,
-    0, 0, 0, 6,
-    0, 0, 0, 8,
-    0, 0, 1, 3,
-    0, 1, 4, 3,
-    0, 1, 4, 3,
-    0, 2, 1, 2, 
-    0, 0, 0, 10,
-  ];
+    List<int> tmp;
+    int pre;
+    int n;
+    int maxN = 0;
+    for (int i=0; i < boardColumnsNum; i++) {
+      tmp = [];
+      pre = 0;
+      n = 0;
+      for (int j=0; j < boardRowsNum; j++) {
+        int now = answer[boardColumnsNum * i + j];
+        if (now == 0) {
+          if (pre == 1) {
+            tmp.add(n);
+          }
+          n = 0;
+          pre = 0;
+        } else {
+          n++;
+          pre = 1;
+        }
+      }
+      if (n != 0) {
+        tmp.add(n);
+      }
+      maxN = max(maxN, tmp.length);
+      hints.add(tmp.reversed.toList());
+    }
+
+    List<int> result = List.generate(maxN * boardColumnsNum, (_) => 0);
+    for (int i = 0; i < boardColumnsNum; i++) {
+      List<int> hint = hints[i];
+      for (int j = 0; j < hint.length; j++) {
+        result[maxN * (i + 1) - j - 1] = hint[j];
+      }
+    }
+
+    return result;
+  }
   int maxNumOfHintsInEachRow = 4; // can be derivated from hintsInEachRow.length, answer.length and boardColumnsNum
-  List<int> hintsInEachColumn = [
-    0, 0, 2, 4,
-    0, 3, 2, 2,
-    2, 2, 2, 1,
-    0, 5, 2, 1,
-    2, 2, 2, 1,
-    2, 2, 2, 1,
-    0, 0, 6, 2,
-    0, 2, 5, 1,
-    0, 0, 3, 6,
-    0, 0, 2, 4,
-  ];
+  List<int> get hintsInEachColumn {
+    List<List<int>> hints = [];
+
+    List<int> tmp;
+    int pre;
+    int n;
+    int maxN = 0;
+    for (int i=0; i < boardRowsNum; i++) {
+      tmp = [];
+      pre = 0;
+      n = 0;
+      for (int j=0; j < boardColumnsNum; j++) {
+        int now = answer[boardColumnsNum * j + i];
+        if (now == 0) {
+          if (pre == 1) {
+            tmp.add(n);
+          }
+          n = 0;
+          pre = 0;
+        } else {
+          n++;
+          pre = 1;
+        }
+      }
+      if (n != 0) {
+        tmp.add(n);
+      }
+      maxN = max(maxN, tmp.length);
+      hints.add(tmp.reversed.toList());
+    }
+
+    List<int> result = List.generate(maxN * boardRowsNum, (_) => 0);
+    for (int i = 0; i < boardRowsNum; i++) {
+      List<int> hint = hints[i];
+      for (int j = 0; j < hint.length; j++) {
+        result[maxN * (i + 1) - j - 1] = hint[j];
+      }
+    }
+
+    return result;
+  }
   int maxNumOfHintsInEachColumn = 4; // can be derivated from hintsInEachColumn.length, boardColumnsNum
 }
 
