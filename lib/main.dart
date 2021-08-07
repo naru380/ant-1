@@ -1,6 +1,7 @@
 import 'package:ant_1/models/top_model.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'models/play_controller.dart';
 import 'pages/top.dart';
 import 'pages/settings.dart';
 import 'pages/Confirm.dart';
@@ -15,7 +16,7 @@ void main() {
           create: (_) => TopModel(),
         ),
         ChangeNotifierProvider(
-          create: (_) => PuzzleProvider(),
+          create: (_) => PlayController(),
         ),
       ],
       child: MyApp(),

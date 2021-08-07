@@ -1,17 +1,26 @@
 import 'dart:math';
 
+import 'package:ant_1/entities/logic_puzzle.dart';
+import 'package:ant_1/models/play_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/foundation.dart';
 
 class PlayScreen extends StatelessWidget {
+  final LogicPuzzle logicPuzzle;
+  PlayScreen({key: Key, this.logicPuzzle});
+
   @override
   Widget build(BuildContext context) {
+    Map<String, dynamic> args = ModalRoute.of(context).settings.arguments;
+    LogicPuzzle logicPuzzle = args['logicPuzzle'];
+    context.read<PlayController>().logicPuzzle = logicPuzzle;
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Puzzle Title')
       ),
-      body: Consumer<PuzzleProvider>(builder: (context, model, _) {
+      body: Consumer<PlayController>(builder: (context, model, _) {
         return GestureDetector(
           onScaleStart: (details) {
             model.initialFocalPoint = details.focalPoint;
@@ -42,7 +51,10 @@ class PlayScreen extends StatelessWidget {
                     offset: model.offset,
                     child: Transform.scale(
                       scale: model.scale,
-                      child: Puzzle(context),
+                      child: Puzzle(
+                        context: context,
+                        logicPuzzle: logicPuzzle,  
+                      ),
                     ),
                   ),
                 ),
@@ -102,12 +114,13 @@ class PlayScreen extends StatelessWidget {
 
 class Puzzle extends StatelessWidget{
   final BuildContext context;
-  Puzzle(this.context);
+  final LogicPuzzle logicPuzzle;
+  Puzzle({this.context, this.logicPuzzle});
 
   @override
   Widget build(BuildContext context) {
-    //context.read<PuzzleProvider>().checkedList.removeWhere((_) => true);
-    context.read<PuzzleProvider>().isCorrect = isCorrect;
+    //context.read<PlayController>().checkedList.removeWhere((_) => true);
+    context.read<PlayController>().isCorrect = isCorrect;
     return Stack(
       fit: StackFit.loose,
       children: <Widget>[
@@ -120,15 +133,95 @@ class Puzzle extends StatelessWidget{
     );
   }
 
-  final PuzzleData puzzleData = PuzzleData();
-  List<int> get answer => puzzleData.answer;
+  List<int> get answer => logicPuzzle.dots;
+  int get boardColumnsNum => logicPuzzle.width;
   int get boardRowsNum => answer.length ~/ boardColumnsNum;
-  int get boardColumnsNum => puzzleData.boardColumnsNum;
-  List<int> get hintsInEachRow => puzzleData.hintsInEachRow;
-  int get maxNumOfHintsInEachRow => puzzleData.maxNumOfHintsInEachRow;
-  List<int> get hintsInEachColumn => puzzleData.hintsInEachColumn;
-  int get maxNumOfHintsInEachColumn => puzzleData.maxNumOfHintsInEachColumn;
+  List<int> get hintsInEachRow => _hintsInEachRow();
+  int get maxNumOfHintsInEachRow => hintsInEachRow.length ~/ boardRowsNum;
+  List<int> get hintsInEachColumn => _hintsInEachColumn();
+  int get maxNumOfHintsInEachColumn => hintsInEachColumn.length ~/ boardColumnsNum;
 
+  List<int> _hintsInEachRow() {
+    List<List<int>> hints = [];
+    List<int> tmp;
+    int pre;
+    int n;
+    int maxN = 0;
+    for (int i=0; i < boardColumnsNum; i++) {
+      tmp = [];
+      pre = 0;
+      n = 0;
+      for (int j=0; j < boardRowsNum; j++) {
+        int now = answer[boardColumnsNum * i + j];
+        if (now == 0) {
+          if (pre == 1) {
+            tmp.add(n);
+          }
+          n = 0;
+          pre = 0;
+        } else {
+          n++;
+          pre = 1;
+        }
+      }
+      if (n != 0) {
+        tmp.add(n);
+      }
+      maxN = max(maxN, tmp.length);
+      hints.add(tmp.reversed.toList());
+    }
+
+    List<int> result = List.generate(maxN * boardColumnsNum, (_) => 0);
+    for (int i = 0; i < boardColumnsNum; i++) {
+      List<int> hint = hints[i];
+      for (int j = 0; j < hint.length; j++) {
+        result[maxN * (i + 1) - j - 1] = hint[j];
+      }
+    }
+
+    return result;
+  }
+  List<int> _hintsInEachColumn() {
+    List<List<int>> hints = [];
+    List<int> tmp;
+    int pre;
+    int n;
+    int maxN = 0;
+    for (int i=0; i < boardRowsNum; i++) {
+      tmp = [];
+      pre = 0;
+      n = 0;
+      for (int j=0; j < boardColumnsNum; j++) {
+        int now = answer[boardColumnsNum * j + i];
+        if (now == 0) {
+          if (pre == 1) {
+            tmp.add(n);
+          }
+          n = 0;
+          pre = 0;
+        } else {
+          n++;
+          pre = 1;
+        }
+      }
+      if (n != 0) {
+        tmp.add(n);
+      }
+      maxN = max(maxN, tmp.length);
+      hints.add(tmp.reversed.toList());
+    }
+
+    List<int> result = List.generate(maxN * boardRowsNum, (_) => 0);
+    for (int i = 0; i < boardRowsNum; i++) {
+      List<int> hint = hints[i];
+      for (int j = 0; j < hint.length; j++) {
+        result[maxN * (i + 1) - j - 1] = hint[j];
+      }
+    }
+
+    return result;
+  }
+  
   double get _screenWidth => MediaQuery.of(context).size.width;
   double get _screenHeight => MediaQuery.of(context).size.height;
   double get _puzzleWidth => _borderLayerWidth;
@@ -181,7 +274,7 @@ class Puzzle extends StatelessWidget{
   double get viewAreaWidth => maxNumOfHintsInEachRow.toDouble() * _squareSize * ratioOfScreenToPuzzle;
   double get viewAreaHeight => maxNumOfHintsInEachColumn.toDouble() * _squareSize * ratioOfScreenToPuzzle;
   Widget buildViewArea() {
-    return Consumer<PuzzleProvider>(builder: (context, model, _) {
+    return Consumer<PlayController>(builder: (context, model, _) {
       return Positioned(
         left: viewAreaLeftOffset,
         top: viewAreaTopOffset,
@@ -303,7 +396,7 @@ class Puzzle extends StatelessWidget{
   double get boardAreaWidth => boardColumnsNum.toDouble() * _squareSize * ratioOfScreenToPuzzle;
   double get boardAreaHeight => boardRowsNum.toDouble() * _squareSize * ratioOfScreenToPuzzle;
   Widget buildBoardArea() {
-    return Consumer<PuzzleProvider>(builder: (context, model, _) {
+    return Consumer<PlayController>(builder: (context, model, _) {
       return Positioned(
         left: boardAreaLeftOffset,
         top: boardAreaTopOffset,
@@ -352,135 +445,13 @@ class Puzzle extends StatelessWidget{
 
   bool isCorrect() {
     List<int> answerCheckedList = answer.asMap().entries.where((e) => (e.value == 1)).toList().map((e) => e.key).toList();
-    List<int> userCheckedList = context.read<PuzzleProvider>().checkedList;
+    List<int> userCheckedList = context.read<PlayController>().checkedList;
     answerCheckedList.sort((a, b) => a - b);
     userCheckedList.sort((a, b) => a - b);
     //print('answer: $answerCheckedList');
     //print('user: $userCheckedList');
     return listEquals(answerCheckedList, userCheckedList);
   }
-}
-
-class PuzzleProvider extends ChangeNotifier {
-  Offset offset = Offset.zero;
-  Offset initialFocalPoint = Offset.zero;
-  Offset sessionOffset = Offset.zero;
-  double scale = 0.9;
-  Function isCorrect;
-  final List<int> checkedList = [];
-  void init() {
-    checkedList.removeWhere((_) => true);
-  }
-  void checked(int index) {
-    checkedList.add(index);
-  }
-  void unchecked(int index) {
-    checkedList.remove(index);
-  }
-  void notify() {
-    notifyListeners();
-  }
-}
-
-class PuzzleData {
-  List<int> answer = [
-    0, 1, 1, 1, 1, 1, 1, 1, 1, 0,
-    1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-    1, 1, 0, 1, 0, 0, 1, 0, 1, 1,
-    0, 0, 1, 1, 1, 1, 1, 1, 0, 0,
-    0, 1, 1, 1, 1, 1, 1, 1, 1, 0,
-    0, 1, 0, 0, 0, 0, 1, 1, 1, 0,
-    1, 0, 1, 1, 1, 1, 0, 1, 1, 1,
-    1, 0, 1, 1, 1, 1, 0, 1, 1, 1,
-    1, 1, 0, 0, 0, 0, 1, 0, 1, 1, 
-    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 
-  ];
-  int boardColumnsNum = 10;
-  int get boardRowsNum => answer.length~/boardColumnsNum;
-  List<int> get hintsInEachRow {
-    List<List<int>> hints = [];
-
-    List<int> tmp;
-    int pre;
-    int n;
-    int maxN = 0;
-    for (int i=0; i < boardColumnsNum; i++) {
-      tmp = [];
-      pre = 0;
-      n = 0;
-      for (int j=0; j < boardRowsNum; j++) {
-        int now = answer[boardColumnsNum * i + j];
-        if (now == 0) {
-          if (pre == 1) {
-            tmp.add(n);
-          }
-          n = 0;
-          pre = 0;
-        } else {
-          n++;
-          pre = 1;
-        }
-      }
-      if (n != 0) {
-        tmp.add(n);
-      }
-      maxN = max(maxN, tmp.length);
-      hints.add(tmp.reversed.toList());
-    }
-
-    List<int> result = List.generate(maxN * boardColumnsNum, (_) => 0);
-    for (int i = 0; i < boardColumnsNum; i++) {
-      List<int> hint = hints[i];
-      for (int j = 0; j < hint.length; j++) {
-        result[maxN * (i + 1) - j - 1] = hint[j];
-      }
-    }
-
-    return result;
-  }
-  int maxNumOfHintsInEachRow = 4; // can be derivated from hintsInEachRow.length, answer.length and boardColumnsNum
-  List<int> get hintsInEachColumn {
-    List<List<int>> hints = [];
-
-    List<int> tmp;
-    int pre;
-    int n;
-    int maxN = 0;
-    for (int i=0; i < boardRowsNum; i++) {
-      tmp = [];
-      pre = 0;
-      n = 0;
-      for (int j=0; j < boardColumnsNum; j++) {
-        int now = answer[boardColumnsNum * j + i];
-        if (now == 0) {
-          if (pre == 1) {
-            tmp.add(n);
-          }
-          n = 0;
-          pre = 0;
-        } else {
-          n++;
-          pre = 1;
-        }
-      }
-      if (n != 0) {
-        tmp.add(n);
-      }
-      maxN = max(maxN, tmp.length);
-      hints.add(tmp.reversed.toList());
-    }
-
-    List<int> result = List.generate(maxN * boardRowsNum, (_) => 0);
-    for (int i = 0; i < boardRowsNum; i++) {
-      List<int> hint = hints[i];
-      for (int j = 0; j < hint.length; j++) {
-        result[maxN * (i + 1) - j - 1] = hint[j];
-      }
-    }
-
-    return result;
-  }
-  int maxNumOfHintsInEachColumn = 4; // can be derivated from hintsInEachColumn.length, boardColumnsNum
 }
 
 class PuzzleSetting {

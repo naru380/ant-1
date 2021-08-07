@@ -1,3 +1,4 @@
+import 'package:ant_1/models/play_controller.dart';
 import 'package:ant_1/models/top_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -82,12 +83,7 @@ class _TopScreenState extends State<TopScreen> {
           IconButton(
             icon: Icon(Icons.settings),
             onPressed: () async {
-              //Navigator.of(context).pushNamed('/setting');
-
-              // temporary change on  branch feature/#4
-              // TODO: create link for game-play page.
-              context.read<PuzzleProvider>().init();
-              Navigator.of(context).pushNamed('/play');
+              Navigator.of(context).pushNamed('/setting');
             },
           ),
         ],
@@ -96,13 +92,24 @@ class _TopScreenState extends State<TopScreen> {
         return ListView.builder(
           itemCount: model.numLogicPuzzle,
           itemBuilder: (BuildContext context, int index) {
-            return Card(
-              child: Padding(
-                child: Text(
-                  '${model.logicPuzzles[index].name}',
-                  style: TextStyle(fontSize: 22.0),
+            return GestureDetector(
+              onTap: () {
+                context.read<PlayController>().init();
+                Navigator.of(context).pushNamed(
+                  '/play',
+                  arguments: {
+                    'logicPuzzle': model.logicPuzzles[index],
+                  }
+                );
+              },
+              child: Card(
+                child: Padding(
+                  child: Text(
+                    '${model.logicPuzzles[index].name}',
+                    style: TextStyle(fontSize: 22.0),
+                  ),
+                  padding: EdgeInsets.all(20.0),
                 ),
-                padding: EdgeInsets.all(20.0),
               ),
             );
           }
