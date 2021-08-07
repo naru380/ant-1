@@ -1,3 +1,4 @@
+import 'package:ant_1/routes.dart';
 import 'package:ant_1/ui/create/confirm_screen.dart';
 import 'package:ant_1/ui/play/play_screen.dart';
 import 'package:ant_1/ui/top/top_screen.dart';
@@ -24,48 +25,18 @@ void main() {
   );
 }
 
-/*
-class RouteGenerator {
-  static Route<dynamic> generateRoute(RouteSettings settings) {
-    switch (settings.name) {
-      case '/':
-        return MaterialPageRoute(builder: (_) => TopScreen());
-      case '/create':
-        return MaterialPageRoute(
-          builder: (_) => Create(),
-        );
-      case '/confirm':
-        return MaterialPageRoute(
-          builder: (_) => Confirm(),
-        );
-      case '/setting':
-        return MaterialPageRoute(
-          builder: (_) => SettingScreen(),
-        );
-    }
-  }
-}
-*/
-
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        theme: ThemeData(
-          primarySwatch: Colors.blue,
-          // visualDensity: VisualDensity.adaptivePlatformDensity,
-        ),
-        title: 'logicmaker',
-        initialRoute: '/',
-        routes: {
-          '/': (context) => TopScreen(),
-          '/create': (context) => CreateScreen(),
-          '/setting': (context) => SettingScreen(),
-          '/confirm': (context) => ConfirmScreen(),
-          '/play': (context) => PlayScreen(),
-        }
-        // onGenerateRoute: RouteGenerator.generateRoute,
-        );
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+        // visualDensity: VisualDensity.adaptivePlatformDensity,
+      ),
+      title: 'logicmaker',
+      initialRoute: '/',
+      onGenerateRoute: RouteGenerator.generateRoute,
+    );
   }
 }
 
