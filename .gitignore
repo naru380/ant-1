@@ -1,5 +1,8 @@
 # Refferece: https://github.com/flutter/flutter/blob/master/.gitignore
 
+# Fvm
+.fvm/
+
 # Miscellaneous
 *.class
 *.lock
