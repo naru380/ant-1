@@ -1,3 +1,4 @@
+import 'package:ant_1/models/top_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -70,6 +71,7 @@ class _TopScreenState extends State<TopScreen> {
 
   @override
   Widget build(BuildContext context) {
+    context.read<TopModel>().init();
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -90,7 +92,24 @@ class _TopScreenState extends State<TopScreen> {
           ),
         ],
       ),
-      body: SingleChildScrollView(
+      body: Consumer<TopModel>(builder: (context, model, _) {
+        return ListView.builder(
+          itemCount: model.numLogicPuzzle,
+          itemBuilder: (BuildContext context, int index) {
+            return Card(
+              child: Padding(
+                child: Text(
+                  '${model.logicPuzzles[index].name}',
+                  style: TextStyle(fontSize: 22.0),
+                ),
+                padding: EdgeInsets.all(20.0),
+              ),
+            );
+          }
+        );
+      }),
+      /*
+      SingleChildScrollView(
         child: Column(
             children: List.generate(
           containerChild.length,
@@ -99,6 +118,7 @@ class _TopScreenState extends State<TopScreen> {
           },
         )),
       ),
+      */
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
         onPressed: () {
