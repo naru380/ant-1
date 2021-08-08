@@ -1,8 +1,8 @@
-import 'package:ant_1/dao/logic_puzzle_dao.dart';
-import 'package:ant_1/entities/logic_puzzle.dart';
+import 'package:ant_1/domain/dao/logic_puzzle_dao.dart';
+import 'package:ant_1/domain/entities/logic_puzzle.dart';
 import 'package:flutter/material.dart';
 
-class TopModel with ChangeNotifier {
+class TopViewModel with ChangeNotifier {
   List<LogicPuzzle> logicPuzzles = [];
   int get numLogicPuzzle => logicPuzzles.length;
 
