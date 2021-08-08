@@ -15,10 +15,12 @@ class RouteGenerator {
         );
       case '/create':
         return MaterialPageRoute(
+          settings: settings,
           builder: (_) => CreateScreen(),
         );
       case '/confirm':
         return MaterialPageRoute(
+          settings: settings,
           builder: (_) => ConfirmScreen(),
         );
       case '/setting':
