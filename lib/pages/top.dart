@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:provider/provider.dart';
@@ -42,7 +43,7 @@ class ImagePickerUtil {
   }
 }
 
-CameraCrop() async {
+Future<File> cameraCrop() async {
   PickedFile imageFile = await ImagePicker().getImage(
     source: ImageSource.gallery,
   );
@@ -55,6 +56,14 @@ CameraCrop() async {
     ),
   );
   return croppedFile;
+}
+
+Future<File> createImage() async {
+  const opencv = const MethodChannel('api.opencv.dev/opencv');
+  File _image = await cameraCrop();
+  var result = await opencv.invokeMethod('toPerspectiveTransformation',
+        <String, dynamic>{'srcPath': _image.path});
+  return result;
 }
 
 class _TopScreenState extends State<TopScreen> {
@@ -80,7 +89,7 @@ class _TopScreenState extends State<TopScreen> {
             icon: Icon(Icons.settings),
             onPressed: () async {
               //Navigator.of(context).pushNamed('/setting');
-              
+
               // temporary change on  branch feature/#4
               // TODO: create link for game-play page.
               context.read<PuzzleProvider>().init();
@@ -127,10 +136,15 @@ class _TopScreenState extends State<TopScreen> {
                   CupertinoDialogAction(
                     child: const Text('カメラロール'),
                     onPressed: () async {
-                      final _coppedImage = await CameraCrop();
-                      if (_coppedImage != null) {
-                        Navigator.of(context).pushNamed('/create',
-                            arguments: _coppedImage);
+                      // final _croppedImage = await cameraCrop();
+                      final _croppedImage = await createImage();
+                      if (_croppedImage != null) {
+                        // Navigator.of(context).pushNamed('/create',
+                        //     arguments: _croppedImage,);
+                        Navigator.of(context).pushNamed(
+                          '/test',
+                          arguments: _croppedImage,
+                        );
                       }
                     },
                   ),
@@ -145,61 +159,6 @@ class _TopScreenState extends State<TopScreen> {
             },
           );
         },
-      ),
-    );
-  }
-}
-
-class ActionContainer extends StatefulWidget {
-  ActionContainer(int cnt);
-
-  @override
-  _ActionContainerState createState() => _ActionContainerState();
-}
-
-class _ActionContainerState extends State<ActionContainer> {
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      key: UniqueKey(),
-      child: GestureDetector(
-        onTap: () {
-          setState(
-            () {
-              print(this.widget);
-              print(containerChild);
-              // print(containerChild[ind]);
-              // var del = this;
-              containerChild.remove(this);
-            },
-          );
-        },
-        child: Container(
-          alignment: Alignment.center,
-          margin: EdgeInsets.all(10.0),
-          child: FractionallySizedBox(
-            widthFactor: 0.9,
-            child: SizedBox(
-              height: MediaQuery.of(context).size.height * 0.1,
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  color: Colors.black12,
-                  borderRadius: const BorderRadius.all(Radius.circular(10)),
-                ),
-                child: Align(
-                  alignment: Alignment.center,
-                  child: Text(
-                    '$widget.cnt',
-                    style: TextStyle(
-                      // color: Colors.blue,
-                      fontSize: 20,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
       ),
     );
   }

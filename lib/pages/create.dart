@@ -1,5 +1,6 @@
-import 'dart:ui';
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:image/image.dart' as imgLib;
 
 class Create extends StatefulWidget {
   @override
@@ -7,22 +8,49 @@ class Create extends StatefulWidget {
 }
 
 class _CreateState extends State<Create> {
-  @override
   double _dot = 50.0;
   double _thr = 50.0;
 
+  @override
   Widget build(BuildContext context) {
     String _text1 = '$_dot';
     String text1 = _text1;
     String _text2 = '$_thr';
     String _title;
-    var ExampleImage = ModalRoute.of(context).settings.arguments;
-    // var ExampleImage = AssetImage('lib/image/arrow.jpeg');
-    var NewImage = ExampleImage;
+    int thresh = 122;
+    File originImage = ModalRoute.of(context).settings.arguments;
+    imgLib.Image imageData = imgLib.decodeImage(originImage.readAsBytesSync());
+    imgLib.Image cloneImage = imageData.clone();
+    imgLib.grayscale(cloneImage);
+
+    List<int> rectNum = [10, 10];
+    int rectSize = (cloneImage.width / rectNum[0]).round();
+    List<int> dotList = [];
+
+    for (int x = 0; x < rectNum[0]; x++) {
+      for (int y = 0; y < rectNum[1]; y++) {
+        final croppedImage = imgLib.copyCrop(
+          cloneImage,
+          x * rectSize,
+          y * rectSize,
+          rectSize,
+          rectSize,
+        );
+        final encoded = imgLib.encodeJpg(croppedImage);
+        print(encoded);
+        double average = encoded.reduce((a, b) => a + b) / encoded.length;
+        if(average > thresh){
+          dotList.add(1);
+          print('aaaa');
+        }else{
+          dotList.add(0);
+        }
+      }
+    }
+    print(dotList);
 
     return Scaffold(
       appBar: AppBar(
-        // backgroundColor: Colors.blue[900],
         title: Text(
           'Create',
           style: TextStyle(fontSize: 20),
@@ -35,13 +63,13 @@ class _CreateState extends State<Create> {
             children: [
               Column(
                 children: [
-                  // Image(
-                  //   image: ExampleImage,
-                  //   width: 180,
-                  // ),
-                  Image.file(
-                    ExampleImage,
-                    width: 180,
+                  SizedBox(
+                    width: 150,
+                    height: 150,
+                    child: Image.file(
+                      originImage,
+                      height: 150,
+                    ),
                   ),
                   Text(
                     '元画像',
@@ -55,16 +83,12 @@ class _CreateState extends State<Create> {
                 image: AssetImage('lib/image/arrow.jpeg'),
                 width: 30,
               ),
-              // Image.file(ExampleImage),
               Column(
                 children: [
-                  // Image(
-                  //   image: NewImage,
-                  //   width: 180,
-                  // ),
-                  Image.file(
-                    ExampleImage,
-                    width: 180,
+                  SizedBox(
+                    width: 150,
+                    height: 150,
+                    child: Image.memory(imgLib.encodeJpg(cloneImage)),
                   ),
                   Text(
                     'ドット絵',
@@ -104,9 +128,6 @@ class _CreateState extends State<Create> {
                           },
                         );
                       },
-                      // decoration: InputDecoration(
-                      //   border: OutlineInputBorder(),
-                      // ),
                     ),
                   ),
                 ],
@@ -145,9 +166,6 @@ class _CreateState extends State<Create> {
                           },
                         );
                       },
-                      // decoration: InputDecoration(
-                      //   border: OutlineInputBorder(),
-                      // ),
                     ),
                   ),
                 ],
@@ -190,7 +208,7 @@ class _CreateState extends State<Create> {
               onTap: () {
                 Navigator.of(context).pushNamed(
                   '/confirm',
-                  arguments: NewImage,
+                  arguments: cloneImage,
                 );
               },
               child: Center(
