@@ -43,27 +43,33 @@ class ImagePickerUtil {
   }
 }
 
-Future<File> cameraCrop() async {
+cameraCrop() async {
   PickedFile imageFile = await ImagePicker().getImage(
     source: ImageSource.gallery,
   );
-  File tmpImage = File(imageFile.path);
-  File croppedFile = await ImageCropper.cropImage(
-    sourcePath: tmpImage.path,
-    aspectRatio: CropAspectRatio(
-      ratioX: 1.0,
-      ratioY: 1.0,
-    ),
-  );
-  return croppedFile;
+  if (imageFile != null) {
+    File tmpImage = File(imageFile.path);
+    File croppedFile = await ImageCropper.cropImage(
+      sourcePath: tmpImage.path,
+      aspectRatio: CropAspectRatio(
+        ratioX: 1.0,
+        ratioY: 1.0,
+      ),
+    );
+    return croppedFile;
+  }
 }
 
-Future<File> createImage() async {
+createImage() async {
   const opencv = const MethodChannel('api.opencv.dev/opencv');
   File _image = await cameraCrop();
-  var result = await opencv.invokeMethod('toPerspectiveTransformation',
-        <String, dynamic>{'srcPath': _image.path});
-  return result;
+  if (_image != null) {
+    var result = await opencv.invokeMethod(
+      'toPerspectiveTransformationImg',
+      <String, dynamic>{'srcPath': _image.path},
+    );
+    return result;
+  }
 }
 
 class _TopScreenState extends State<TopScreen> {
@@ -139,12 +145,11 @@ class _TopScreenState extends State<TopScreen> {
                       // final _croppedImage = await cameraCrop();
                       final _croppedImage = await createImage();
                       if (_croppedImage != null) {
-                        // Navigator.of(context).pushNamed('/create',
-                        //     arguments: _croppedImage,);
-                        Navigator.of(context).pushNamed(
-                          '/test',
-                          arguments: _croppedImage,
-                        );
+                        // Navigator.of(context).pushNamed(
+                        //   '/create',
+                        //   arguments: _croppedImage,
+                        // );
+                        print(_croppedImage);
                       }
                     },
                   ),
