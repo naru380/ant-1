@@ -1,5 +1,8 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:image/image.dart' as imgLib;
+import 'dart:typed_data';
+import 'dart:io';
 
 class CreateScreen extends StatefulWidget {
   @override
@@ -16,13 +19,14 @@ class _CreateState extends State<CreateScreen> {
     String text1 = _text1;
     String _text2 = '$_thr';
     String _title;
-    var ExampleImage = ModalRoute.of(context).settings.arguments;
-    // var ExampleImage = AssetImage('lib/image/arrow.jpeg');
-    var NewImage = ExampleImage;
+
+    Map<String, dynamic> args = ModalRoute.of(context).settings.arguments;
+    File argImage = args['croppedImage'];
+    final decodedImage = imgLib.decodeImage(argImage.readAsBytesSync());
+    var dotList;
 
     return Scaffold(
       appBar: AppBar(
-        // backgroundColor: Colors.blue[900],
         title: Text(
           'Create',
           style: TextStyle(fontSize: 20),
@@ -36,13 +40,14 @@ class _CreateState extends State<CreateScreen> {
               Column(
                 children: [
                   // Image(
-                  //   image: ExampleImage,
+                  //   image: test,
                   //   width: 180,
                   // ),
                   Image.file(
-                    ExampleImage,
-                    width: 180,
+                    argImage,
+                    width: 130,
                   ),
+                  // Image.memory(pre),
                   Text(
                     '元画像',
                     style: TextStyle(
@@ -59,13 +64,17 @@ class _CreateState extends State<CreateScreen> {
               Column(
                 children: [
                   // Image(
-                  //   image: NewImage,
+                  //   image: test,
                   //   width: 180,
                   // ),
-                  Image.file(
-                    ExampleImage,
-                    width: 180,
-                  ),
+                  // Image.memory(
+                  //   jpg,
+                  //   width: 130,
+                  // ),
+                  // Image.memory(test),
+                  // CustomPaint(
+                  //   painter: OriginalPainter(),
+                  // ),
                   Text(
                     'ドット絵',
                     style: TextStyle(
@@ -188,10 +197,13 @@ class _CreateState extends State<CreateScreen> {
                 borderRadius: const BorderRadius.all(Radius.circular(100))),
             child: GestureDetector(
               onTap: () {
-                Navigator.of(context).pushNamed(
-                  '/confirm',
-                  arguments: NewImage,
-                );
+                // Navigator.of(context).pushNamed(
+                //   '/confirm',
+                //   arguments: exampleImage,
+                // );
+                setState(() {
+                  dotList = createDots(decodedImage);
+                });
               },
               child: Center(
                 child: Text(
@@ -208,4 +220,35 @@ class _CreateState extends State<CreateScreen> {
       ),
     );
   }
+}
+
+Uint8List createDots(imgLib.Image image) {
+  imgLib.Image cloneImage = image.clone();
+  imgLib.grayscale(cloneImage);
+
+  List<int> rectNum = [100, 100];
+  int rectSize = (cloneImage.width / rectNum[0]).round();
+
+  int thresh = 200;
+  List<int> result = [];
+
+  for (int y = 0; y < rectNum[0]; y++) {
+    for (int x = 0; x < rectNum[1]; x++) {
+      final croppedImage = imgLib.copyCrop(
+        cloneImage,
+        x * rectSize,
+        y * rectSize,
+        rectSize,
+        rectSize,
+      );
+      Uint8List encoded = croppedImage.getBytes();
+      double average = encoded.reduce((a, b) => a + b) / encoded.length;
+      if (average > thresh) {
+        result.add(1);
+      } else {
+        result.add(0);
+      }
+    }
+  }
+  return result;
 }

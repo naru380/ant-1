@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'dart:io';
 
 class ConfirmScreen extends StatefulWidget {
   @override
@@ -9,7 +10,9 @@ class ConfirmScreen extends StatefulWidget {
 class _ConfirmState extends State<ConfirmScreen> {
   @override
   Widget build(BuildContext context) {
-    var DotImage = ModalRoute.of(context).settings.arguments;
+    Map<String, dynamic> args = ModalRoute.of(context).settings.arguments;
+    File dotImage = args['croppedImage'];
+    // var dotImage = ModalRoute.of(context).settings.arguments;
     return Scaffold(
       appBar: AppBar(
         // backgroundColor: Colors.blue[900],
@@ -23,7 +26,7 @@ class _ConfirmState extends State<ConfirmScreen> {
         children: [
           Center(
             child: Image.file(
-              DotImage,
+              dotImage,
               width: 300,
             ),
           ),
