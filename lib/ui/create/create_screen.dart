@@ -14,6 +14,66 @@ class _CreateState extends State<CreateScreen> {
   double _dot = 50.0;
   double _thr = 50.0;
 
+  List<DropdownMenuItem<int>> _nums = [];
+  List<DropdownMenuItem<int>> _thrs = [];
+  int _selectNum = 0;
+  int _selectThr = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    setItems();
+    _selectNum = _nums[0].value;
+    _selectThr = _thrs[0].value;
+  }
+
+  void setItems() {
+    _nums
+      ..add(DropdownMenuItem(
+        child: Text(
+          ' 10 ×  10',
+          style: TextStyle(fontSize: 20.0),
+        ),
+        value: 10,
+      ))
+      ..add(DropdownMenuItem(
+        child: Text(
+          ' 50 ×  50',
+          style: TextStyle(fontSize: 20.0),
+        ),
+        value: 50,
+      ))
+      ..add(DropdownMenuItem(
+        child: Text(
+          '100 × 100',
+          style: TextStyle(fontSize: 20.0),
+        ),
+        value: 100,
+      ));
+    _thrs
+      ..add(DropdownMenuItem(
+        child: Text(
+          '100',
+          style: TextStyle(fontSize: 20.0),
+        ),
+        value: 100,
+      ))
+      ..add(DropdownMenuItem(
+        child: Text(
+          '150',
+          style: TextStyle(fontSize: 20.0),
+        ),
+        value: 150,
+      ))
+      ..add(DropdownMenuItem(
+        child: Text(
+          '200',
+          style: TextStyle(fontSize: 20.0),
+        ),
+        value: 3,
+      ));
+  }
+
   Widget build(BuildContext context) {
     String _text1 = '$_dot';
     String text1 = _text1;
@@ -97,43 +157,52 @@ class _CreateState extends State<CreateScreen> {
                     ),
                   ),
                   SizedBox(
-                    width: 40,
-                    height: 35,
-                    child: TextField(
-                      controller: TextEditingController(text: _text1),
-                      onChanged: (_text1) {
-                        setState(
-                          () {
-                            try {
-                              _dot = _text1 as double;
-                            } catch (e) {
-                              _text1 = text1;
-                            }
-                            text1 = _text1;
-                          },
-                        );
+                    width: 120,
+                    height: 40,
+                    child: DropdownButton(
+                      items: _nums,
+                      value: _selectNum,
+                      onChanged: (value) => {
+                        setState(() {
+                          _selectNum = value;
+                        }),
                       },
-                      // decoration: InputDecoration(
-                      //   border: OutlineInputBorder(),
-                      // ),
                     ),
+                    // child: TextField(
+                    //   controller: TextEditingController(text: _text1),
+                    //   onChanged: (_text1) {
+                    //     setState(
+                    //       () {
+                    //         try {
+                    //           _dot = _text1 as double;
+                    //         } catch (e) {
+                    //           _text1 = text1;
+                    //         }
+                    //         text1 = _text1;
+                    //       },
+                    //     );
+                    //   },
+                    //   // decoration: InputDecoration(
+                    //   //   border: OutlineInputBorder(),
+                    //   // ),
+                    // ),
                   ),
                 ],
               ),
-              Slider.adaptive(
-                value: _dot,
-                min: 0.0,
-                max: 100.0,
-                divisions: 100,
-                onChanged: (double value1) {
-                  setState(
-                    () {
-                      _dot = value1;
-                      _text1 = '$_dot';
-                    },
-                  );
-                },
-              ),
+              // Slider.adaptive(
+              //   value: _dot,
+              //   min: 0.0,
+              //   max: 100.0,
+              //   divisions: 100,
+              //   onChanged: (double value1) {
+              //     setState(
+              //       () {
+              //         _dot = value1;
+              //         _text1 = '$_dot';
+              //       },
+              //     );
+              //   },
+              // ),
               Row(
                 children: [
                   Text(
@@ -142,38 +211,51 @@ class _CreateState extends State<CreateScreen> {
                       fontSize: 15,
                     ),
                   ),
+                  // SizedBox(
+                  //   width: 60,
+                  //   height: 35,
+                  //   child: TextField(
+                  //     controller: TextEditingController(text: _text2),
+                  //     onChanged: (_text2) {
+                  //       setState(
+                  //         () {
+                  //           _thr = _text2 as double;
+                  //         },
+                  //       );
+                  //     },
+                  //     // decoration: InputDecoration(
+                  //     //   border: OutlineInputBorder(),
+                  //     // ),
+                  //   ),
+                  // ),
                   SizedBox(
-                    width: 60,
-                    height: 35,
-                    child: TextField(
-                      controller: TextEditingController(text: _text2),
-                      onChanged: (_text2) {
-                        setState(
-                          () {
-                            _thr = _text2 as double;
-                          },
-                        );
+                    width: 70,
+                    height: 40,
+                    child: DropdownButton(
+                      items: _thrs,
+                      value: _selectThr,
+                      onChanged: (value) => {
+                        setState(() {
+                          _selectThr = value;
+                        }),
                       },
-                      // decoration: InputDecoration(
-                      //   border: OutlineInputBorder(),
-                      // ),
                     ),
-                  ),
+                  )
                 ],
               ),
-              Slider.adaptive(
-                value: _thr,
-                min: 1.0,
-                max: 100.0,
-                onChanged: (double value1) {
-                  setState(
-                    () {
-                      _thr = value1;
-                      _text2 = '$_thr';
-                    },
-                  );
-                },
-              ),
+              // Slider.adaptive(
+              //   value: _thr,
+              //   min: 1.0,
+              //   max: 100.0,
+              //   onChanged: (double value1) {
+              //     setState(
+              //       () {
+              //         _thr = value1;
+              //         _text2 = '$_thr';
+              //       },
+              //     );
+              //   },
+              // ),
               TextField(
                 decoration: InputDecoration(
                   contentPadding: EdgeInsets.only(
@@ -202,8 +284,45 @@ class _CreateState extends State<CreateScreen> {
                 //   arguments: exampleImage,
                 // );
                 setState(() {
-                  dotList = createDots(decodedImage);
+                  dotList = createDots(decodedImage, _selectNum, _selectThr);
                 });
+                print(dotList.length);
+                int test = 0;
+                for (int i = 0; i < dotList.length; i++) {
+                  if (dotList[i] == 1) {
+                    test++;
+                  }
+                }
+                print(test);
+              },
+              child: Center(
+                child: Text(
+                  'CREATE',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 20,
+                  ),
+                ),
+              ),
+            ),
+          ),
+          Container(
+            height: 60,
+            width: 200,
+            decoration: BoxDecoration(
+                color: Colors.blue,
+                borderRadius: const BorderRadius.all(Radius.circular(100))),
+            child: GestureDetector(
+              onTap: () {
+                Navigator.of(context).pushNamed(
+                  '/confirm',
+                  arguments: {
+                    'croppedImage': argImage,
+                  },
+                );
+                // setState(() {
+                //   dotList = createDots(decodedImage);
+                // });
               },
               child: Center(
                 child: Text(
@@ -222,14 +341,13 @@ class _CreateState extends State<CreateScreen> {
   }
 }
 
-Uint8List createDots(imgLib.Image image) {
+List<int> createDots(imgLib.Image image, int num, int thresh) {
   imgLib.Image cloneImage = image.clone();
   imgLib.grayscale(cloneImage);
 
-  List<int> rectNum = [100, 100];
+  List<int> rectNum = [num, num];
   int rectSize = (cloneImage.width / rectNum[0]).round();
 
-  int thresh = 200;
   List<int> result = [];
 
   for (int y = 0; y < rectNum[0]; y++) {
