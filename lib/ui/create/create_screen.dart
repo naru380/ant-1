@@ -52,7 +52,7 @@ class _CreateState extends State<CreateScreen> {
                 ],
               ),
               Image(
-                image: AssetImage('lib/image/arrow.jpeg'),
+                image: AssetImage('assets/images/arrow.jpeg'),
                 width: 30,
               ),
               // Image.file(ExampleImage),
