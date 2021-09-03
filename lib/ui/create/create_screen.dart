@@ -18,6 +18,8 @@ class _CreateState extends State<CreateScreen> {
   List<DropdownMenuItem<int>> _thrs = [];
   int _selectNum = 0;
   int _selectThr = 0;
+  String _title = "";
+
 
   @override
   void initState() {
@@ -74,11 +76,16 @@ class _CreateState extends State<CreateScreen> {
       ));
   }
 
+  void _handleText(String e) {
+    setState(() {
+      _title = e;
+    });
+  }
+
   Widget build(BuildContext context) {
     String _text1 = '$_dot';
     String text1 = _text1;
     String _text2 = '$_thr';
-    String _title;
 
     Map<String, dynamic> args = ModalRoute.of(context).settings.arguments;
     File argImage = args['croppedImage'];
@@ -267,7 +274,8 @@ class _CreateState extends State<CreateScreen> {
                 style: TextStyle(
                   fontSize: 25,
                 ),
-                controller: TextEditingController(text: _title),
+                // controller: TextEditingController(text: _title),
+                onChanged: _handleText,
               ),
             ],
           ),
@@ -294,6 +302,7 @@ class _CreateState extends State<CreateScreen> {
                   }
                 }
                 print(test);
+                print(_title);
               },
               child: Center(
                 child: Text(
@@ -318,6 +327,7 @@ class _CreateState extends State<CreateScreen> {
                   '/confirm',
                   arguments: {
                     'croppedImage': argImage,
+                    'title':_title,
                   },
                 );
                 // setState(() {

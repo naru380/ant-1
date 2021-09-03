@@ -12,7 +12,10 @@ class _ConfirmState extends State<ConfirmScreen> {
   Widget build(BuildContext context) {
     Map<String, dynamic> args = ModalRoute.of(context).settings.arguments;
     File dotImage = args['croppedImage'];
-    // var dotImage = ModalRoute.of(context).settings.arguments;
+    String title = args['title'];
+    if (title == null) {
+      title = 'タイトル';
+    }
     return Scaffold(
       appBar: AppBar(
         // backgroundColor: Colors.blue[900],
@@ -30,6 +33,13 @@ class _ConfirmState extends State<ConfirmScreen> {
               width: 300,
             ),
           ),
+          Center(child:
+                  Text(
+                    title,
+                    style: TextStyle(
+                      fontSize: 40,
+                    ),
+                  ),),
           Center(
             child: Container(
               height: 60,
