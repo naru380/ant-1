@@ -11,12 +11,12 @@ class LogicPuzzle {
   LogicPuzzle({this.id, this.name, this.width, this.dots, this.lastState, this.isClear});
 
   Map<String, dynamic> toMap() => {
-    'id': id,
-    'name': name,
-    'width': width,
-    'dots': dots.toString(),
-    'last_state': lastState.toString(),
-    'is_clear': isClear ? 1 : 0,
+    if(id != null) 'id': id,
+    if(name != null) 'name': name,
+    if(width != null) 'width': width,
+    if(dots != null) 'dots': dots.toString(),
+    if(lastState != null) 'last_state': lastState.toString(),
+    if(isClear != null) 'is_clear': isClear ? 1 : 0,
   };
 
   Map<String, dynamic> toMapExceptId() {

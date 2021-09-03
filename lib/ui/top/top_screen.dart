@@ -73,10 +73,9 @@ class _TopScreenState extends State<TopScreen> {
             itemBuilder: (BuildContext context, int index) {
               return GestureDetector(
                 onTap: () {
+                  context.read<PlayViewModel>().logicPuzzle =  model.logicPuzzles[index];
                   context.read<PlayViewModel>().init();
-                  Navigator.of(context).pushNamed('/play', arguments: {
-                    'logicPuzzle': model.logicPuzzles[index],
-                  });
+                  Navigator.of(context).pushNamed('/play');
                 },
                 child: Card(
                   child: Padding(
