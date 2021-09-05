@@ -1,9 +1,10 @@
+import 'dart:typed_data';
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:ant_1/ui/top/top_view_model.dart';
 import 'package:ant_1/domain/entities/logic_puzzle.dart';
 import 'package:ant_1/domain/dao/logic_puzzle_dao.dart';
-import 'dart:io';
+import 'package:image_gallery_saver/image_gallery_saver.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class ConfirmScreen extends StatefulWidget {
   @override
@@ -14,13 +15,18 @@ class _ConfirmState extends State<ConfirmScreen> {
   @override
   Widget build(BuildContext context) {
     Map<String, dynamic> args = ModalRoute.of(context).settings.arguments;
-    File dotImage = args['croppedImage'];
     String title = args['title'];
     List<int> dotList = args['dotList'];
     int width = args['width'];
+    Uint8List dotImage = args['dotImage'];
     if (title == null) {
       title = 'タイトル';
     }
+
+    Future _saveImage(Uint8List dotImage) async {
+      final result = await ImageGallerySaver.saveImage(dotImage);
+    }
+
     return Scaffold(
       appBar: AppBar(
         // backgroundColor: Colors.blue[900],
@@ -33,7 +39,7 @@ class _ConfirmState extends State<ConfirmScreen> {
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
           Center(
-            child: Image.file(
+            child: Image.memory(
               dotImage,
               width: 300,
             ),
@@ -55,15 +61,12 @@ class _ConfirmState extends State<ConfirmScreen> {
                   borderRadius: const BorderRadius.all(Radius.circular(100))),
               child: GestureDetector(
                 onTap: () async {
-                  print(dotList);
-                  print(width);
                   LogicPuzzleDao logicPuzzleDao = LogicPuzzleDao();
                   var logicPuzzle = LogicPuzzle(
                       name: title,
                       width: width,
                       dots: dotList,
-                      lastState:
-                          List.generate(dotList.length, (_) => 0),
+                      lastState: List.generate(dotList.length, (_) => 0),
                       isClear: false);
                   await logicPuzzleDao.create(logicPuzzle);
                   Navigator.of(context)
@@ -82,6 +85,13 @@ class _ConfirmState extends State<ConfirmScreen> {
             ),
           ),
         ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        child: Icon(Icons.download_sharp),
+        onPressed: () async {
+          await _saveImage(dotImage);
+          Fluttertoast.showToast(msg: 'ダウンロードしました');
+        },
       ),
     );
   }

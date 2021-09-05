@@ -1,7 +1,8 @@
-import 'dart:ui';
+import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:image/image.dart' as imgLib;
 import 'dart:typed_data';
+import 'package:flutter/rendering.dart';
 import 'dart:io';
 
 class CreateScreen extends StatefulWidget {
@@ -21,13 +22,14 @@ class _CreateState extends State<CreateScreen> {
   String title = "";
   List<int> dotList;
   List<Widget> gridList;
+  final _globalKey = GlobalKey();
 
   @override
   void initState() {
     super.initState();
     setItems();
-    _selectNum = _nums[0].value;
-    _selectThr = _thrs[1].value;
+    _selectNum = _nums[1].value;
+    _selectThr = _thrs[2].value;
   }
 
   void setItems() {
@@ -181,9 +183,13 @@ class _CreateState extends State<CreateScreen> {
                     //     return _dotItem(dotList[index], _selectNum);
                     //   },
                     // ),
-                    child: GridView.count(
-                      crossAxisCount: _selectNum,
-                      children: gridList,
+
+                    child: RepaintBoundary(
+                      key: _globalKey,
+                      child: GridView.count(
+                        crossAxisCount: _selectNum,
+                        children: gridList,
+                      ),
                     ),
                   ),
                   // Image(
@@ -335,6 +341,42 @@ class _CreateState extends State<CreateScreen> {
               ),
             ],
           ),
+          // Container(
+          //   height: 60,
+          //   width: 200,
+          //   decoration: BoxDecoration(
+          //       color: Colors.blue,
+          //       borderRadius: const BorderRadius.all(Radius.circular(100))),
+          //   child: GestureDetector(
+          //     onTap: () {
+          //       // Navigator.of(context).pushNamed(
+          //       //   '/confirm',
+          //       //   arguments: exampleImage,
+          //       // );
+          //       setState(() {
+          //         dotList = createDots(decodedImage, _selectNum, _selectThr);
+          //       });
+          //       print(dotList.length);
+          //       int test = 0;
+          //       for (int i = 0; i < dotList.length; i++) {
+          //         if (dotList[i] == 1) {
+          //           test++;
+          //         }
+          //       }
+          //       print(test);
+          //       print(title);
+          //     },
+          //     child: Center(
+          //       child: Text(
+          //         'CREATE',
+          //         style: TextStyle(
+          //           color: Colors.white,
+          //           fontSize: 20,
+          //         ),
+          //       ),
+          //     ),
+          //   ),
+          // ),
           Container(
             height: 60,
             width: 200,
@@ -342,51 +384,15 @@ class _CreateState extends State<CreateScreen> {
                 color: Colors.blue,
                 borderRadius: const BorderRadius.all(Radius.circular(100))),
             child: GestureDetector(
-              onTap: () {
-                // Navigator.of(context).pushNamed(
-                //   '/confirm',
-                //   arguments: exampleImage,
-                // );
-                setState(() {
-                  dotList = createDots(decodedImage, _selectNum, _selectThr);
-                });
-                print(dotList.length);
-                int test = 0;
-                for (int i = 0; i < dotList.length; i++) {
-                  if (dotList[i] == 1) {
-                    test++;
-                  }
-                }
-                print(test);
-                print(title);
-              },
-              child: Center(
-                child: Text(
-                  'CREATE',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 20,
-                  ),
-                ),
-              ),
-            ),
-          ),
-          Container(
-            height: 60,
-            width: 200,
-            decoration: BoxDecoration(
-                color: Colors.blue,
-                borderRadius: const BorderRadius.all(Radius.circular(100))),
-            child: GestureDetector(
-              onTap: () {
-                print(dotList.length);
+              onTap: () async{
+                var dotImage = await convertWidgetToImage(_globalKey);
                 Navigator.of(context).pushNamed(
                   '/confirm',
                   arguments: {
-                    'croppedImage': argImage,
                     'title': title,
                     'dotList': dotList,
                     'width': _selectNum,
+                    'dotImage': dotImage,
                   },
                 );
                 // setState(() {
@@ -463,4 +469,12 @@ List<Widget> createGrid(List<int> dotList, int selectNum) {
     list.add(dotItem(dotList[i], selectNum));
   }
   return list;
+}
+
+Future<Uint8List> convertWidgetToImage(GlobalKey widgetGlobalKey) async {
+  RenderRepaintBoundary boundary =
+      widgetGlobalKey.currentContext.findRenderObject();
+  ui.Image image = await boundary.toImage();
+  ByteData byteData = await image.toByteData(format: ui.ImageByteFormat.png);
+  return byteData.buffer.asUint8List();
 }

@@ -35,6 +35,8 @@ dependencies:
   sqflite: any
   path: any
   image: ^3.0.2
+  image_gallery_saver: ^1.5.0
+  fluttertoast: ^8.0.8
 
 dev_dependencies:
   flutter_test:
