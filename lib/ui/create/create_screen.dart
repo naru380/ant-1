@@ -18,7 +18,8 @@ class _CreateState extends State<CreateScreen> {
   List<DropdownMenuItem<int>> _thrs = [];
   int _selectNum = 0;
   int _selectThr = 0;
-  String _title = "";
+  String title = "";
+  List<int> dotList;
 
 
   @override
@@ -78,7 +79,7 @@ class _CreateState extends State<CreateScreen> {
 
   void _handleText(String e) {
     setState(() {
-      _title = e;
+      title = e;
     });
   }
 
@@ -89,8 +90,9 @@ class _CreateState extends State<CreateScreen> {
 
     Map<String, dynamic> args = ModalRoute.of(context).settings.arguments;
     File argImage = args['croppedImage'];
+    // File argImage = File('../../../assets/images/arrow.jpeg');
     final decodedImage = imgLib.decodeImage(argImage.readAsBytesSync());
-    var dotList;
+    // final decodedImage = imgLib.decodeImage(File('assets/images/arrow.jpeg').readAsBytesSync());
 
     return Scaffold(
       appBar: AppBar(
@@ -127,6 +129,10 @@ class _CreateState extends State<CreateScreen> {
                 image: AssetImage('assets/images/arrow.jpeg'),
                 width: 30,
               ),
+              // Icon(
+              //   Icons.arrow_forward_ios,
+              //   size: 40,
+              // ),
               // Image.file(ExampleImage),
               Column(
                 children: [
@@ -274,7 +280,7 @@ class _CreateState extends State<CreateScreen> {
                 style: TextStyle(
                   fontSize: 25,
                 ),
-                // controller: TextEditingController(text: _title),
+                // controller: TextEditingController(text: title),
                 onChanged: _handleText,
               ),
             ],
@@ -302,7 +308,7 @@ class _CreateState extends State<CreateScreen> {
                   }
                 }
                 print(test);
-                print(_title);
+                print(title);
               },
               child: Center(
                 child: Text(
@@ -323,11 +329,14 @@ class _CreateState extends State<CreateScreen> {
                 borderRadius: const BorderRadius.all(Radius.circular(100))),
             child: GestureDetector(
               onTap: () {
+                print(dotList.length);
                 Navigator.of(context).pushNamed(
                   '/confirm',
                   arguments: {
                     'croppedImage': argImage,
-                    'title':_title,
+                    'title': title,
+                    'dotList': dotList,
+                    'width': _selectNum,
                   },
                 );
                 // setState(() {
