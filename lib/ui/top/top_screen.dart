@@ -6,6 +6,9 @@ import 'package:image_picker/image_picker.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:provider/provider.dart';
 import 'dart:io';
+import 'dart:typed_data';
+import 'package:flutter/services.dart';
+import 'package:image/image.dart' as imgLib;
 
 class MyApp extends StatelessWidget {
   @override
