@@ -10,9 +10,9 @@ class CreateScreen extends StatefulWidget {
 }
 
 class _CreateState extends State<CreateScreen> {
-  @override
-  double _dot = 50.0;
-  double _thr = 50.0;
+  // @override
+  // double _dot = 50.0;
+  // double _thr = 50.0;
 
   List<DropdownMenuItem<int>> _nums = [];
   List<DropdownMenuItem<int>> _thrs = [];
@@ -20,61 +20,91 @@ class _CreateState extends State<CreateScreen> {
   int _selectThr = 0;
   String title = "";
   List<int> dotList;
-
+  List<Widget> gridList;
 
   @override
   void initState() {
     super.initState();
     setItems();
     _selectNum = _nums[0].value;
-    _selectThr = _thrs[0].value;
+    _selectThr = _thrs[1].value;
   }
 
   void setItems() {
     _nums
-      ..add(DropdownMenuItem(
-        child: Text(
-          ' 10 ×  10',
-          style: TextStyle(fontSize: 20.0),
+      ..add(
+        DropdownMenuItem(
+          child: Text(
+            ' 10 ×  10',
+            style: TextStyle(fontSize: 20.0),
+          ),
+          value: 10,
         ),
-        value: 10,
-      ))
-      ..add(DropdownMenuItem(
-        child: Text(
-          ' 50 ×  50',
-          style: TextStyle(fontSize: 20.0),
+      )
+      ..add(
+        DropdownMenuItem(
+          child: Text(
+            ' 50 ×  50',
+            style: TextStyle(fontSize: 20.0),
+          ),
+          value: 50,
         ),
-        value: 50,
-      ))
-      ..add(DropdownMenuItem(
-        child: Text(
-          '100 × 100',
-          style: TextStyle(fontSize: 20.0),
+      )
+      ..add(
+        DropdownMenuItem(
+          child: Text(
+            '100 × 100',
+            style: TextStyle(fontSize: 20.0),
+          ),
+          value: 100,
         ),
-        value: 100,
-      ));
+      );
     _thrs
-      ..add(DropdownMenuItem(
-        child: Text(
-          '100',
-          style: TextStyle(fontSize: 20.0),
+      ..add(
+        DropdownMenuItem(
+          child: Text(
+            '100',
+            style: TextStyle(fontSize: 20.0),
+          ),
+          value: 100,
         ),
-        value: 100,
-      ))
-      ..add(DropdownMenuItem(
-        child: Text(
-          '150',
-          style: TextStyle(fontSize: 20.0),
+      )
+      ..add(
+        DropdownMenuItem(
+          child: Text(
+            '125',
+            style: TextStyle(fontSize: 20.0),
+          ),
+          value: 125,
         ),
-        value: 150,
-      ))
-      ..add(DropdownMenuItem(
-        child: Text(
-          '200',
-          style: TextStyle(fontSize: 20.0),
+      )
+      ..add(
+        DropdownMenuItem(
+          child: Text(
+            '150',
+            style: TextStyle(fontSize: 20.0),
+          ),
+          value: 150,
         ),
-        value: 3,
-      ));
+      )
+      ..add(
+        DropdownMenuItem(
+          child: Text(
+            '175',
+            style: TextStyle(fontSize: 20.0),
+          ),
+          value: 175,
+        ),
+      )
+      ..add(
+        DropdownMenuItem(
+          child: Text(
+            '200',
+            style: TextStyle(fontSize: 20.0),
+          ),
+          value: 200,
+        ),
+      );
   }
 
   void _handleText(String e) {
@@ -84,15 +114,16 @@ class _CreateState extends State<CreateScreen> {
   }
 
   Widget build(BuildContext context) {
-    String _text1 = '$_dot';
-    String text1 = _text1;
-    String _text2 = '$_thr';
+    // String _text1 = '$_dot';
+    // String text1 = _text1;
+    // String _text2 = '$_thr';
 
     Map<String, dynamic> args = ModalRoute.of(context).settings.arguments;
     File argImage = args['croppedImage'];
-    // File argImage = File('../../../assets/images/arrow.jpeg');
     final decodedImage = imgLib.decodeImage(argImage.readAsBytesSync());
-    // final decodedImage = imgLib.decodeImage(File('assets/images/arrow.jpeg').readAsBytesSync());
+
+    dotList = createDots(decodedImage, _selectNum, _selectThr);
+    gridList = createGrid(dotList, _selectNum);
 
     return Scaffold(
       appBar: AppBar(
@@ -125,17 +156,36 @@ class _CreateState extends State<CreateScreen> {
                   ),
                 ],
               ),
-              Image(
-                image: AssetImage('assets/images/arrow.jpeg'),
-                width: 30,
-              ),
-              // Icon(
-              //   Icons.arrow_forward_ios,
-              //   size: 40,
+              // Image(
+              //   image: AssetImage('assets/images/arrow.jpeg'),
+              //   width: 30,
               // ),
+              Icon(
+                Icons.arrow_forward_ios,
+                size: 40,
+              ),
               // Image.file(ExampleImage),
               Column(
                 children: [
+                  SizedBox(
+                    width: 130,
+                    height: 130,
+                    // child: GridView.builder(
+                    //   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    //     crossAxisCount: _selectNum,
+                    //   ),
+                    //   itemBuilder: (BuildContext context, int index) {
+                    //     // if (index >= dotList.length) {
+                    //     //   dotList.addAll(dotList);
+                    //     // }
+                    //     return _dotItem(dotList[index], _selectNum);
+                    //   },
+                    // ),
+                    child: GridView.count(
+                      crossAxisCount: _selectNum,
+                      children: gridList,
+                    ),
+                  ),
                   // Image(
                   //   image: test,
                   //   width: 180,
@@ -381,11 +431,36 @@ List<int> createDots(imgLib.Image image, int num, int thresh) {
       Uint8List encoded = croppedImage.getBytes();
       double average = encoded.reduce((a, b) => a + b) / encoded.length;
       if (average > thresh) {
-        result.add(1);
-      } else {
         result.add(0);
+      } else {
+        result.add(1);
       }
     }
   }
   return result;
+}
+
+Widget dotItem(int col, int selectNum) {
+  double size = 130 / selectNum;
+  if (col == 0) {
+    return Container(
+      height: size,
+      width: size,
+      color: Colors.white,
+    );
+  } else {
+    return Container(
+      width: size,
+      height: size,
+      color: Colors.black,
+    );
+  }
+}
+
+List<Widget> createGrid(List<int> dotList, int selectNum) {
+  List<Widget> list = [];
+  for (int i = 0; i < dotList.length; i++) {
+    list.add(dotItem(dotList[i], selectNum));
+  }
+  return list;
 }
