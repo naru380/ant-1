@@ -22,6 +22,16 @@ class LogicPuzzleDao {
   }
 
   // update
+  Future<int> update(int id, LogicPuzzle logicPuzzle) async {
+    Database db = await _dbProvider.database;
+    int result = await db.update(
+      _tbName,
+      logicPuzzle.toMapExceptId(),
+      where: 'id=?',
+      whereArgs: [id],
+    );
+    return result;
+  }
 
   // delete
   void deleteAll() async {

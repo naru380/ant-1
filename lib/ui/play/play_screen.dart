@@ -7,25 +7,21 @@ import 'package:provider/provider.dart';
 import 'package:flutter/foundation.dart';
 
 class PlayScreen extends StatelessWidget {
-  final LogicPuzzle logicPuzzle;
-  PlayScreen({key: Key, this.logicPuzzle});
-
   @override
   Widget build(BuildContext context) {
-    Map<String, dynamic> args = ModalRoute.of(context).settings.arguments;
-    LogicPuzzle logicPuzzle = args['logicPuzzle'];
-    context.read<PlayViewModel>().logicPuzzle = logicPuzzle;
+    LogicPuzzle logicPuzzle = context.read<PlayViewModel>().logicPuzzle;
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Puzzle Title')
+        title: Text('${logicPuzzle.name}'),
+        automaticallyImplyLeading: false,
       ),
       body: Consumer<PlayViewModel>(builder: (context, model, _) {
         return GestureDetector(
           onScaleStart: (details) {
             model.initialFocalPoint = details.focalPoint;
           },
-          onScaleUpdate: (details) {
+          onScaleUpdate: (details) async {
             model.sessionOffset = details.focalPoint - model.initialFocalPoint;
             model.initialFocalPoint = details.focalPoint;
             model.offset += model.sessionOffset;
@@ -41,7 +37,7 @@ class PlayScreen extends StatelessWidget {
             model.notify();
           },
           onScaleEnd: (details) {
-            // nothnig
+            // nothing
           },
           child: Column(
             children: <Widget>[
@@ -62,45 +58,65 @@ class PlayScreen extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: <Widget>[
-                  ElevatedButton(
-                    onPressed: () {
-                      if (model.isCorrect()) {
-                        showDialog<int>(
-                          context: context,
-                          barrierDismissible: false,
-                          builder: (BuildContext context) {
-                            return AlertDialog(
-                              title: Text('COMPLETE'),
-                              content: Text('TOPページに戻ります。'),
-                              actions: <Widget>[
-                                TextButton(
-                                  child: Text('OK'),
-                                  onPressed: () => Navigator.of(context).pushNamed('/'),
-                                ),
-                              ],
-                            );
-                          }
-                        );
-                      } else {
-                        showDialog<int>(
-                          context: context,
-                          barrierDismissible: false,
-                          builder: (BuildContext context) {
-                            return AlertDialog(
-                              title: Text('INCOMPLETE'),
-                              content: Text('解答を再度確認してください。'),
-                              actions: <Widget>[
-                                TextButton(
-                                  child: Text('OK'),
-                                  onPressed: () => Navigator.of(context).pop(0),
-                                ),
-                              ],
-                            );
-                          }
-                        );
-                      }
-                    },
-                    child: Text('Check'),
+                  Container(
+                    margin: EdgeInsets.all(10),
+                    width: 100,
+                    height: 40,
+                    child: ElevatedButton(
+                      onPressed: () => Navigator.of(context).pushNamedAndRemoveUntil('/', (_) => false),
+                      child: Icon(
+                        IconData(0xf82c, fontFamily: 'MaterialIcons'),
+                        color: Colors.white
+                      )
+                    ),
+                  ),
+                  Container(
+                    margin: EdgeInsets.all(10),
+                    width: 100,
+                    height: 40,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        if (model.isCorrect()) {
+                          showDialog<int>(
+                            context: context,
+                            barrierDismissible: false,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: Text('COMPLETE'),
+                                content: Text('TOPページに戻ります。'),
+                                actions: <Widget>[
+                                  TextButton(
+                                    child: Text('OK'),
+                                    onPressed: () => Navigator.of(context).pushNamed('/'),
+                                  ),
+                                ],
+                              );
+                            }
+                          );
+                        } else {
+                          showDialog<int>(
+                            context: context,
+                            barrierDismissible: false,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: Text('INCOMPLETE'),
+                                content: Text('解答を再度確認してください。'),
+                                actions: <Widget>[
+                                  TextButton(
+                                    child: Text('OK'),
+                                    onPressed: () => Navigator.of(context).pop(0),
+                                  ),
+                                ],
+                              );
+                            }
+                          );
+                        }
+                      },
+                      child: Icon(
+                        IconData(57846, fontFamily: 'MaterialIcons'), 
+                        color: Colors.white
+                      ),
+                    ),
                   ),
                 ],
               ),
@@ -433,6 +449,7 @@ class Puzzle extends StatelessWidget{
                   } else {
                     model.checked(index);
                   }
+                  model.save();
                   model.notify();
                 },
               );
