@@ -63,7 +63,7 @@ class PlayScreen extends StatelessWidget {
                     width: 100,
                     height: 40,
                     child: ElevatedButton(
-                      onPressed: () => Navigator.of(context).pushNamed('/'),
+                      onPressed: () => Navigator.of(context).pushNamedAndRemoveUntil('/', (_) => false),
                       child: Icon(
                         IconData(0xf82c, fontFamily: 'MaterialIcons'),
                         color: Colors.white
