@@ -520,8 +520,6 @@ class Puzzle extends StatelessWidget{
     List<int> userCheckedList = context.read<PlayViewModel>().checkedList;
     answerCheckedList.sort((a, b) => a - b);
     userCheckedList.sort((a, b) => a - b);
-    //print('answer: $answerCheckedList');
-    //print('user: $userCheckedList');
     return listEquals(answerCheckedList, userCheckedList);
   }
 }
