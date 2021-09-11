@@ -28,12 +28,6 @@ class PlayViewModel with ChangeNotifier {
   void changeOperationMethod() {
     operationMethodIndex = (operationMethodIndex + 1) % 2;
   }
-  void checked(int index) {
-    checkedList.add(index);
-  }
-  void unchecked(int index) {
-    checkedList.remove(index);
-  }
   void save() async {
     await logicPuzzleDao.update(logicPuzzle.id, logicPuzzle);
   }

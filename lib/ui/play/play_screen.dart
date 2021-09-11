@@ -335,7 +335,7 @@ class Puzzle extends StatelessWidget{
             itemBuilder: (context, index) {
               return Container(
                 decoration: BoxDecoration(
-                  color: model.checkedList.indexOf(index) == -1 ? nonMarkedColor : markedColor,
+                  color: model.logicPuzzle.lastState[index] == 1 ? markedColor : nonMarkedColor,
                 ),
                 child: Text(''),
               );
@@ -494,7 +494,6 @@ class Puzzle extends StatelessWidget{
                     switch (model.operationMethodIndex) {
                       case 0:
                         model.logicPuzzle.lastState[index] = 1;
-                        model.checked(index);
                         break;
                       case 1:
                         model.logicPuzzle.lastState[index] = 2;
@@ -502,7 +501,6 @@ class Puzzle extends StatelessWidget{
                     }
                   } else {
                     model.logicPuzzle.lastState[index] = 0;
-                    model.unchecked(index);
                   }
                   model.save();
                   model.notify();
