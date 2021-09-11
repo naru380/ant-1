@@ -72,6 +72,31 @@ class PlayScreen extends StatelessWidget {
                   ),
                   Container(
                     margin: EdgeInsets.all(10),
+                      width: 100,
+                      height: 40,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          model.changeOperationMethod();
+                          model.notify();
+                        },
+                        child: (() {
+                          switch (model.operationMethodIndex) {
+                            case 0:
+                              return Icon(                        
+                                IconData(59563, fontFamily: 'MaterialIcons'),
+                                color: Colors.white
+                              );
+                            case 1:
+                              return Icon(                        
+                                IconData(57704, fontFamily: 'MaterialIcons'),
+                                color: Colors.white
+                              );
+                          }
+                        })(),
+                      ),
+                  ),
+                  Container(
+                    margin: EdgeInsets.all(10),
                     width: 100,
                     height: 40,
                     child: ElevatedButton(
@@ -435,19 +460,49 @@ class Puzzle extends StatelessWidget{
                   decoration: BoxDecoration(
                     color: nonMarkedColor,
                   ),
-                  child: Container(
-                    margin: EdgeInsets.all(2),
-                    decoration: BoxDecoration(
-                      color: checked ? markedColor : nonMarkedColor,
-                    ),
-                    child: Text(''),
-                    ),
+                  child: ((){ 
+                    switch (model.logicPuzzle.lastState[index]) {
+                      case 0:
+                        return Container(
+                          margin: EdgeInsets.all(2),
+                          decoration: BoxDecoration(
+                            color: nonMarkedColor,
+                          ),
+                          child: Text(''),
+                        );
+                      case 1:
+                        return Container(
+                          margin: EdgeInsets.all(2),
+                          decoration: BoxDecoration(
+                            color: markedColor,
+                          ),
+                          child: Text(''),
+                        );
+                      case 2:
+                        return Container(
+                          margin: EdgeInsets.all(2),
+                          child: Icon(                        
+                            IconData(57704, fontFamily: 'MaterialIcons'),
+                                color: markedColor,
+                            ),
+                        );
+                    }
+                  })(),
                 ),
                 onTap: () {
-                  if (checked) {
-                    model.unchecked(index);
+                  if (model.logicPuzzle.lastState[index] == 0) {                
+                    switch (model.operationMethodIndex) {
+                      case 0:
+                        model.logicPuzzle.lastState[index] = 1;
+                        model.checked(index);
+                        break;
+                      case 1:
+                        model.logicPuzzle.lastState[index] = 2;
+                        break;
+                    }
                   } else {
-                    model.checked(index);
+                    model.logicPuzzle.lastState[index] = 0;
+                    model.unchecked(index);
                   }
                   model.save();
                   model.notify();
