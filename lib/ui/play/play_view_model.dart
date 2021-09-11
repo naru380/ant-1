@@ -9,6 +9,7 @@ class PlayViewModel with ChangeNotifier {
   Offset initialFocalPoint;
   Offset sessionOffset;
   double scale;
+  int operationMethodIndex;
   Function isCorrect;
   LogicPuzzleDao logicPuzzleDao;
   final List<int> checkedList = [];
@@ -17,25 +18,18 @@ class PlayViewModel with ChangeNotifier {
     initialFocalPoint = Offset.zero;
     sessionOffset = Offset.zero;
     scale = 0.9;
+    operationMethodIndex = 0;
     logicPuzzleDao = LogicPuzzleDao();
     checkedList.removeWhere((_) => true);
     logicPuzzle.lastState.asMap().forEach((int i, int value) {
       if (value == 1) checkedList.add(i);
     });
   }
-  void checked(int index) {
-    checkedList.add(index);
-  }
-  void unchecked(int index) {
-    checkedList.remove(index);
+  void changeOperationMethod() {
+    operationMethodIndex = (operationMethodIndex + 1) % 2;
   }
   void save() async {
-    List<int> currentState = List.generate(logicPuzzle.dots.length, (_) => 0);
-    for (int i in checkedList) {
-      currentState[i] = 1;
-    }
-    LogicPuzzle saveLogicPuzzle = LogicPuzzle(lastState: currentState);
-    await logicPuzzleDao.update(logicPuzzle.id, saveLogicPuzzle);
+    await logicPuzzleDao.update(logicPuzzle.id, logicPuzzle);
   }
   void notify() async {
     notifyListeners();
