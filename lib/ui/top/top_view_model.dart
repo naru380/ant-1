@@ -10,34 +10,8 @@ class TopViewModel with ChangeNotifier {
 
   void init() async {
     LogicPuzzleDao logicPuzzleDao = LogicPuzzleDao();
-    // ---
-    // TODO: For Debug code. So we must remove it.
-    logicPuzzleDao.deleteAll();
-    var logicPuzzle = LogicPuzzle(
-      name: 'sample', 
-      width: PuzzleData.boardColumnsNum, 
-      dots: PuzzleData.answer, 
-      lastState: List.generate(PuzzleData.answer.length, (_) => 0), 
-      isClear: false);
-    await logicPuzzleDao.create(logicPuzzle);
-    // ---
     logicPuzzles = await logicPuzzleDao.findAll();
     notify();
   }
 }
 
-class PuzzleData {
-  static const List<int> answer = [
-    0, 1, 1, 1, 1, 1, 1, 1, 1, 0,
-    1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-    1, 1, 0, 1, 0, 0, 1, 0, 1, 1,
-    0, 0, 1, 1, 1, 1, 1, 1, 0, 0,
-    0, 1, 1, 1, 1, 1, 1, 1, 1, 0,
-    0, 1, 0, 0, 0, 0, 1, 1, 1, 0,
-    1, 0, 1, 1, 1, 1, 0, 1, 1, 1,
-    1, 0, 1, 1, 1, 1, 0, 1, 1, 1,
-    1, 1, 0, 0, 0, 0, 1, 0, 1, 1, 
-    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 
-  ];
-  static const int boardColumnsNum = 10;
-}

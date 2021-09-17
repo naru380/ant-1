@@ -37,7 +37,10 @@ class DBProvider {
     return await openDatabase(
       path, 
       version: _databaseVersion,
-      onCreate: _createTable,
+      onCreate: (Database database, int version) async {
+        _createTable(database, version);
+        _createSampleData(database, version);
+      }
     );
   }
 
@@ -54,4 +57,35 @@ class DBProvider {
       )
     ''');
   }
+
+  Future<void> _createSampleData(Database database, int version) async {
+    return await database.execute(
+      '''
+      INSERT INTO $tableName ('name', 'width', 'dots', 'last_state', 'is_clear')
+      values (?, ?, ?, ?. ?)
+      ''',
+      [SampleData.name, SampleData.width, SampleData.dots, SampleData.lastState, SampleData.isClear]
+    );
+  }
+}
+
+class SampleData {
+  static const String name = 'sample';
+  static const int width = 10;
+  static const List<int> _dots = [
+    0, 1, 1, 1, 1, 1, 1, 1, 1, 0,
+    1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+    1, 1, 0, 1, 0, 0, 1, 0, 1, 1,
+    0, 0, 1, 1, 1, 1, 1, 1, 0, 0,
+    0, 1, 1, 1, 1, 1, 1, 1, 1, 0,
+    0, 1, 0, 0, 0, 0, 1, 1, 1, 0,
+    1, 0, 1, 1, 1, 1, 0, 1, 1, 1,
+    1, 0, 1, 1, 1, 1, 0, 1, 1, 1,
+    1, 1, 0, 0, 0, 0, 1, 0, 1, 1, 
+    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 
+  ];
+  static String dots = _dots.toString();
+  static List<int> _lastState = List.generate(_dots.length, (_) => 0);
+  static String lastState = _lastState.toString();
+  static const int isClear = 0;
 }
