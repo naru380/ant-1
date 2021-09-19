@@ -14,100 +14,12 @@ class _CreateState extends State<CreateScreen> {
   // @override
   // double _dot = 50.0;
   // double _thr = 50.0;
-
-  List<DropdownMenuItem<int>> _nums = [];
-  List<DropdownMenuItem<int>> _thrs = [];
   int _selectNum = 0;
   int _selectThr = 0;
   String title = "";
   List<int> dotList;
   List<Widget> gridList;
   final _globalKey = GlobalKey();
-
-  @override
-  void initState() {
-    super.initState();
-    setItems();
-    _selectNum = _nums[1].value;
-    _selectThr = _thrs[2].value;
-  }
-
-  void setItems() {
-    _nums
-      ..add(
-        DropdownMenuItem(
-          child: Text(
-            ' 10 ×  10',
-            style: TextStyle(fontSize: 20.0),
-          ),
-          value: 10,
-        ),
-      )
-      ..add(
-        DropdownMenuItem(
-          child: Text(
-            ' 50 ×  50',
-            style: TextStyle(fontSize: 20.0),
-          ),
-          value: 50,
-        ),
-      )
-      ..add(
-        DropdownMenuItem(
-          child: Text(
-            '100 × 100',
-            style: TextStyle(fontSize: 20.0),
-          ),
-          value: 100,
-        ),
-      );
-    _thrs
-      ..add(
-        DropdownMenuItem(
-          child: Text(
-            '100',
-            style: TextStyle(fontSize: 20.0),
-          ),
-          value: 100,
-        ),
-      )
-      ..add(
-        DropdownMenuItem(
-          child: Text(
-            '125',
-            style: TextStyle(fontSize: 20.0),
-          ),
-          value: 125,
-        ),
-      )
-      ..add(
-        DropdownMenuItem(
-          child: Text(
-            '150',
-            style: TextStyle(fontSize: 20.0),
-          ),
-          value: 150,
-        ),
-      )
-      ..add(
-        DropdownMenuItem(
-          child: Text(
-            '175',
-            style: TextStyle(fontSize: 20.0),
-          ),
-          value: 175,
-        ),
-      )
-      ..add(
-        DropdownMenuItem(
-          child: Text(
-            '200',
-            style: TextStyle(fontSize: 20.0),
-          ),
-          value: 200,
-        ),
-      );
-  }
 
   void _handleText(String e) {
     setState(() {
@@ -122,10 +34,28 @@ class _CreateState extends State<CreateScreen> {
 
     Map<String, dynamic> args = ModalRoute.of(context).settings.arguments;
     File argImage = args['croppedImage'];
-    final decodedImage = imgLib.decodeImage(argImage.readAsBytesSync());
+    imgLib.Image decodedImage = imgLib.decodeImage(argImage.readAsBytesSync());
 
-    dotList = createDots(decodedImage, _selectNum, _selectThr);
-    gridList = createGrid(dotList, _selectNum);
+    bool widthIsShorter;
+    (decodedImage.height > decodedImage.width)
+        ? widthIsShorter = true
+        : widthIsShorter = false;
+
+    double rectSize;
+    widthIsShorter
+        ? rectSize = decodedImage.width / 100
+        : rectSize = decodedImage.height / 100;
+
+    List<double> imageSize = getImageSize(decodedImage, rectSize);
+
+    // dotList = createDots(decodedImage, _selectNum, _selectThr);
+    // gridList = createGrid(dotList, _selectNum);
+
+    List<List<DropdownMenuItem<int>>> itemList = setItems(imageSize, rectSize);
+    List<DropdownMenuItem<int>> _nums = itemList[0];
+    List<DropdownMenuItem<int>> _thrs = itemList[1];
+    _selectNum = _nums[1].value;
+    _selectThr = _thrs[2].value;
 
     return Scaffold(
       appBar: AppBar(
@@ -184,12 +114,17 @@ class _CreateState extends State<CreateScreen> {
                     //   },
                     // ),
 
-                    child: RepaintBoundary(
-                      key: _globalKey,
-                      child: GridView.count(
-                        crossAxisCount: _selectNum,
-                        children: gridList,
-                      ),
+                    // child: RepaintBoundary(
+                    //   key: _globalKey,
+                    //   child: GridView.count(
+                    //     crossAxisCount: _selectNum,
+                    //     children: gridList,
+                    //   ),
+                    // ),
+
+                    child: Image.file(
+                      argImage,
+                      width: 130,
                     ),
                   ),
                   // Image(
@@ -298,7 +233,7 @@ class _CreateState extends State<CreateScreen> {
                   //   ),
                   // ),
                   SizedBox(
-                    width: 70,
+                    width: 100,
                     height: 40,
                     child: DropdownButton(
                       items: _thrs,
@@ -384,7 +319,7 @@ class _CreateState extends State<CreateScreen> {
                 color: Colors.blue,
                 borderRadius: const BorderRadius.all(Radius.circular(100))),
             child: GestureDetector(
-              onTap: () async{
+              onTap: () async {
                 var dotImage = await convertWidgetToImage(_globalKey);
                 Navigator.of(context).pushNamed(
                   '/confirm',
@@ -463,13 +398,13 @@ Widget dotItem(int col, int selectNum) {
   }
 }
 
-List<Widget> createGrid(List<int> dotList, int selectNum) {
-  List<Widget> list = [];
-  for (int i = 0; i < dotList.length; i++) {
-    list.add(dotItem(dotList[i], selectNum));
-  }
-  return list;
-}
+// List<Widget> createGrid(List<int> dotList, int selectNum) {
+//   List<Widget> list = [];
+//   for (int i = 0; i < dotList.length; i++) {
+//     list.add(dotItem(dotList[i], selectNum));
+//   }
+//   return list;
+// }
 
 Future<Uint8List> convertWidgetToImage(GlobalKey widgetGlobalKey) async {
   RenderRepaintBoundary boundary =
@@ -477,4 +412,101 @@ Future<Uint8List> convertWidgetToImage(GlobalKey widgetGlobalKey) async {
   ui.Image image = await boundary.toImage();
   ByteData byteData = await image.toByteData(format: ui.ImageByteFormat.png);
   return byteData.buffer.asUint8List();
+}
+
+List<double> getImageSize(imgLib.Image _image, double rectSize) {
+  int tmp;
+  tmp = ((_image.width / rectSize + 0.00001) / 50).floor();
+  double _width = tmp * rectSize * 50;
+  tmp = ((_image.height / rectSize + 0.00001) / 50).floor();
+  double _height = tmp * rectSize * 50;
+  return [_width, _height];
+}
+
+List<List<DropdownMenuItem<int>>> setItems(
+    List<double> imageSize, double rectSize) {
+  List<DropdownMenuItem<int>> _nums = [];
+  List<DropdownMenuItem<int>> _thrs = [];
+
+  _nums
+    ..add(
+      DropdownMenuItem(
+        child: Text(
+          (imageSize[0] / (rectSize * 10)).round().toString() +
+              ' × ' +
+              (imageSize[1] / (rectSize * 10)).round().toString(),
+          style: TextStyle(fontSize: 20.0),
+        ),
+        value: 10,
+      ),
+    )
+    ..add(
+      DropdownMenuItem(
+        child: Text(
+          (imageSize[0] / (rectSize * 2)).round().toString() +
+              ' × ' +
+              (imageSize[1] / (rectSize * 2)).round().toString(),
+          style: TextStyle(fontSize: 20.0),
+        ),
+        value: 50,
+      ),
+    )
+    ..add(
+      DropdownMenuItem(
+        child: Text(
+          (imageSize[0] / rectSize).round().toString() +
+              ' × ' +
+              (imageSize[1] / rectSize).round().toString(),
+          style: TextStyle(fontSize: 20.0),
+        ),
+        value: 100,
+      ),
+    );
+  _thrs
+    ..add(
+      DropdownMenuItem(
+        child: Text(
+          '100',
+          style: TextStyle(fontSize: 20.0),
+        ),
+        value: 100,
+      ),
+    )
+    ..add(
+      DropdownMenuItem(
+        child: Text(
+          '125',
+          style: TextStyle(fontSize: 20.0),
+        ),
+        value: 125,
+      ),
+    )
+    ..add(
+      DropdownMenuItem(
+        child: Text(
+          '150',
+          style: TextStyle(fontSize: 20.0),
+        ),
+        value: 150,
+      ),
+    )
+    ..add(
+      DropdownMenuItem(
+        child: Text(
+          '175',
+          style: TextStyle(fontSize: 20.0),
+        ),
+        value: 175,
+      ),
+    )
+    ..add(
+      DropdownMenuItem(
+        child: Text(
+          '200',
+          style: TextStyle(fontSize: 20.0),
+        ),
+        value: 200,
+      ),
+    );
+  return [_nums, _thrs];
 }
