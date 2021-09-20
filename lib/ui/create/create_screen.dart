@@ -16,7 +16,7 @@ class _CreateState extends State<CreateScreen> {
   // double _thr = 50.0;
   int _selectNum = 2;
   int _selectThr = 150;
-  String title = "";
+  String title = "タイトル";
   List<int> dotList;
   List<Widget> gridList;
   final _globalKey = GlobalKey();
@@ -31,6 +31,9 @@ class _CreateState extends State<CreateScreen> {
     // String _text1 = '$_dot';
     // String text1 = _text1;
     // String _text2 = '$_thr';
+
+
+  final Size size = MediaQuery.of(context).size;
 
     Map<String, dynamic> args = ModalRoute.of(context).settings.arguments;
     File argImage = args['croppedImage'];
@@ -65,7 +68,6 @@ class _CreateState extends State<CreateScreen> {
     int rectWidth = (imageSize[0] / (rectSize * _selectNum)).round();
     gridList = createGrid(dotList, rectWidth);
 
-    print(dotList.length);
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -89,7 +91,7 @@ class _CreateState extends State<CreateScreen> {
                   //   width: 130,
                   // ),
                   SizedBox(
-                    width: 130,
+                    width: size.width / 3,
                     child: Image.memory(
                       imgLib.encodeJpg(croppedImage),
                       width: 130,
@@ -110,14 +112,14 @@ class _CreateState extends State<CreateScreen> {
               // ),
               Icon(
                 Icons.arrow_forward_ios,
-                size: 40,
+                size: size.width / 10,
               ),
               // Image.file(ExampleImage),
               Column(
                 children: [
                   SizedBox(
-                    width: 130,
-                    height: 130 * (imageSize[1] / imageSize[0]),
+                    width: size.width / 3,
+                    height: size.width / 3 * (imageSize[1] / imageSize[0]),
                     // child: GridView.builder(
                     //   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                     //     crossAxisCount: _selectNum,
@@ -180,8 +182,8 @@ class _CreateState extends State<CreateScreen> {
                     ),
                   ),
                   SizedBox(
-                    width: 120,
-                    height: 40,
+                    width: size.width / 3,
+                    height: size.width / 10,
                     child: DropdownButton(
                       items: _nums,
                       value: _selectNum,
@@ -254,8 +256,8 @@ class _CreateState extends State<CreateScreen> {
                   //   ),
                   // ),
                   SizedBox(
-                    width: 100,
-                    height: 40,
+                    width: size.width / 4,
+                    height: size.width / 10,
                     child: DropdownButton(
                       items: _thrs,
                       value: _selectThr,
@@ -334,8 +336,8 @@ class _CreateState extends State<CreateScreen> {
           //   ),
           // ),
           Container(
-            height: 60,
-            width: 200,
+            height: size.width / 8,
+            width: size.width / 3,
             decoration: BoxDecoration(
                 color: Colors.blue,
                 borderRadius: const BorderRadius.all(Radius.circular(100))),
@@ -349,6 +351,7 @@ class _CreateState extends State<CreateScreen> {
                     'dotList': dotList,
                     'width': _selectNum,
                     'dotImage': dotImage,
+                    'imageSize': imageSize,
                   },
                 );
                 // setState(() {

@@ -5,6 +5,9 @@ import 'package:ant_1/domain/entities/logic_puzzle.dart';
 import 'package:ant_1/domain/dao/logic_puzzle_dao.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+//import 'package:share/share.dart';
+import 'package:image/image.dart' as imgLib;
+import 'package:esys_flutter_share/esys_flutter_share.dart';
 
 class ConfirmScreen extends StatefulWidget {
   @override
@@ -19,9 +22,12 @@ class _ConfirmState extends State<ConfirmScreen> {
     List<int> dotList = args['dotList'];
     int width = args['width'];
     Uint8List dotImage = args['dotImage'];
+    List<double> imageSize = args['imageSize'];
     if (title == null) {
       title = 'タイトル';
     }
+
+    final Size size = MediaQuery.of(context).size;
 
     Future _saveImage(Uint8List dotImage) async {
       final result = await ImageGallerySaver.saveImage(dotImage);
@@ -41,7 +47,8 @@ class _ConfirmState extends State<ConfirmScreen> {
           Center(
             child: Image.memory(
               dotImage,
-              width: 300,
+              width: size.width,
+              height: size.width * (imageSize[1] / imageSize[0]),
             ),
           ),
           Center(
@@ -54,8 +61,8 @@ class _ConfirmState extends State<ConfirmScreen> {
           ),
           Center(
             child: Container(
-              height: 60,
-              width: 200,
+              height: size.width / 8,
+              width: size.width / 3,
               decoration: BoxDecoration(
                   color: Colors.blue,
                   borderRadius: const BorderRadius.all(Radius.circular(100))),
@@ -75,6 +82,34 @@ class _ConfirmState extends State<ConfirmScreen> {
                 child: Center(
                   child: Text(
                     'FINISH',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 20,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+          Center(
+            child: Container(
+              height: size.width / 8,
+              width: size.width / 3,
+              decoration: BoxDecoration(
+                  color: Colors.blue,
+                  borderRadius: const BorderRadius.all(Radius.circular(100))),
+              child: GestureDetector(
+                onTap: () async {
+                  await Share.file(
+                    title,
+                    title + '.png',
+                    dotImage,
+                    'image/png',
+                  );
+                },
+                child: Center(
+                  child: Text(
+                    'POST',
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 20,

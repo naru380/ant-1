@@ -37,6 +37,7 @@ dependencies:
   image: ^3.0.2
   image_gallery_saver: ^1.5.0
   fluttertoast: ^8.0.8
+  esys_flutter_share: ^1.0.2
 
 dev_dependencies:
   flutter_test:
