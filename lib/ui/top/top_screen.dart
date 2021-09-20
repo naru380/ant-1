@@ -6,9 +6,6 @@ import 'package:image_picker/image_picker.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:provider/provider.dart';
 import 'dart:io';
-import 'dart:typed_data';
-import 'package:flutter/services.dart';
-import 'package:image/image.dart' as imgLib;
 
 class MyApp extends StatelessWidget {
   @override
@@ -30,14 +27,13 @@ class TopScreen extends StatefulWidget {
 }
 
 Future<File> cameraCrop(XFile imageFile) async {
-  // File tmpImage = File(imageFile.path);
-  print(imageFile.path);
   File croppedFile = await ImageCropper.cropImage(
     sourcePath: imageFile.path,
-    aspectRatio: CropAspectRatio(
-      ratioX: 1.0,
-      ratioY: 1.0,
-    ),
+    aspectRatioPresets: [
+      CropAspectRatioPreset.square,
+      CropAspectRatioPreset.ratio4x3,
+      CropAspectRatioPreset.ratio16x9,
+    ],
   );
   return croppedFile;
 }
@@ -76,7 +72,8 @@ class _TopScreenState extends State<TopScreen> {
             itemBuilder: (BuildContext context, int index) {
               return GestureDetector(
                 onTap: () {
-                  context.read<PlayViewModel>().logicPuzzle =  model.logicPuzzles[index];
+                  context.read<PlayViewModel>().logicPuzzle =
+                      model.logicPuzzles[index];
                   context.read<PlayViewModel>().init();
                   Navigator.of(context).pushNamed('/play');
                 },
@@ -110,11 +107,13 @@ class _TopScreenState extends State<TopScreen> {
                       if (_image != null) {
                         final _coppedImage = await cameraCrop(_image);
                         if (_coppedImage != null) {
-                          Navigator.of(context)
-                              .pushNamed('/create', arguments: _coppedImage);
+                          Navigator.of(context).pushNamed(
+                            '/create',
+                            arguments: {
+                              'croppedImage': _coppedImage,
+                            },
+                          );
                         }
-                      } else {
-                        print('object');
                       }
                     },
                   ),
@@ -128,7 +127,7 @@ class _TopScreenState extends State<TopScreen> {
                         final _coppedImage = await cameraCrop(_image);
                         if (_coppedImage != null) {
                           Navigator.of(context)
-                              .pushNamed('/create', arguments: _coppedImage);
+                              .pushNamed('/create', arguments:{'croppedImage': _coppedImage});
                         }
                       }
                     },
