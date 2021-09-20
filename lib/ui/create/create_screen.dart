@@ -14,8 +14,8 @@ class _CreateState extends State<CreateScreen> {
   // @override
   // double _dot = 50.0;
   // double _thr = 50.0;
-  int _selectNum = 0;
-  int _selectThr = 0;
+  int _selectNum = 2;
+  int _selectThr = 150;
   String title = "";
   List<int> dotList;
   List<Widget> gridList;
@@ -48,15 +48,24 @@ class _CreateState extends State<CreateScreen> {
 
     List<double> imageSize = getImageSize(decodedImage, rectSize);
 
-    // dotList = createDots(decodedImage, _selectNum, _selectThr);
-    // gridList = createGrid(dotList, _selectNum);
+    imgLib.Image croppedImage = imgLib.copyCrop(
+      decodedImage,
+      0,
+      0,
+      imageSize[0].round(),
+      imageSize[1].round(),
+    );
 
     List<List<DropdownMenuItem<int>>> itemList = setItems(imageSize, rectSize);
     List<DropdownMenuItem<int>> _nums = itemList[0];
     List<DropdownMenuItem<int>> _thrs = itemList[1];
-    _selectNum = _nums[1].value;
-    _selectThr = _thrs[2].value;
 
+    dotList =
+        createDots(decodedImage, _selectNum, _selectThr, imageSize, rectSize);
+    int rectWidth = (imageSize[0] / (rectSize * _selectNum)).round();
+    gridList = createGrid(dotList, rectWidth);
+
+    print(dotList.length);
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -75,11 +84,18 @@ class _CreateState extends State<CreateScreen> {
                   //   image: test,
                   //   width: 180,
                   // ),
-                  Image.file(
-                    argImage,
+                  // Image.file(
+                  //   argImage,
+                  //   width: 130,
+                  // ),
+                  SizedBox(
                     width: 130,
+                    child: Image.memory(
+                      imgLib.encodeJpg(croppedImage),
+                      width: 130,
+                    ),
                   ),
-                  // Image.memory(pre),
+
                   Text(
                     '元画像',
                     style: TextStyle(
@@ -101,7 +117,7 @@ class _CreateState extends State<CreateScreen> {
                 children: [
                   SizedBox(
                     width: 130,
-                    height: 130,
+                    height: 130 * (imageSize[1] / imageSize[0]),
                     // child: GridView.builder(
                     //   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                     //     crossAxisCount: _selectNum,
@@ -114,19 +130,22 @@ class _CreateState extends State<CreateScreen> {
                     //   },
                     // ),
 
-                    // child: RepaintBoundary(
-                    //   key: _globalKey,
-                    //   child: GridView.count(
-                    //     crossAxisCount: _selectNum,
-                    //     children: gridList,
-                    //   ),
-                    // ),
-
-                    child: Image.file(
-                      argImage,
-                      width: 130,
+                    child: Center(
+                      child: RepaintBoundary(
+                        key: _globalKey,
+                        child: GridView.count(
+                          crossAxisCount: rectWidth,
+                          children: gridList,
+                        ),
+                      ),
                     ),
                   ),
+
+                  //   child: Image.file(
+                  //     argImage,
+                  //     width: 130,
+                  //   ),
+                  // ),
                   // Image(
                   //   image: test,
                   //   width: 180,
@@ -169,6 +188,8 @@ class _CreateState extends State<CreateScreen> {
                       onChanged: (value) => {
                         setState(() {
                           _selectNum = value;
+                          rectWidth =
+                              (imageSize[0] / (rectSize * _selectNum)).round();
                         }),
                       },
                     ),
@@ -351,23 +372,25 @@ class _CreateState extends State<CreateScreen> {
   }
 }
 
-List<int> createDots(imgLib.Image image, int num, int thresh) {
+List<int> createDots(imgLib.Image image, int value, int thresh,
+    List<double> imageSize, double rectSize) {
   imgLib.Image cloneImage = image.clone();
   imgLib.grayscale(cloneImage);
 
-  List<int> rectNum = [num, num];
-  int rectSize = (cloneImage.width / rectNum[0]).round();
-
+  List<int> rectNum = [
+    (imageSize[0] / (rectSize * value)).round(),
+    (imageSize[1] / (rectSize * value)).round()
+  ];
   List<int> result = [];
 
-  for (int y = 0; y < rectNum[0]; y++) {
-    for (int x = 0; x < rectNum[1]; x++) {
-      final croppedImage = imgLib.copyCrop(
+  for (int y = 0; y < rectNum[1]; y++) {
+    for (int x = 0; x < rectNum[0]; x++) {
+      imgLib.Image croppedImage = imgLib.copyCrop(
         cloneImage,
-        x * rectSize,
-        y * rectSize,
-        rectSize,
-        rectSize,
+        (x * rectSize * value).round(),
+        (y * rectSize * value).round(),
+        (rectSize * value).round(),
+        (rectSize * value).round(),
       );
       Uint8List encoded = croppedImage.getBytes();
       double average = encoded.reduce((a, b) => a + b) / encoded.length;
@@ -381,8 +404,8 @@ List<int> createDots(imgLib.Image image, int num, int thresh) {
   return result;
 }
 
-Widget dotItem(int col, int selectNum) {
-  double size = 130 / selectNum;
+Widget dotItem(int col, int rectWidth) {
+  double size = 130 / rectWidth;
   if (col == 0) {
     return Container(
       height: size,
@@ -398,13 +421,13 @@ Widget dotItem(int col, int selectNum) {
   }
 }
 
-// List<Widget> createGrid(List<int> dotList, int selectNum) {
-//   List<Widget> list = [];
-//   for (int i = 0; i < dotList.length; i++) {
-//     list.add(dotItem(dotList[i], selectNum));
-//   }
-//   return list;
-// }
+List<Widget> createGrid(List<int> dotList, int rectWidth) {
+  List<Widget> list = [];
+  for (int i = 0; i < dotList.length; i++) {
+    list.add(dotItem(dotList[i], rectWidth));
+  }
+  return list;
+}
 
 Future<Uint8List> convertWidgetToImage(GlobalKey widgetGlobalKey) async {
   RenderRepaintBoundary boundary =
@@ -448,7 +471,7 @@ List<List<DropdownMenuItem<int>>> setItems(
               (imageSize[1] / (rectSize * 2)).round().toString(),
           style: TextStyle(fontSize: 20.0),
         ),
-        value: 50,
+        value: 2,
       ),
     )
     ..add(
@@ -459,7 +482,7 @@ List<List<DropdownMenuItem<int>>> setItems(
               (imageSize[1] / rectSize).round().toString(),
           style: TextStyle(fontSize: 20.0),
         ),
-        value: 100,
+        value: 1,
       ),
     );
   _thrs
