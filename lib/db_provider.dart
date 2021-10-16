@@ -62,7 +62,7 @@ class DBProvider {
     return await database.execute(
       '''
       INSERT INTO $tableName ('name', 'width', 'dots', 'last_state', 'is_clear')
-      values (?, ?, ?, ?. ?)
+      values (?, ?, ?, ?, ?)
       ''',
       [SampleData.name, SampleData.width, SampleData.dots, SampleData.lastState, SampleData.isClear]
     );
