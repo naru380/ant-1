@@ -178,9 +178,11 @@ class Puzzle extends StatelessWidget{
   int get boardColumnsNum => logicPuzzle.width;
   int get boardRowsNum => answer.length ~/ boardColumnsNum;
   List<int> get hintsInEachRow => _hintsInEachRow();
-  int get maxNumOfHintsInEachRow => hintsInEachRow.length ~/ boardRowsNum;
+  int get _maxNumOfHintsInEachRow => hintsInEachRow.length ~/ boardRowsNum;
+  int get maxNumOfHintsInEachRow => _maxNumOfHintsInEachRow > 0 ? _maxNumOfHintsInEachRow : 1;
   List<int> get hintsInEachColumn => _hintsInEachColumn();
-  int get maxNumOfHintsInEachColumn => hintsInEachColumn.length ~/ boardColumnsNum;
+  int get _maxNumOfHintsInEachColumn => hintsInEachColumn.length ~/ boardColumnsNum;
+  int get maxNumOfHintsInEachColumn => _maxNumOfHintsInEachColumn > 0 ? _maxNumOfHintsInEachColumn : 1;
 
   List<int> _hintsInEachRow() {
     List<List<int>> hints = [];
@@ -193,7 +195,7 @@ class Puzzle extends StatelessWidget{
       pre = 0;
       n = 0;
       for (int j=0; j < boardRowsNum; j++) {
-        int now = answer[boardColumnsNum * i + j];
+        int now = answer[boardRowsNum * i + j];
         if (now == 0) {
           if (pre == 1) {
             tmp.add(n);
@@ -233,7 +235,7 @@ class Puzzle extends StatelessWidget{
       pre = 0;
       n = 0;
       for (int j=0; j < boardColumnsNum; j++) {
-        int now = answer[boardColumnsNum * j + i];
+        int now = answer[boardRowsNum * j + i];
         if (now == 0) {
           if (pre == 1) {
             tmp.add(n);
@@ -394,6 +396,8 @@ class Puzzle extends StatelessWidget{
   double get rowHintsAreaWidth => maxNumOfHintsInEachRow.toDouble() * _squareSize * ratioOfScreenToPuzzle;
   double get rowHintsAreaHeight => (boardRowsNum.toDouble() * _squareSize) * ratioOfScreenToPuzzle;
   Widget buildRowHintsArea() {
+    //print('buildRowHintsArea()');
+    //print('crossAxisCount: {$maxNumOfHintsInEachRow}');
     return Positioned(
       left: rowHintsAreaLeftOffset,
       top: rowHintsAreaTopOffset,
