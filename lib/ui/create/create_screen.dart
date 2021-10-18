@@ -15,22 +15,17 @@ class CreateScreen extends StatelessWidget {
     final Size size = MediaQuery.of(context).size;
 
     Map<String, dynamic> args = ModalRoute.of(context).settings.arguments;
-    imgLib.Image decodedImage = args['decodedImage'];
+    imgLib.Image croppedImage = args['croppedImage'];
     double rectSize = args['rectSize'];
     List<double> imageSize = args['imageSize'];
     int rectWidth = args['rectWidth'];
+
 
     // Future<File> compImage = compressFile(argImage);
 
     //imgLib.Image compDecoded = imgLib.decodeImage(compImage.readAsBytesSync());
 
-    imgLib.Image croppedImage = imgLib.copyCrop(
-      decodedImage,
-      0,
-      0,
-      imageSize[0].round(),
-      imageSize[1].round(),
-    );
+
 
     List<List<DropdownMenuItem<int>>> itemList = setItems(imageSize, rectSize);
     List<DropdownMenuItem<int>> _nums = itemList[0];
@@ -123,6 +118,10 @@ class CreateScreen extends StatelessWidget {
                             rectWidth =
                                 (imageSize[0] / (rectSize * model.selectNum))
                                     .round(),
+                            model.ave = createAverageList(croppedImage, value,
+                                imageSize, rectSize),
+                            model.dotList = createDotList(model.ave, model.selectThr),
+                            model.gridList = createGrid(model.dotList, rectWidth),
                             model.notify(),
                           },
                         ),
@@ -149,6 +148,8 @@ class CreateScreen extends StatelessWidget {
                           value: model.selectThr,
                           onChanged: (value) => {
                             model.selectThr = value,
+                            model.dotList = createDotList(model.ave, model.selectThr),
+                            model.gridList = createGrid(model.dotList, rectWidth),
                             model.notify(),
                           },
                         ),
@@ -222,7 +223,7 @@ class CreateScreen extends StatelessWidget {
   }
 }
 
-List<int> createDots(imgLib.Image image, int value, int thresh,
+List<double> createAverageList(imgLib.Image image, int value,
     List<double> imageSize, double rectSize) {
   imgLib.Image cloneImage = image.clone();
   imgLib.grayscale(cloneImage);
@@ -232,7 +233,7 @@ List<int> createDots(imgLib.Image image, int value, int thresh,
     (imageSize[1] / (rectSize * value)).round()
   ];
 
-  List<int> result = [];
+  List<double> result = [];
 
   Uint8List test = cloneImage.getBytes();
 
@@ -251,12 +252,25 @@ List<int> createDots(imgLib.Image image, int value, int thresh,
       );
       Uint8List encoded = croppedImage.getBytes();
       double average = encoded.reduce((a, b) => a + b) / encoded.length;
-      if (average > thresh) {
+      // if (average > thresh) {
+      //   result.add(0);
+      // } else {
+      //   result.add(1);
+      // }
+      result.add(average);
+    }
+  }
+  return result;
+}
+
+List<int> createDotList(List<double> aveList, int thresh){
+  List<int> result = [];
+  for(int i = 0; i < aveList.length; i++ ){
+      if (aveList[i] > thresh) {
         result.add(0);
       } else {
         result.add(1);
       }
-    }
   }
   return result;
 }

@@ -8,6 +8,10 @@ class CreateViewModel with ChangeNotifier {
   String title;
   List<int> dotList;
   List<Widget> gridList;
+  List<double> ave;
+  List<List<DropdownMenuItem<int>>> itemList;
+  List<DropdownMenuItem<int>> nums;
+  List<DropdownMenuItem<int>> thrs;
 
   void notify() async {
     notifyListeners();

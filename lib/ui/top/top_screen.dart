@@ -140,14 +140,15 @@ class _TopScreenState extends State<TopScreen> {
 }
 
 void initCreate(BuildContext context, XFile image) async {
-  final croppedImage = await cameraCrop(image);
-  if (croppedImage != null) {
+  final tookImage = await cameraCrop(image);
+  if (tookImage != null) {
     imgLib.Image decodedImage =
-        imgLib.decodeImage(croppedImage.readAsBytesSync());
+        imgLib.decodeImage(tookImage.readAsBytesSync());
     bool widthIsShorter;
     double rectSize;
     List<double> imageSize;
     int rectWidth;
+    List<double> ave = [];
 
     (decodedImage.height > decodedImage.width)
         ? widthIsShorter = true
@@ -158,15 +159,24 @@ void initCreate(BuildContext context, XFile image) async {
     imageSize = getImageSize(decodedImage, rectSize);
     rectWidth = (imageSize[0] / (rectSize * 2)).round();
 
+    imgLib.Image croppedImage = imgLib.copyCrop(
+      decodedImage,
+      0,
+      0,
+      imageSize[0].round(),
+      imageSize[1].round(),
+    );
+
     context.read<CreateViewModel>().selectNum = 2;
     context.read<CreateViewModel>().selectThr = 150;
     context.read<CreateViewModel>().title = "タイトル";
-    context.read<CreateViewModel>().dotList =
-        createDots(decodedImage, 2, 150, imageSize, rectSize);
-    context.read<CreateViewModel>().gridList = createGrid(context.read<CreateViewModel>().dotList, rectWidth);
+    ave = createAverageList(croppedImage, 2, imageSize, rectSize);
+    context.read<CreateViewModel>().dotList = createDotList(ave, 150);
+    context.read<CreateViewModel>().gridList =
+        createGrid(context.read<CreateViewModel>().dotList, rectWidth);
 
     Navigator.of(context).pushNamed('/create', arguments: {
-      'decodedImage': decodedImage,
+      'croppedImage': croppedImage,
       'rectSize': rectSize,
       'imageSize': imageSize,
       'rectWidth': rectWidth,
