@@ -3,53 +3,26 @@ import 'package:flutter/material.dart';
 import 'package:image/image.dart' as imgLib;
 import 'dart:typed_data';
 import 'package:flutter/rendering.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
+import 'package:ant_1/ui/create/create_view_model.dart';
 import 'dart:io';
+import 'package:provider/provider.dart';
 
-class CreateScreen extends StatefulWidget {
-  @override
-  _CreateState createState() => _CreateState();
-}
-
-class _CreateState extends State<CreateScreen> {
-  // @override
-  // double _dot = 50.0;
-  // double _thr = 50.0;
-  int _selectNum = 2;
-  int _selectThr = 150;
-  String title = "タイトル";
-  List<int> dotList;
-  List<Widget> gridList;
+class CreateScreen extends StatelessWidget {
   final _globalKey = GlobalKey();
 
-  void _handleText(String e) {
-    setState(() {
-      title = e;
-    });
-  }
-
   Widget build(BuildContext context) {
-    // String _text1 = '$_dot';
-    // String text1 = _text1;
-    // String _text2 = '$_thr';
-
-
-  final Size size = MediaQuery.of(context).size;
+    final Size size = MediaQuery.of(context).size;
 
     Map<String, dynamic> args = ModalRoute.of(context).settings.arguments;
-    File argImage = args['croppedImage'];
-    imgLib.Image decodedImage = imgLib.decodeImage(argImage.readAsBytesSync());
+    imgLib.Image decodedImage = args['decodedImage'];
+    double rectSize = args['rectSize'];
+    List<double> imageSize = args['imageSize'];
+    int rectWidth = args['rectWidth'];
 
-    bool widthIsShorter;
-    (decodedImage.height > decodedImage.width)
-        ? widthIsShorter = true
-        : widthIsShorter = false;
+    // Future<File> compImage = compressFile(argImage);
 
-    double rectSize;
-    widthIsShorter
-        ? rectSize = decodedImage.width / 100
-        : rectSize = decodedImage.height / 100;
-
-    List<double> imageSize = getImageSize(decodedImage, rectSize);
+    //imgLib.Image compDecoded = imgLib.decodeImage(compImage.readAsBytesSync());
 
     imgLib.Image croppedImage = imgLib.copyCrop(
       decodedImage,
@@ -62,11 +35,6 @@ class _CreateState extends State<CreateScreen> {
     List<List<DropdownMenuItem<int>>> itemList = setItems(imageSize, rectSize);
     List<DropdownMenuItem<int>> _nums = itemList[0];
     List<DropdownMenuItem<int>> _thrs = itemList[1];
-
-    dotList =
-        createDots(decodedImage, _selectNum, _selectThr, imageSize, rectSize);
-    int rectWidth = (imageSize[0] / (rectSize * _selectNum)).round();
-    gridList = createGrid(dotList, rectWidth);
 
     return Scaffold(
       appBar: AppBar(
@@ -82,14 +50,6 @@ class _CreateState extends State<CreateScreen> {
             children: [
               Column(
                 children: [
-                  // Image(
-                  //   image: test,
-                  //   width: 180,
-                  // ),
-                  // Image.file(
-                  //   argImage,
-                  //   width: 130,
-                  // ),
                   SizedBox(
                     width: size.width / 3,
                     child: Image.memory(
@@ -97,7 +57,6 @@ class _CreateState extends State<CreateScreen> {
                       width: 130,
                     ),
                   ),
-
                   Text(
                     '元画像',
                     style: TextStyle(
@@ -106,60 +65,29 @@ class _CreateState extends State<CreateScreen> {
                   ),
                 ],
               ),
-              // Image(
-              //   image: AssetImage('assets/images/arrow.jpeg'),
-              //   width: 30,
-              // ),
               Icon(
                 Icons.arrow_forward_ios,
                 size: size.width / 10,
               ),
-              // Image.file(ExampleImage),
               Column(
                 children: [
-                  SizedBox(
-                    width: size.width / 3,
-                    height: size.width / 3 * (imageSize[1] / imageSize[0]),
-                    // child: GridView.builder(
-                    //   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    //     crossAxisCount: _selectNum,
-                    //   ),
-                    //   itemBuilder: (BuildContext context, int index) {
-                    //     // if (index >= dotList.length) {
-                    //     //   dotList.addAll(dotList);
-                    //     // }
-                    //     return _dotItem(dotList[index], _selectNum);
-                    //   },
-                    // ),
-
-                    child: Center(
-                      child: RepaintBoundary(
-                        key: _globalKey,
-                        child: GridView.count(
-                          crossAxisCount: rectWidth,
-                          children: gridList,
+                  Consumer<CreateViewModel>(
+                    builder: (context, model, _) {
+                      return SizedBox(
+                        width: size.width / 3,
+                        height: size.width / 3 * (imageSize[1] / imageSize[0]),
+                        child: Center(
+                          child: RepaintBoundary(
+                            key: _globalKey,
+                            child: GridView.count(
+                              crossAxisCount: rectWidth,
+                              children: model.gridList,
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
+                      );
+                    },
                   ),
-
-                  //   child: Image.file(
-                  //     argImage,
-                  //     width: 130,
-                  //   ),
-                  // ),
-                  // Image(
-                  //   image: test,
-                  //   width: 180,
-                  // ),
-                  // Image.memory(
-                  //   jpg,
-                  //   width: 130,
-                  // ),
-                  // Image.memory(test),
-                  // CustomPaint(
-                  //   painter: OriginalPainter(),
-                  // ),
                   Text(
                     'ドット絵',
                     style: TextStyle(
@@ -181,55 +109,28 @@ class _CreateState extends State<CreateScreen> {
                       fontSize: 15,
                     ),
                   ),
-                  SizedBox(
-                    width: size.width / 3,
-                    height: size.width / 10,
-                    child: DropdownButton(
-                      items: _nums,
-                      value: _selectNum,
-                      onChanged: (value) => {
-                        setState(() {
-                          _selectNum = value;
-                          rectWidth =
-                              (imageSize[0] / (rectSize * _selectNum)).round();
-                        }),
-                      },
-                    ),
-                    // child: TextField(
-                    //   controller: TextEditingController(text: _text1),
-                    //   onChanged: (_text1) {
-                    //     setState(
-                    //       () {
-                    //         try {
-                    //           _dot = _text1 as double;
-                    //         } catch (e) {
-                    //           _text1 = text1;
-                    //         }
-                    //         text1 = _text1;
-                    //       },
-                    //     );
-                    //   },
-                    //   // decoration: InputDecoration(
-                    //   //   border: OutlineInputBorder(),
-                    //   // ),
-                    // ),
-                  ),
+                  Consumer<CreateViewModel>(
+                    builder: (context, model, _) {
+                      return SizedBox(
+                        width: size.width / 3,
+                        height: size.width / 10,
+                        child: DropdownButton(
+                          items: _nums,
+                          value: model.selectNum,
+                          onChanged: (value) => {
+                            print(model.selectNum),
+                            model.selectNum = value,
+                            rectWidth =
+                                (imageSize[0] / (rectSize * model.selectNum))
+                                    .round(),
+                            model.notify(),
+                          },
+                        ),
+                      );
+                    },
+                  )
                 ],
               ),
-              // Slider.adaptive(
-              //   value: _dot,
-              //   min: 0.0,
-              //   max: 100.0,
-              //   divisions: 100,
-              //   onChanged: (double value1) {
-              //     setState(
-              //       () {
-              //         _dot = value1;
-              //         _text1 = '$_dot';
-              //       },
-              //     );
-              //   },
-              // ),
               Row(
                 children: [
                   Text(
@@ -238,137 +139,83 @@ class _CreateState extends State<CreateScreen> {
                       fontSize: 15,
                     ),
                   ),
-                  // SizedBox(
-                  //   width: 60,
-                  //   height: 35,
-                  //   child: TextField(
-                  //     controller: TextEditingController(text: _text2),
-                  //     onChanged: (_text2) {
-                  //       setState(
-                  //         () {
-                  //           _thr = _text2 as double;
-                  //         },
-                  //       );
-                  //     },
-                  //     // decoration: InputDecoration(
-                  //     //   border: OutlineInputBorder(),
-                  //     // ),
-                  //   ),
-                  // ),
-                  SizedBox(
-                    width: size.width / 4,
-                    height: size.width / 10,
-                    child: DropdownButton(
-                      items: _thrs,
-                      value: _selectThr,
-                      onChanged: (value) => {
-                        setState(() {
-                          _selectThr = value;
-                        }),
-                      },
-                    ),
+                  Consumer<CreateViewModel>(
+                    builder: (context, model, _) {
+                      return SizedBox(
+                        width: size.width / 4,
+                        height: size.width / 10,
+                        child: DropdownButton(
+                          items: _thrs,
+                          value: model.selectThr,
+                          onChanged: (value) => {
+                            model.selectThr = value,
+                            model.notify(),
+                          },
+                        ),
+                      );
+                    },
                   )
                 ],
               ),
-              // Slider.adaptive(
-              //   value: _thr,
-              //   min: 1.0,
-              //   max: 100.0,
-              //   onChanged: (double value1) {
-              //     setState(
-              //       () {
-              //         _thr = value1;
-              //         _text2 = '$_thr';
-              //       },
-              //     );
-              //   },
-              // ),
-              TextField(
-                decoration: InputDecoration(
-                  contentPadding: EdgeInsets.only(
-                    left: 20.0,
-                  ),
-                  border: OutlineInputBorder(),
-                  hintText: 'タイトル',
-                ),
-                style: TextStyle(
-                  fontSize: 25,
-                ),
-                // controller: TextEditingController(text: title),
-                onChanged: _handleText,
-              ),
+              Consumer<CreateViewModel>(
+                builder: (context, model, _) {
+                  return TextField(
+                    decoration: InputDecoration(
+                      contentPadding: EdgeInsets.only(
+                        left: 20.0,
+                      ),
+                      border: OutlineInputBorder(),
+                      hintText: 'タイトル',
+                    ),
+                    style: TextStyle(
+                      fontSize: 25,
+                    ),
+                    onChanged: (value) => {
+                      model.title = '後でやる',
+                      model.notify(),
+                    },
+                  );
+                },
+              )
             ],
           ),
-          // Container(
-          //   height: 60,
-          //   width: 200,
-          //   decoration: BoxDecoration(
-          //       color: Colors.blue,
-          //       borderRadius: const BorderRadius.all(Radius.circular(100))),
-          //   child: GestureDetector(
-          //     onTap: () {
-          //       // Navigator.of(context).pushNamed(
-          //       //   '/confirm',
-          //       //   arguments: exampleImage,
-          //       // );
-          //       setState(() {
-          //         dotList = createDots(decodedImage, _selectNum, _selectThr);
-          //       });
-          //       print(dotList.length);
-          //       int test = 0;
-          //       for (int i = 0; i < dotList.length; i++) {
-          //         if (dotList[i] == 1) {
-          //           test++;
-          //         }
-          //       }
-          //       print(test);
-          //       print(title);
-          //     },
-          //     child: Center(
-          //       child: Text(
-          //         'CREATE',
-          //         style: TextStyle(
-          //           color: Colors.white,
-          //           fontSize: 20,
-          //         ),
-          //       ),
-          //     ),
-          //   ),
-          // ),
-          Container(
-            height: size.width / 8,
-            width: size.width / 3,
-            decoration: BoxDecoration(
-                color: Colors.blue,
-                borderRadius: const BorderRadius.all(Radius.circular(100))),
-            child: GestureDetector(
-              onTap: () async {
-                var dotImage = await convertWidgetToImage(_globalKey);
-                Navigator.of(context).pushNamed(
-                  '/confirm',
-                  arguments: {
-                    'title': title,
-                    'dotList': dotList,
-                    'width': _selectNum,
-                    'dotImage': dotImage,
-                    'imageSize': imageSize,
+          Consumer<CreateViewModel>(
+            builder: (context, model, _) {
+              return Container(
+                height: size.width / 8,
+                width: size.width / 3,
+                decoration: BoxDecoration(
+                  color: Colors.blue,
+                  borderRadius: const BorderRadius.all(Radius.circular(100)),
+                ),
+                child: GestureDetector(
+                  onTap: () async {
+                    var dotImage = await convertWidgetToImage(_globalKey);
+                    Navigator.of(context).pushNamed(
+                      '/confirm',
+                      arguments: {
+                        'title': model.title,
+                        'dotList': model.dotList,
+                        'width': (imageSize[0] / (rectSize * model.selectNum))
+                            .round(),
+                        'dotImage': dotImage,
+                        'imageSize': imageSize,
+                      },
+                    );
                   },
-                );
-                // setState(() {
-                //   dotList = createDots(decodedImage);
-                // });
-              },
-              child: Center(
-                child: Text(
-                  'NEXT',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 20,
+                  child: Center(
+                    child: Text(
+                      'NEXT',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                      ),
+                    ),
                   ),
                 ),
-              ),
-            ),
-          ),
+              );
+            },
+          )
         ],
       ),
     );
@@ -384,7 +231,14 @@ List<int> createDots(imgLib.Image image, int value, int thresh,
     (imageSize[0] / (rectSize * value)).round(),
     (imageSize[1] / (rectSize * value)).round()
   ];
+
   List<int> result = [];
+
+  Uint8List test = cloneImage.getBytes();
+
+  print(test.length);
+  print(imageSize);
+  print(rectSize);
 
   for (int y = 0; y < rectNum[1]; y++) {
     for (int x = 0; x < rectNum[0]; x++) {
@@ -406,6 +260,56 @@ List<int> createDots(imgLib.Image image, int value, int thresh,
   }
   return result;
 }
+
+// List<int> createDots(imgLib.Image image, int value, int thresh,
+//     List<double> imageSize, double rectSize) {
+//   List<int> result = [];
+//   int cursor = 0;
+//   int size = (rectSize * 2).floor() * 2;
+//   int tes = 0;
+//   int tt = 0;
+
+//   List<int> rectNum = [
+//     (imageSize[0] / (rectSize * value)).floor(),
+//     (imageSize[1] / (rectSize * value)).floor()
+//   ];
+
+//   imgLib.Image cloneImage = image.clone();
+//   imgLib.grayscale(cloneImage);
+//   Uint8List encoded = cloneImage.getBytes();
+
+//   for (int y = 0; y < rectNum[1]; y++) {
+//     var tmp = new List<int>.filled(rectNum[0], 0);
+//     tes++;
+//     for (int q = 0; q < size; q++) {
+//       for (int x = 0; x < rectNum[0]; x++) {
+//         for (int p = 0; p < size; p++) {
+//           tmp[x] += encoded[cursor];
+//           cursor++;
+//           tt += encoded[cursor];
+//         }
+//       }
+//     }
+//     for (int i = 0; i < tmp.length; i++) {
+//       if (tmp[i] / size / size > thresh) {
+//         result.add(0);
+//       } else {
+//         result.add(1);
+//       }
+//     }
+//   }
+//   print(result.length);
+//   var tmp1 = new List<int>.filled(rectNum[0], 0);
+//   print(tmp1.length);
+//   print(size);
+//   print(imageSize);
+//   print(encoded.length);
+//   print(cursor);
+//   print(tes);
+//   print(tt/cursor);
+//   print(result.length);
+//   return result;
+// }
 
 Widget dotItem(int col, int rectWidth) {
   double size = 130 / rectWidth;
@@ -536,3 +440,13 @@ List<List<DropdownMenuItem<int>>> setItems(
     );
   return [_nums, _thrs];
 }
+
+// Future<File> compressFile(File file) async {
+//   var result = await FlutterImageCompress.compressAndGetFile(
+//     file.absolute.path,
+//     file.absolute.path,
+//     quality: 1,
+//   );
+
+//   return result;
+// }

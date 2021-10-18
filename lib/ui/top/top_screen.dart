@@ -1,10 +1,13 @@
 import 'package:ant_1/ui/play/play_view_model.dart';
 import 'package:ant_1/ui/top/top_view_model.dart';
+import 'package:ant_1/ui/create/create_screen.dart';
+import 'package:ant_1/ui/create/create_view_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:provider/provider.dart';
+import 'package:image/image.dart' as imgLib;
 import 'dart:io';
 
 class MyApp extends StatelessWidget {
@@ -105,15 +108,7 @@ class _TopScreenState extends State<TopScreen> {
                       final _image =
                           await picker.pickImage(source: ImageSource.camera);
                       if (_image != null) {
-                        final _coppedImage = await cameraCrop(_image);
-                        if (_coppedImage != null) {
-                          Navigator.of(context).pushNamed(
-                            '/create',
-                            arguments: {
-                              'croppedImage': _coppedImage,
-                            },
-                          );
-                        }
+                        initCreate(context, _image);
                       }
                     },
                   ),
@@ -124,11 +119,7 @@ class _TopScreenState extends State<TopScreen> {
                         source: ImageSource.gallery,
                       );
                       if (_image != null) {
-                        final _coppedImage = await cameraCrop(_image);
-                        if (_coppedImage != null) {
-                          Navigator.of(context)
-                              .pushNamed('/create', arguments:{'croppedImage': _coppedImage});
-                        }
+                        initCreate(context, _image);
                       }
                     },
                   ),
@@ -145,5 +136,40 @@ class _TopScreenState extends State<TopScreen> {
         },
       ),
     );
+  }
+}
+
+void initCreate(BuildContext context, XFile image) async {
+  final croppedImage = await cameraCrop(image);
+  if (croppedImage != null) {
+    imgLib.Image decodedImage =
+        imgLib.decodeImage(croppedImage.readAsBytesSync());
+    bool widthIsShorter;
+    double rectSize;
+    List<double> imageSize;
+    int rectWidth;
+
+    (decodedImage.height > decodedImage.width)
+        ? widthIsShorter = true
+        : widthIsShorter = false;
+    widthIsShorter
+        ? rectSize = decodedImage.width / 100
+        : rectSize = decodedImage.height / 100;
+    imageSize = getImageSize(decodedImage, rectSize);
+    rectWidth = (imageSize[0] / (rectSize * 2)).round();
+
+    context.read<CreateViewModel>().selectNum = 2;
+    context.read<CreateViewModel>().selectThr = 150;
+    context.read<CreateViewModel>().title = "タイトル";
+    context.read<CreateViewModel>().dotList =
+        createDots(decodedImage, 2, 150, imageSize, rectSize);
+    context.read<CreateViewModel>().gridList = createGrid(context.read<CreateViewModel>().dotList, rectWidth);
+
+    Navigator.of(context).pushNamed('/create', arguments: {
+      'decodedImage': decodedImage,
+      'rectSize': rectSize,
+      'imageSize': imageSize,
+      'rectWidth': rectWidth,
+    });
   }
 }
