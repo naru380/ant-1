@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:image/image.dart' as imgLib;
 import 'dart:typed_data';
 import 'package:flutter/rendering.dart';
-import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:ant_1/ui/create/create_view_model.dart';
 import 'dart:io';
 import 'package:provider/provider.dart';
@@ -18,14 +17,14 @@ class CreateScreen extends StatelessWidget {
     imgLib.Image croppedImage = args['croppedImage'];
     double rectSize = args['rectSize'];
     List<double> imageSize = args['imageSize'];
-    int rectWidth = args['rectWidth'];
+    List<int> rectNum = args['rectNum'];
+    List<double> aveList = args['aveList'];
 
+    // imgLib.Image testImage = imgLib.Image.fromBytes(150, 49, half);
 
     // Future<File> compImage = compressFile(argImage);
 
     //imgLib.Image compDecoded = imgLib.decodeImage(compImage.readAsBytesSync());
-
-
 
     List<List<DropdownMenuItem<int>>> itemList = setItems(imageSize, rectSize);
     List<DropdownMenuItem<int>> _nums = itemList[0];
@@ -47,6 +46,10 @@ class CreateScreen extends StatelessWidget {
                 children: [
                   SizedBox(
                     width: size.width / 3,
+                    // child: Image.memory(
+                    //   croppedImage,
+                    //   width: 130,
+                    // ),
                     child: Image.memory(
                       imgLib.encodeJpg(croppedImage),
                       width: 130,
@@ -75,7 +78,7 @@ class CreateScreen extends StatelessWidget {
                           child: RepaintBoundary(
                             key: _globalKey,
                             child: GridView.count(
-                              crossAxisCount: rectWidth,
+                              crossAxisCount: model.rectWidth,
                               children: model.gridList,
                             ),
                           ),
@@ -113,15 +116,23 @@ class CreateScreen extends StatelessWidget {
                           items: _nums,
                           value: model.selectNum,
                           onChanged: (value) => {
-                            print(model.selectNum),
                             model.selectNum = value,
-                            rectWidth =
+                            model.rectWidth =
                                 (imageSize[0] / (rectSize * model.selectNum))
                                     .round(),
-                            model.ave = createAverageList(croppedImage, value,
-                                imageSize, rectSize),
-                            model.dotList = createDotList(model.ave, model.selectThr),
-                            model.gridList = createGrid(model.dotList, rectWidth),
+                            if (model.selectNum != 1)
+                              {
+                                model.interList = createInterList(
+                                    aveList, rectNum, model.selectNum),
+                              }
+                            else
+                              {
+                                model.interList = aveList
+                              },
+                            model.dotList =
+                                createDotList(model.interList, model.selectThr),
+                            model.gridList =
+                                createGrid(model.dotList, model.rectWidth),
                             model.notify(),
                           },
                         ),
@@ -148,8 +159,10 @@ class CreateScreen extends StatelessWidget {
                           value: model.selectThr,
                           onChanged: (value) => {
                             model.selectThr = value,
-                            model.dotList = createDotList(model.ave, model.selectThr),
-                            model.gridList = createGrid(model.dotList, rectWidth),
+                            model.dotList =
+                                createDotList(model.interList, model.selectThr),
+                            model.gridList =
+                                createGrid(model.dotList, model.rectWidth),
                             model.notify(),
                           },
                         ),
@@ -223,54 +236,14 @@ class CreateScreen extends StatelessWidget {
   }
 }
 
-List<double> createAverageList(imgLib.Image image, int value,
-    List<double> imageSize, double rectSize) {
-  imgLib.Image cloneImage = image.clone();
-  imgLib.grayscale(cloneImage);
-
-  List<int> rectNum = [
-    (imageSize[0] / (rectSize * value)).round(),
-    (imageSize[1] / (rectSize * value)).round()
-  ];
-
-  List<double> result = [];
-
-  Uint8List test = cloneImage.getBytes();
-
-  print(test.length);
-  print(imageSize);
-  print(rectSize);
-
-  for (int y = 0; y < rectNum[1]; y++) {
-    for (int x = 0; x < rectNum[0]; x++) {
-      imgLib.Image croppedImage = imgLib.copyCrop(
-        cloneImage,
-        (x * rectSize * value).round(),
-        (y * rectSize * value).round(),
-        (rectSize * value).round(),
-        (rectSize * value).round(),
-      );
-      Uint8List encoded = croppedImage.getBytes();
-      double average = encoded.reduce((a, b) => a + b) / encoded.length;
-      // if (average > thresh) {
-      //   result.add(0);
-      // } else {
-      //   result.add(1);
-      // }
-      result.add(average);
-    }
-  }
-  return result;
-}
-
-List<int> createDotList(List<double> aveList, int thresh){
+List<int> createDotList(List<double> aveList, int thresh) {
   List<int> result = [];
-  for(int i = 0; i < aveList.length; i++ ){
-      if (aveList[i] > thresh) {
-        result.add(0);
-      } else {
-        result.add(1);
-      }
+  for (int i = 0; i < aveList.length; i++) {
+    if (aveList[i] > thresh) {
+      result.add(0);
+    } else {
+      result.add(1);
+    }
   }
   return result;
 }
@@ -356,15 +329,6 @@ Future<Uint8List> convertWidgetToImage(GlobalKey widgetGlobalKey) async {
   ui.Image image = await boundary.toImage();
   ByteData byteData = await image.toByteData(format: ui.ImageByteFormat.png);
   return byteData.buffer.asUint8List();
-}
-
-List<double> getImageSize(imgLib.Image _image, double rectSize) {
-  int tmp;
-  tmp = ((_image.width / rectSize + 0.00001) / 50).floor();
-  double _width = tmp * rectSize * 50;
-  tmp = ((_image.height / rectSize + 0.00001) / 50).floor();
-  double _height = tmp * rectSize * 50;
-  return [_width, _height];
 }
 
 List<List<DropdownMenuItem<int>>> setItems(
@@ -455,12 +419,28 @@ List<List<DropdownMenuItem<int>>> setItems(
   return [_nums, _thrs];
 }
 
-// Future<File> compressFile(File file) async {
-//   var result = await FlutterImageCompress.compressAndGetFile(
-//     file.absolute.path,
-//     file.absolute.path,
-//     quality: 1,
-//   );
+List<double> createInterList(
+    List<double> aveList, List<int> rectNum, int selectNum) {
+  List<double> result = [];
+  int cursor = 0;
+  int _num = selectNum * selectNum;
 
-//   return result;
-// }
+  for (int y = 0; y < (rectNum[1] / selectNum); y++) {
+    var tmp = new List<double>.filled((rectNum[0] / selectNum).floor(), 0);
+    for (int q = 0; q < selectNum; q++) {
+      for (int x = 0; x < (rectNum[0] / selectNum); x++) {
+        double sumX = 0;
+        for (int p = 0; p < selectNum; p++) {
+          sumX += aveList[cursor];
+          cursor++;
+        }
+        tmp[x] += sumX;
+      }
+    }
+    for (int n = 0; n < tmp.length; n++) {
+      tmp[n] /= _num;
+      result.add(tmp[n]);
+    }
+  }
+  return result;
+}
