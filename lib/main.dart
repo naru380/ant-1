@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'routes.dart';
 import 'ui/top/top_view_model.dart';
 import 'ui/play/play_view_model.dart';
+import 'ui/create/create_view_model.dart';
 
 void main() {
   runApp(
@@ -13,6 +14,9 @@ void main() {
         ),
         ChangeNotifierProvider(
           create: (_) => PlayViewModel(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => CreateViewModel(),
         ),
       ],
       child: MyApp(),
