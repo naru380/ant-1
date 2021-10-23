@@ -179,12 +179,13 @@ void initCreate(BuildContext context, XFile image) async {
 
     // int switcher = 1;
 
-    context.read<CreateViewModel>().selectNum = 1;
+    context.read<CreateViewModel>().selectNum = 4;
     context.read<CreateViewModel>().selectThr = 150;
     context.read<CreateViewModel>().title = "タイトル";
     context.read<CreateViewModel>().rectWidth = rectNum[0];
     context.read<CreateViewModel>().dotList = createDotList(aveList, 150);
-    context.read<CreateViewModel>().interList = aveList;
+    context.read<CreateViewModel>().interList =
+        createInterList(aveList, rectNum, 4);
     context.read<CreateViewModel>().gridList =
         createGrid(context.read<CreateViewModel>().dotList, rectWidth);
 
@@ -223,10 +224,10 @@ Future<Uint8List> compressFile(File file) async {
 
 List<double> getImageSize(imgLib.Image _image, double rectSize) {
   int tmp;
-  tmp = ((_image.width / rectSize + 0.00001) / 50).floor();
-  double _width = tmp * rectSize * 50;
-  tmp = ((_image.height / rectSize + 0.00001) / 50).floor();
-  double _height = tmp * rectSize * 50;
+  tmp = ((_image.width / rectSize + 0.00001) / 20).floor();
+  double _width = tmp * rectSize * 20;
+  tmp = ((_image.height / rectSize + 0.00001) / 20).floor();
+  double _height = tmp * rectSize * 20;
   return [_width, _height];
 }
 
