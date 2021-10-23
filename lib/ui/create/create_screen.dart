@@ -120,15 +120,8 @@ class CreateScreen extends StatelessWidget {
                             model.rectWidth =
                                 (imageSize[0] / (rectSize * model.selectNum))
                                     .round(),
-                            if (model.selectNum != 1)
-                              {
                                 model.interList = createInterList(
                                     aveList, rectNum, model.selectNum),
-                              }
-                            else
-                              {
-                                model.interList = aveList
-                              },
                             model.dotList =
                                 createDotList(model.interList, model.selectThr),
                             model.gridList =
@@ -351,23 +344,23 @@ List<List<DropdownMenuItem<int>>> setItems(
     ..add(
       DropdownMenuItem(
         child: Text(
+          (imageSize[0] / (rectSize * 4)).round().toString() +
+              ' × ' +
+              (imageSize[1] / (rectSize * 4)).round().toString(),
+          style: TextStyle(fontSize: 20.0),
+        ),
+        value: 4,
+      ),
+    )
+    ..add(
+      DropdownMenuItem(
+        child: Text(
           (imageSize[0] / (rectSize * 2)).round().toString() +
               ' × ' +
               (imageSize[1] / (rectSize * 2)).round().toString(),
           style: TextStyle(fontSize: 20.0),
         ),
         value: 2,
-      ),
-    )
-    ..add(
-      DropdownMenuItem(
-        child: Text(
-          (imageSize[0] / rectSize).round().toString() +
-              ' × ' +
-              (imageSize[1] / rectSize).round().toString(),
-          style: TextStyle(fontSize: 20.0),
-        ),
-        value: 1,
       ),
     );
   _thrs
