@@ -55,99 +55,119 @@ class PlayScreen extends StatelessWidget {
                   ),
                 ),
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: <Widget>[
-                  Container(
-                    margin: EdgeInsets.all(10),
-                    width: 100,
-                    height: 40,
-                    child: ElevatedButton(
-                      onPressed: () => Navigator.of(context).pushNamedAndRemoveUntil('/', (_) => false),
-                      child: Icon(
-                        IconData(0xf82c, fontFamily: 'MaterialIcons'),
-                        color: Colors.white
-                      ),
-                    ),
-                  ),
-                  Container(
-                    margin: EdgeInsets.all(10),
-                    width: 100,
-                    height: 40,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        model.changeOperationMethod();
-                        model.notify();
-                      },
-                      child: (() {
-                        switch (model.operationMethodIndex) {
-                          case 0:
-                            return Icon(
-                              IconData(59563, fontFamily: 'MaterialIcons'),
-                              color: Colors.white
-                            );
-                          case 1:
-                            return Icon(
-                              IconData(57704, fontFamily: 'MaterialIcons'),
-                              color: Colors.white
-                            );
-                        }
-                      })(),
-                    ),
-                  ),
-                  Container(
-                    margin: EdgeInsets.all(10),
-                    width: 100,
-                    height: 40,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        if (model.isCorrect()) {
-                          showDialog<int>(
-                              context: context,
-                              barrierDismissible: false,
-                              builder: (BuildContext context) {
-                                return AlertDialog(
-                                  title: Text('COMPLETE'),
-                                  content: Text('TOPページに戻ります。'),
-                                  actions: <Widget>[
-                                    TextButton(
-                                      child: Text('OK'),
-                                      onPressed: () =>
-                                          Navigator.of(context).pushNamed('/'),
-                                    ),
-                                  ],
-                                );
-                              });
-                        } else {
-                          showDialog<int>(
-                              context: context,
-                              barrierDismissible: false,
-                              builder: (BuildContext context) {
-                                return AlertDialog(
-                                  title: Text('INCOMPLETE'),
-                                  content: Text('解答を再度確認してください。'),
-                                  actions: <Widget>[
-                                    TextButton(
-                                      child: Text('OK'),
-                                      onPressed: () =>
-                                          Navigator.of(context).pop(0),
-                                    ),
-                                  ],
-                                );
-                              });
-                        }
-                      },
-                      child: Icon(IconData(57846, fontFamily: 'MaterialIcons'),
-                          color: Colors.white),
-                    ),
-                  ),
-                ],
+              OperationBar(
+                context: context,
               ),
             ],
           ),
         );
       }),
     );
+  }
+}
+
+class OperationBar extends StatelessWidget {
+  final BuildContext context;
+  OperationBar({this.context});
+  
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<PlayViewModel>(builder: (context, model, _) {
+      return Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: <Widget>[
+          Container(
+            margin: EdgeInsets.all(10),
+            width: 100,
+            height: 40,
+            child: ElevatedButton(
+              onPressed: () => Navigator.of(context).pushNamedAndRemoveUntil('/', (_) => false),
+              child: Icon(
+                IconData(0xf82c, fontFamily: 'MaterialIcons'),
+                color: Colors.white
+              ),
+            ),
+          ),
+          Container(
+            margin: EdgeInsets.all(10),
+            width: 100,
+            height: 40,
+            child: ElevatedButton(
+              onPressed: () {
+                model.changeOperationMethod();
+                model.notify();
+              },
+              child: (() {
+                switch (model.operationMethodIndex) {
+                  case 0:
+                    return Icon(
+                      IconData(59563, fontFamily: 'MaterialIcons'),
+                      color: Colors.white
+                    );
+                  case 1:
+                    return Icon(
+                      IconData(57704, fontFamily: 'MaterialIcons'),
+                      color: Colors.white
+                    );
+                }
+              })(),
+            ),
+          ),
+          Container(
+            margin: EdgeInsets.all(10),
+            width: 100,
+            height: 40,
+            child: ElevatedButton(
+              onPressed: () {
+                if (model.isCorrect()) {
+                  showDialog<int>(
+                      context: context,
+                      barrierDismissible: false,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: Text('COMPLETE'),
+                          content: Text('TOPページに戻ります。'),
+                          actions: <Widget>[
+                            TextButton(
+                              child: Text('OK'),
+                              onPressed: () =>
+                                  Navigator.of(context).pushNamed('/'),
+                            ),
+                          ],
+                        );
+                      });
+                } else {
+                  showDialog<int>(
+                    context: context,
+                    barrierDismissible: false,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: Text('INCOMPLETE'),
+                        content: Text('解答を再度確認してください。'),
+                        actions: <Widget>[
+                          TextButton(
+                            child: Text('OK'),
+                            onPressed: () =>
+                                Navigator.of(context).pop(0),
+                          ),
+                        ],
+                      );
+                    }
+                  );
+                }
+              },
+              child: Icon(
+                IconData(
+                  57846, 
+                  fontFamily: 'MaterialIcons'
+                ),
+                color: Colors.white
+              ),
+            ),
+          ),
+        ],
+      );
+    });
   }
 }
 
