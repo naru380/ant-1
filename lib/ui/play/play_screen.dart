@@ -300,6 +300,7 @@ class Puzzle extends StatelessWidget {
   double get borderWidth => _borderWidth * ratioOfScreenToPuzzle;
   final double _boldBorderWidth = PuzzleSetting.boldBorderWidth;
   double get boldBorderWidth => _boldBorderWidth * ratioOfScreenToPuzzle;
+  final int boldBorderInterval = PuzzleSetting.boldBorderInterval;
 
   Color borderColor = PuzzleSetting.borderColor;
   Color boldBorderColor = PuzzleSetting.boldBorderColor;
@@ -313,7 +314,8 @@ class Puzzle extends StatelessWidget {
     (maxNumOfHintsInEachRow - 1) * _borderWidth + 
     _boldBorderWidth +
     boardColumnsNum * _squareSize +
-    (boardColumnsNum - 1) * _borderWidth + 
+    (boardColumnsNum - ((boardColumnsNum - 1) ~/ boldBorderInterval) - 1) * _borderWidth + 
+    ((boardColumnsNum - 1) ~/ boldBorderInterval) * _boldBorderWidth +
     _boldBorderWidth;
   double get borderLayerWidth => _borderLayerWidth * ratioOfScreenToPuzzle;
   double get _borderLayerHeight =>
@@ -322,7 +324,8 @@ class Puzzle extends StatelessWidget {
     (maxNumOfHintsInEachColumn - 1) * _borderWidth + 
     _boldBorderWidth +
     boardRowsNum * _squareSize +
-    (boardRowsNum - 1) * _borderWidth + 
+    (boardRowsNum - ((boardRowsNum - 1) ~/ boldBorderInterval) - 1) * _borderWidth + 
+    ((boardRowsNum - 1) ~/ boldBorderInterval) * _boldBorderWidth +
     _boldBorderWidth;
   double get borderLayerHeight => _borderLayerHeight * ratioOfScreenToPuzzle;
   Widget buildBorderArea() {
@@ -373,9 +376,11 @@ class Puzzle extends StatelessWidget {
     });
   }
 
+  int get _columnHintsAreaBoldBorderNum => (boardColumnsNum - 1) ~/ boldBorderInterval;
+  int get _columnHintsAreaBorderNum => boardColumnsNum - _columnHintsAreaBoldBorderNum - 1;
   double get columnHintsAreaLeftOffset => viewAreaLeftOffset + viewAreaWidth + _boldBorderWidth * ratioOfScreenToPuzzle;
   double get columnHintsAreaTopOffset => _boldBorderWidth * ratioOfScreenToPuzzle;
-  double get columnHintsAreaWidth => (boardColumnsNum.toDouble() * _squareSize + (boardColumnsNum.toDouble() - 1) * _borderWidth) * ratioOfScreenToPuzzle;
+  double get columnHintsAreaWidth => (_squareSize * boardColumnsNum.toDouble() + _borderWidth * _columnHintsAreaBorderNum + _boldBorderWidth * _columnHintsAreaBoldBorderNum) * ratioOfScreenToPuzzle;
   double get columnHintsAreaHeight => (maxNumOfHintsInEachColumn.toDouble() * _squareSize + (maxNumOfHintsInEachColumn.toDouble() - 1) * _borderWidth) * ratioOfScreenToPuzzle;
   Widget buildColumnHintsArea() {
     return Stack(
@@ -383,7 +388,7 @@ class Puzzle extends StatelessWidget {
         for (int i = 0; i < boardColumnsNum; i++) 
           for (int j = 0; j < maxNumOfHintsInEachColumn; j++)
             buildHintSquare(
-              columnHintsAreaLeftOffset + (squareSize + borderWidth) * i,
+              columnHintsAreaLeftOffset + squareSize * i + borderWidth * (i - i ~/ boldBorderInterval) + boldBorderWidth * (i ~/ boldBorderInterval),
               columnHintsAreaTopOffset + (squareSize + borderWidth) * j,
               squareSize,
               squareSize,
@@ -393,10 +398,12 @@ class Puzzle extends StatelessWidget {
     );
   }
 
+  int get _rowHintsAreaBoldBorderNum => (boardRowsNum - 1) ~/ boldBorderInterval;
+  int get _rowHintsAreaBorderNum => boardColumnsNum - _rowHintsAreaBoldBorderNum - 1;
   double get rowHintsAreaLeftOffset => _boldBorderWidth * ratioOfScreenToPuzzle;
   double get rowHintsAreaTopOffset => viewAreaTopOffset + viewAreaHeight + _boldBorderWidth * ratioOfScreenToPuzzle;
   double get rowHintsAreaWidth => (maxNumOfHintsInEachRow.toDouble() * _squareSize + (maxNumOfHintsInEachRow.toDouble() - 1) * _borderWidth) * ratioOfScreenToPuzzle;
-  double get rowHintsAreaHeight => (boardRowsNum.toDouble() * _squareSize + (boardRowsNum.toDouble() - 1) * _borderWidth) * ratioOfScreenToPuzzle;
+  double get rowHintsAreaHeight => (_squareSize * boardRowsNum.toDouble() + _borderWidth * _rowHintsAreaBorderNum + _boldBorderWidth * _rowHintsAreaBorderNum) * ratioOfScreenToPuzzle;
   Widget buildRowHintsArea() {
     return Stack(
       children: [
@@ -404,7 +411,7 @@ class Puzzle extends StatelessWidget {
           for (int j = 0; j < boardRowsNum; j++)
             buildHintSquare(
               rowHintsAreaLeftOffset + (squareSize + borderWidth) * i,
-              rowHintsAreaTopOffset + (squareSize + borderWidth) * j,
+              rowHintsAreaTopOffset + squareSize * j + borderWidth * (j - j ~/ boldBorderInterval) + boldBorderWidth * (j ~/ boldBorderInterval),
               squareSize,
               squareSize,
               hintsInEachRow[maxNumOfHintsInEachColumn * j + i]
@@ -413,20 +420,23 @@ class Puzzle extends StatelessWidget {
     );
   }
 
+  int get _boardAreaRowBoldBorderNum => (boardColumnsNum - 1) ~/ boldBorderInterval;
+  int get _boardAreaColumnBoldBorderNum => (boardRowsNum - 1) ~/ boldBorderInterval;
+  int get _boardAreaRowBorderNum => boardColumnsNum - _boardAreaRowBoldBorderNum - 1;
+  int get _boardAreaColumnBorderNum => boardRowsNum - _boardAreaColumnBoldBorderNum - 1;
   double get boardAreaLeftOffset => rowHintsAreaLeftOffset + rowHintsAreaWidth + _boldBorderWidth * ratioOfScreenToPuzzle;
   double get boardAreaTopOffset => columnHintsAreaTopOffset + columnHintsAreaHeight + _boldBorderWidth * ratioOfScreenToPuzzle;
-  double get boardAreaWidth => boardColumnsNum.toDouble() * _squareSize * ratioOfScreenToPuzzle;
-  double get boardAreaHeight => boardRowsNum.toDouble() * _squareSize * ratioOfScreenToPuzzle;
+  double get boardAreaWidth => (_squareSize * boardColumnsNum.toDouble() + borderWidth * _boardAreaRowBorderNum + boldBorderWidth * _boardAreaRowBoldBorderNum) * ratioOfScreenToPuzzle;
+  double get boardAreaHeight => (_squareSize * boardRowsNum.toDouble() + borderWidth * _boardAreaColumnBorderNum + boldBorderWidth * _boardAreaColumnBoldBorderNum) * ratioOfScreenToPuzzle;
   Widget buildBoardArea() {
     return Consumer<PlayViewModel>(builder: (context, model, _) {
-      int boldBorderInterval = 5;
       return Stack(
         children: [
           for (int i = 0; i < boardColumnsNum; i++) 
             for (int j = 0; j < boardRowsNum; j++)
               buildInputSquare(
-                boardAreaLeftOffset + (squareSize + borderWidth) * i,
-                boardAreaTopOffset + (squareSize + borderWidth) * j,
+                boardAreaLeftOffset + squareSize * i + borderWidth * (i - i ~/ boldBorderInterval) + boldBorderWidth * (i ~/ boldBorderInterval),
+                boardAreaTopOffset + squareSize * j + borderWidth * (j - j ~/ boldBorderInterval) + boldBorderWidth * (j ~/ boldBorderInterval),
                 squareSize,
                 squareSize,
                 boardColumnsNum * j + i
@@ -540,6 +550,7 @@ class PuzzleSetting {
   static const double squareSize = 10.0;
   static const double borderWidth = 0.8;
   static const double boldBorderWidth = 1.5;
+  static const int boldBorderInterval = 5;
   static const Color borderColor = Colors.black;
   static const Color boldBorderColor = Colors.black;
   //static final Color hintBackgroundColor = Colors.blue[50];
