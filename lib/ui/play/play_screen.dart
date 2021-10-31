@@ -456,7 +456,7 @@ class Puzzle extends StatelessWidget {
         decoration: BoxDecoration(
           color: hintBackgroundColor
         ),
-        child: Center(
+        child: FittedBox(
           child: hintNum != 0
             ? Text(
               '${hintNum}',
