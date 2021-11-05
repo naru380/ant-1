@@ -1,6 +1,7 @@
-import 'package:ant_1/ui/create/create_screen.dart';
+import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'dart:ui' as ui;
 
 class CreateViewModel with ChangeNotifier {
   int selectNum;
@@ -8,11 +9,13 @@ class CreateViewModel with ChangeNotifier {
   String title;
   List<int> dotList;
   int rectWidth;
-  List<Widget> gridList;
   List<double> interList;
   List<List<DropdownMenuItem<int>>> itemList;
   List<DropdownMenuItem<int>> nums;
   List<DropdownMenuItem<int>> thrs;
+  GlobalKey<State<StatefulWidget>> globalKey;
+  Uint8List testImage;
+  ui.Image compImage;
 
   void notify() async {
     notifyListeners();

@@ -30,7 +30,7 @@ class _ConfirmState extends State<ConfirmScreen> {
     final Size size = MediaQuery.of(context).size;
 
     Future _saveImage(Uint8List dotImage) async {
-      final result = await ImageGallerySaver.saveImage(dotImage);
+      await ImageGallerySaver.saveImage(dotImage);
     }
 
     return Scaffold(

@@ -1,15 +1,13 @@
 import 'dart:ui' as ui;
+import 'package:ant_1/ui/create/init_create_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:image/image.dart' as imgLib;
 import 'dart:typed_data';
 import 'package:flutter/rendering.dart';
 import 'package:ant_1/ui/create/create_view_model.dart';
-import 'dart:io';
 import 'package:provider/provider.dart';
 
 class CreateScreen extends StatelessWidget {
-  final _globalKey = GlobalKey();
-
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
 
@@ -19,17 +17,13 @@ class CreateScreen extends StatelessWidget {
     List<double> imageSize = args['imageSize'];
     List<int> rectNum = args['rectNum'];
     List<double> aveList = args['aveList'];
-
-    // imgLib.Image testImage = imgLib.Image.fromBytes(150, 49, half);
-
-    // Future<File> compImage = compressFile(argImage);
-
-    //imgLib.Image compDecoded = imgLib.decodeImage(compImage.readAsBytesSync());
-
     List<List<DropdownMenuItem<int>>> itemList = setItems(imageSize, rectSize);
     List<DropdownMenuItem<int>> _nums = itemList[0];
     List<DropdownMenuItem<int>> _thrs = itemList[1];
-
+    List<int> containerSize = [
+      (size.width / 3).floor(),
+      (size.width / 3 * (imageSize[1] / imageSize[0])).floor()
+    ];
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -45,11 +39,8 @@ class CreateScreen extends StatelessWidget {
               Column(
                 children: [
                   SizedBox(
-                    width: size.width / 3,
-                    // child: Image.memory(
-                    //   croppedImage,
-                    //   width: 130,
-                    // ),
+                    width: containerSize[0].toDouble(),
+                    height: containerSize[1].toDouble(),
                     child: Image.memory(
                       imgLib.encodeJpg(croppedImage),
                       width: 130,
@@ -69,22 +60,18 @@ class CreateScreen extends StatelessWidget {
               ),
               Column(
                 children: [
-                  Consumer<CreateViewModel>(
-                    builder: (context, model, _) {
-                      return SizedBox(
-                        width: size.width / 3,
-                        height: size.width / 3 * (imageSize[1] / imageSize[0]),
-                        child: Center(
-                          child: RepaintBoundary(
-                            key: _globalKey,
-                            child: GridView.count(
-                              crossAxisCount: model.rectWidth,
-                              children: model.gridList,
-                            ),
-                          ),
-                        ),
-                      );
-                    },
+                  FittedBox(
+                    fit: BoxFit.contain,
+                    child: Consumer<CreateViewModel>(
+                      builder: (context, model, _) {
+                        return SizedBox(
+                          width: containerSize[0].toDouble(),
+                          height: containerSize[1].toDouble(),
+                          child: CustomPaint(
+                              painter: OriginalPainter(model.compImage)),
+                        );
+                      },
+                    ),
                   ),
                   Text(
                     'ドット絵',
@@ -120,12 +107,17 @@ class CreateScreen extends StatelessWidget {
                             model.rectWidth =
                                 (imageSize[0] / (rectSize * model.selectNum))
                                     .round(),
-                                model.interList = createInterList(
-                                    aveList, rectNum, model.selectNum),
+                            model.interList = createInterList(
+                                aveList, rectNum, model.selectNum),
                             model.dotList =
                                 createDotList(model.interList, model.selectThr),
-                            model.gridList =
-                                createGrid(model.dotList, model.rectWidth),
+                            syncVariable(
+                                makeImage(
+                                    model.dotList,
+                                    (rectNum[0] / model.selectNum).floor(),
+                                    (rectNum[1] / model.selectNum).floor(),
+                                    containerSize),
+                                model),
                             model.notify(),
                           },
                         ),
@@ -154,8 +146,13 @@ class CreateScreen extends StatelessWidget {
                             model.selectThr = value,
                             model.dotList =
                                 createDotList(model.interList, model.selectThr),
-                            model.gridList =
-                                createGrid(model.dotList, model.rectWidth),
+                            syncVariable(
+                                makeImage(
+                                    model.dotList,
+                                    (rectNum[0] / model.selectNum).floor(),
+                                    (rectNum[1] / model.selectNum).floor(),
+                                    containerSize),
+                                model),
                             model.notify(),
                           },
                         ),
@@ -197,7 +194,9 @@ class CreateScreen extends StatelessWidget {
                 ),
                 child: GestureDetector(
                   onTap: () async {
-                    var dotImage = await convertWidgetToImage(_globalKey);
+                    ByteData byteData = await model.compImage
+                        .toByteData(format: ui.ImageByteFormat.png);
+                    var dotImage = byteData.buffer.asUint8List();
                     Navigator.of(context).pushNamed(
                       '/confirm',
                       arguments: {
@@ -241,56 +240,6 @@ List<int> createDotList(List<double> aveList, int thresh) {
   return result;
 }
 
-// List<int> createDots(imgLib.Image image, int value, int thresh,
-//     List<double> imageSize, double rectSize) {
-//   List<int> result = [];
-//   int cursor = 0;
-//   int size = (rectSize * 2).floor() * 2;
-//   int tes = 0;
-//   int tt = 0;
-
-//   List<int> rectNum = [
-//     (imageSize[0] / (rectSize * value)).floor(),
-//     (imageSize[1] / (rectSize * value)).floor()
-//   ];
-
-//   imgLib.Image cloneImage = image.clone();
-//   imgLib.grayscale(cloneImage);
-//   Uint8List encoded = cloneImage.getBytes();
-
-//   for (int y = 0; y < rectNum[1]; y++) {
-//     var tmp = new List<int>.filled(rectNum[0], 0);
-//     tes++;
-//     for (int q = 0; q < size; q++) {
-//       for (int x = 0; x < rectNum[0]; x++) {
-//         for (int p = 0; p < size; p++) {
-//           tmp[x] += encoded[cursor];
-//           cursor++;
-//           tt += encoded[cursor];
-//         }
-//       }
-//     }
-//     for (int i = 0; i < tmp.length; i++) {
-//       if (tmp[i] / size / size > thresh) {
-//         result.add(0);
-//       } else {
-//         result.add(1);
-//       }
-//     }
-//   }
-//   print(result.length);
-//   var tmp1 = new List<int>.filled(rectNum[0], 0);
-//   print(tmp1.length);
-//   print(size);
-//   print(imageSize);
-//   print(encoded.length);
-//   print(cursor);
-//   print(tes);
-//   print(tt/cursor);
-//   print(result.length);
-//   return result;
-// }
-
 Widget dotItem(int col, int rectWidth) {
   double size = 130 / rectWidth;
   if (col == 0) {
@@ -306,22 +255,6 @@ Widget dotItem(int col, int rectWidth) {
       color: Colors.black,
     );
   }
-}
-
-List<Widget> createGrid(List<int> dotList, int rectWidth) {
-  List<Widget> list = [];
-  for (int i = 0; i < dotList.length; i++) {
-    list.add(dotItem(dotList[i], rectWidth));
-  }
-  return list;
-}
-
-Future<Uint8List> convertWidgetToImage(GlobalKey widgetGlobalKey) async {
-  RenderRepaintBoundary boundary =
-      widgetGlobalKey.currentContext.findRenderObject();
-  ui.Image image = await boundary.toImage();
-  ByteData byteData = await image.toByteData(format: ui.ImageByteFormat.png);
-  return byteData.buffer.asUint8List();
 }
 
 List<List<DropdownMenuItem<int>>> setItems(
