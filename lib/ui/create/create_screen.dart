@@ -24,6 +24,7 @@ class CreateScreen extends StatelessWidget {
       (size.width / 3).floor(),
       (size.width / 3 * (imageSize[1] / imageSize[0])).floor()
     ];
+
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -164,6 +165,8 @@ class CreateScreen extends StatelessWidget {
               Consumer<CreateViewModel>(
                 builder: (context, model, _) {
                   return TextField(
+                    maxLength: 20,
+                    maxLines: 1,
                     decoration: InputDecoration(
                       contentPadding: EdgeInsets.only(
                         left: 20.0,
@@ -175,8 +178,7 @@ class CreateScreen extends StatelessWidget {
                       fontSize: 25,
                     ),
                     onChanged: (value) => {
-                      model.title = '後でやる',
-                      model.notify(),
+                      model.title = value,
                     },
                   );
                 },
