@@ -13,7 +13,6 @@ import 'dart:async';
 void initCreate(BuildContext context, File tookImage) async {
   Uint8List compressedImage = await compressFile(tookImage);
   imgLib.Image decodedImage = imgLib.decodeImage(compressedImage);
-  imgLib.Image originImage = imgLib.decodeImage(tookImage.readAsBytesSync());
 
   bool widthIsShorter;
   List<int> rectNum = [0, 0];
@@ -35,6 +34,11 @@ void initCreate(BuildContext context, File tookImage) async {
   rectNum[0] = rectWidth;
   rectNum[1] = (imageSize[1] / rectSize).round();
 
+  List<int> containerSize = [
+    (size.width / 3).floor(),
+    (size.width / 3 * (imageSize[1] / imageSize[0])).floor()
+  ];
+
   imgLib.Image croppedImage = imgLib.copyCrop(
     decodedImage,
     0,
@@ -42,12 +46,29 @@ void initCreate(BuildContext context, File tookImage) async {
     imageSize[0].round(),
     imageSize[1].round(),
   );
+
+  imgLib.Image originImage = imgLib.decodeImage(tookImage.readAsBytesSync());
+
+  int originWidth =
+      (originImage.width * (imageSize[0] / decodedImage.width)).round();
+  int originHeight =
+      (originImage.height * (imageSize[1] / decodedImage.height)).round();
+
+  int magnificant = (containerSize[0] / originWidth).round() * 100;
+
+  Uint8List compressedOriginList = await FlutterImageCompress.compressWithFile(
+    tookImage.path,
+    quality: magnificant,
+  );
+
+  imgLib.Image compressedOrigin = imgLib.decodeImage(compressedOriginList);
+
   imgLib.Image originCroppedImage = imgLib.copyCrop(
-    originImage,
+    compressedOrigin,
     0,
     0,
-    (originImage.width * (imageSize[0] / decodedImage.width)).round(),
-    (originImage.height * (imageSize[1] / decodedImage.height)).round(),
+    originWidth,
+    originHeight,
   );
 
   aveList = createAverageList(croppedImage, 1, imageSize, rectSize);
@@ -63,11 +84,6 @@ void initCreate(BuildContext context, File tookImage) async {
     4,
   );
   createModel.dotList = createDotList(createModel.interList, 150);
-
-  List<int> containerSize = [
-    (size.width / 3).floor(),
-    (size.width / 3 * (imageSize[1] / imageSize[0])).floor()
-  ];
 
   createModel.compImage = await makeImage(
     createModel.dotList,
