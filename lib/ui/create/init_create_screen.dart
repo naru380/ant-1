@@ -83,12 +83,15 @@ void initCreate(BuildContext context, File tookImage) async {
     rectNum,
     4,
   );
-  createModel.dotList = createDotList(createModel.interList, 150);
+  createModel.widthNum =
+      (imageSize[0] / (rectSize * createModel.selectNum)).round();
+  createModel.dotList =
+      createDotList(createModel.interList, 150, 4, createModel.widthNum);
 
   createModel.compImage = await makeImage(
     createModel.dotList,
-    (rectNum[0] / 4).floor(),
-    (rectNum[1] / 4).floor(),
+    rectNum[0],
+    rectNum[1],
     containerSize,
   );
 
@@ -173,7 +176,6 @@ Future<ui.Image> makeImage(List<int> listImage, int rectWidth, int rectHeight,
   for (int i = 0; i < pixels.length; i++) {
     pixels[i] = listImage[i] * 0xFF000000;
   }
-
   ui.decodeImageFromPixels(
     pixels.buffer.asUint8List(),
     rectWidth,

@@ -16,6 +16,7 @@ class CreateViewModel with ChangeNotifier {
   GlobalKey<State<StatefulWidget>> globalKey;
   Uint8List testImage;
   ui.Image compImage;
+  int widthNum;
 
   void notify() async {
     notifyListeners();

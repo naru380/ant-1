@@ -110,13 +110,16 @@ class CreateScreen extends StatelessWidget {
                                     .round(),
                             model.interList = createInterList(
                                 aveList, rectNum, model.selectNum),
-                            model.dotList =
-                                createDotList(model.interList, model.selectThr),
+                            model.widthNum =
+                                (imageSize[0] / (rectSize * model.selectNum))
+                                    .round(),
+                            model.dotList = createDotList(
+                                model.interList,
+                                model.selectThr,
+                                model.selectNum,
+                                model.widthNum),
                             syncVariable(
-                                makeImage(
-                                    model.dotList,
-                                    (rectNum[0] / model.selectNum).floor(),
-                                    (rectNum[1] / model.selectNum).floor(),
+                                makeImage(model.dotList, rectNum[0], rectNum[1],
                                     containerSize),
                                 model),
                             model.notify(),
@@ -145,13 +148,13 @@ class CreateScreen extends StatelessWidget {
                           value: model.selectThr,
                           onChanged: (value) => {
                             model.selectThr = value,
-                            model.dotList =
-                                createDotList(model.interList, model.selectThr),
+                            model.dotList = createDotList(
+                                model.interList,
+                                model.selectThr,
+                                model.selectNum,
+                                model.widthNum),
                             syncVariable(
-                                makeImage(
-                                    model.dotList,
-                                    (rectNum[0] / model.selectNum).floor(),
-                                    (rectNum[1] / model.selectNum).floor(),
+                                makeImage(model.dotList, rectNum[0], rectNum[1],
                                     containerSize),
                                 model),
                             model.notify(),
@@ -204,8 +207,7 @@ class CreateScreen extends StatelessWidget {
                       arguments: {
                         'title': model.title,
                         'dotList': model.dotList,
-                        'width': (imageSize[0] / (rectSize * model.selectNum))
-                            .round(),
+                        'width': model.widthNum,
                         'dotImage': dotImage,
                         'imageSize': imageSize,
                       },
@@ -230,34 +232,48 @@ class CreateScreen extends StatelessWidget {
   }
 }
 
-List<int> createDotList(List<double> aveList, int thresh) {
+List<int> createDotList(
+    List<double> interList, int thresh, int num, int widthNum) {
   List<int> result = [];
-  for (int i = 0; i < aveList.length; i++) {
-    if (aveList[i] > thresh) {
-      result.add(0);
-    } else {
-      result.add(1);
+  List<int> tmp;
+  int p = 0;
+  for (int i = 0; i < (interList.length / widthNum); i++) {
+    tmp = [];
+    for (int j = 0; j < widthNum; j++) {
+      if (interList[p] > thresh) {
+        for (int n = 0; n < num; n++) {
+          tmp.add(0);
+        }
+      } else {
+        for (int n = 0; n < num; n++) {
+          tmp.add(1);
+        }
+      }
+      p++;
+    }
+    for (int k = 0; k < num; k++) {
+      result += tmp;
     }
   }
   return result;
 }
 
-Widget dotItem(int col, int rectWidth) {
-  double size = 130 / rectWidth;
-  if (col == 0) {
-    return Container(
-      height: size,
-      width: size,
-      color: Colors.white,
-    );
-  } else {
-    return Container(
-      width: size,
-      height: size,
-      color: Colors.black,
-    );
-  }
-}
+// List<int> createDotList(
+//     List<double> interList, int thresh, int num, int widthNum) {
+//   List<int> result = [];
+//   for (int i = 0; i < interList.length; i++) {
+//       if (interList[i] > thresh) {
+//         for (int n = 0; n < num; n++) {
+//           result.add(0);
+//         }
+//       } else {
+//         for (int n = 0; n < num; n++) {
+//           result.add(1);
+//         }
+//       }
+//   }
+//   return result;
+// }
 
 List<List<DropdownMenuItem<int>>> setItems(
     List<double> imageSize, double rectSize) {
