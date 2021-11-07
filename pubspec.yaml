@@ -39,6 +39,7 @@ dependencies:
   fluttertoast: ^8.0.8
   esys_flutter_share: ^1.0.2
   flutter_image_compress: ^1.1.0
+  font_awesome_flutter: ^9.2.0
 
 dev_dependencies:
   flutter_test:

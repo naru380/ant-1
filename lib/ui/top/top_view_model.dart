@@ -5,11 +5,12 @@ import 'package:flutter/material.dart';
 class TopViewModel with ChangeNotifier {
   List<LogicPuzzle> logicPuzzles = [];
   int get numLogicPuzzle => logicPuzzles.length;
+  LogicPuzzleDao logicPuzzleDao;
 
   void notify() => notifyListeners();
 
   void init() async {
-    LogicPuzzleDao logicPuzzleDao = LogicPuzzleDao();
+    logicPuzzleDao = LogicPuzzleDao();
     logicPuzzles = await logicPuzzleDao.findAll();
     notify();
   }

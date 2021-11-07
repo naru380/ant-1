@@ -1,4 +1,5 @@
 import 'package:ant_1/ui/create/init_create_screen.dart';
+import 'package:ant_1/domain/dao/logic_puzzle_dao.dart';
 import 'package:ant_1/ui/play/play_view_model.dart';
 import 'package:ant_1/ui/top/top_view_model.dart';
 import 'package:flutter/cupertino.dart';
@@ -8,24 +9,19 @@ import 'package:image_cropper/image_cropper.dart';
 import 'package:provider/provider.dart';
 import 'dart:io';
 
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      theme: ThemeData(
-        primarySwatch: Colors.red,
-        // visualDensity: VisualDensity.adaptivePlatformDensity,
-      ),
-      title: 'logic_maker',
-      home: TopScreen(),
-    );
-  }
-}
-
-class TopScreen extends StatefulWidget {
-  @override
-  _TopScreenState createState() => _TopScreenState();
-}
+// class MyApp extends StatelessWidget {
+//   @override
+//   Widget build(BuildContext context) {
+//     return MaterialApp(
+//       theme: ThemeData(
+//         primarySwatch: Colors.red,
+//         // visualDensity: VisualDensity.adaptivePlatformDensity,
+//       ),
+//       title: 'logic_maker',
+//       home: TopScreen(),
+//     );
+//   }
+// }
 
 Future<File> cameraCrop(XFile imageFile) async {
   File croppedFile = await ImageCropper.cropImage(
@@ -39,19 +35,13 @@ Future<File> cameraCrop(XFile imageFile) async {
   return croppedFile;
 }
 
-class _TopScreenState extends State<TopScreen> {
-  int cnt = 0;
+class TopScreen extends StatelessWidget {
   final picker = ImagePicker();
-
-  @override
-  void initState() {
-    super.initState();
-    cnt = 0;
-  }
 
   @override
   Widget build(BuildContext context) {
     context.read<TopViewModel>().init();
+    final Size size = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -61,7 +51,7 @@ class _TopScreenState extends State<TopScreen> {
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.settings),
-            onPressed: () async {
+            onPressed: () {
               Navigator.of(context).pushNamed('/setting');
             },
           ),
@@ -78,13 +68,33 @@ class _TopScreenState extends State<TopScreen> {
                   context.read<PlayViewModel>().init();
                   Navigator.of(context).pushNamed('/play');
                 },
-                child: Card(
-                  child: Padding(
-                    child: Text(
-                      '${model.logicPuzzles[index].name}',
-                      style: TextStyle(fontSize: 22.0),
+                child: Dismissible(
+                  key: ObjectKey(model.logicPuzzles[index]),
+                  direction: DismissDirection.endToStart,
+                  onDismissed: (direction) {
+                    model.logicPuzzleDao.deleteElement(model.logicPuzzles[index].id);
+                    model.logicPuzzles.removeAt(index);
+                    model.notify();
+                  },
+                  background: Container(
+                    alignment: AlignmentDirectional.centerEnd,
+                    color: Colors.red,
+                    child: Icon(
+                      Icons.delete,
+                      color: Colors.white,
                     ),
-                    padding: EdgeInsets.all(20.0),
+                  ),
+                  child: SizedBox(
+                    width: size.width,
+                    child: Card(
+                      child: Padding(
+                        padding: const EdgeInsets.all(20.0),
+                        child: Text(
+                          '${model.logicPuzzles[index].name}',
+                          style: TextStyle(fontSize: 22.0),
+                        ),
+                      ),
+                    ),
                   ),
                 ),
               );
