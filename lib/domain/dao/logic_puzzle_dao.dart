@@ -40,4 +40,9 @@ class LogicPuzzleDao {
       '$_tbName',
     );
   }
+
+  void deleteElement(int id) async {
+    Database db = await _dbProvider.database;
+    await db.delete('$_tbName', where: "id=?", whereArgs: [id]);
+  }
 }
