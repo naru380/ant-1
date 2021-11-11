@@ -5,6 +5,8 @@ import 'package:image/image.dart' as imgLib;
 import 'dart:typed_data';
 import 'package:flutter/rendering.dart';
 import 'package:ant_1/ui/create/create_view_model.dart';
+import 'package:admob_flutter/admob_flutter.dart';
+import 'package:ant_1/service/admob.dart';
 import 'package:provider/provider.dart';
 
 class CreateScreen extends StatelessWidget {
@@ -228,6 +230,14 @@ class CreateScreen extends StatelessWidget {
           )
         ],
       ),
+      bottomNavigationBar: AdmobBanner(
+            adUnitId: AdMobService().getBannerAdUnitId(),
+            adSize: AdmobBannerSize(
+              width: MediaQuery.of(context).size.width.toInt(),
+              height: AdMobService().getHeight(context).toInt(),
+              name: 'SMART_BANNER',
+            ),
+          ),
     );
   }
 }

@@ -1,5 +1,4 @@
 import 'package:ant_1/ui/create/init_create_screen.dart';
-import 'package:ant_1/domain/dao/logic_puzzle_dao.dart';
 import 'package:ant_1/ui/play/play_view_model.dart';
 import 'package:ant_1/ui/top/top_view_model.dart';
 import 'package:flutter/cupertino.dart';
@@ -7,6 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:provider/provider.dart';
+import 'package:admob_flutter/admob_flutter.dart';
+import 'package:ant_1/service/admob.dart';
 import 'dart:io';
 
 // class MyApp extends StatelessWidget {
@@ -149,6 +150,14 @@ class TopScreen extends StatelessWidget {
           );
         },
       ),
+      bottomNavigationBar: AdmobBanner(
+            adUnitId: AdMobService().getBannerAdUnitId(),
+            adSize: AdmobBannerSize(
+              width: MediaQuery.of(context).size.width.toInt(),
+              height: AdMobService().getHeight(context).toInt(),
+              name: 'SMART_BANNER',
+            ),
+          ),
     );
   }
 }

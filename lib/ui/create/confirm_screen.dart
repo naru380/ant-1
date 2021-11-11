@@ -5,8 +5,8 @@ import 'package:ant_1/domain/entities/logic_puzzle.dart';
 import 'package:ant_1/domain/dao/logic_puzzle_dao.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-//import 'package:share/share.dart';
-import 'package:image/image.dart' as imgLib;
+import 'package:admob_flutter/admob_flutter.dart';
+import 'package:ant_1/service/admob.dart';
 import 'package:esys_flutter_share/esys_flutter_share.dart';
 
 class ConfirmScreen extends StatefulWidget {
@@ -128,6 +128,14 @@ class _ConfirmState extends State<ConfirmScreen> {
           Fluttertoast.showToast(msg: 'ダウンロードしました');
         },
       ),
+      bottomNavigationBar: AdmobBanner(
+            adUnitId: AdMobService().getBannerAdUnitId(),
+            adSize: AdmobBannerSize(
+              width: MediaQuery.of(context).size.width.toInt(),
+              height: AdMobService().getHeight(context).toInt(),
+              name: 'SMART_BANNER',
+            ),
+          ),
     );
   }
 }

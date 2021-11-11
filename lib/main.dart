@@ -4,8 +4,11 @@ import 'routes.dart';
 import 'ui/top/top_view_model.dart';
 import 'ui/play/play_view_model.dart';
 import 'ui/create/create_view_model.dart';
+import 'package:admob_flutter/admob_flutter.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  Admob.initialize();
   runApp(
     MultiProvider(
       providers: [
@@ -20,7 +23,7 @@ void main() {
         ),
       ],
       child: MyApp(),
-    )
+    ),
   );
 }
 
