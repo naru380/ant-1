@@ -275,7 +275,7 @@ class PuzzlePainter extends CustomPainter {
         drawMarked1(canvas, offset, size, markedColor, 0);
         break;
       case 2:
-        drawMarked2(canvas, offset, size, markedColor, 5);
+        drawMarked2(canvas, offset, size, markedColor, borderWidth);
         break;
     }
   }
@@ -298,7 +298,7 @@ class PuzzlePainter extends CustomPainter {
   }
 
   void drawMarked1(Canvas canvas, Offset offset, Size size, Color color, double strokeWidth) {
-    double padding = 10;
+    double padding = squareSize * 0.9;
     Offset filledSquareOffset = Offset(
       offset.dx + padding,
       offset.dy + padding
@@ -311,7 +311,7 @@ class PuzzlePainter extends CustomPainter {
   }
 
   void drawMarked2(Canvas canvas, Offset offset, Size size, Color color, double strokeWidth) {
-    double padding = 10;
+    double padding = squareSize * 0.9;
     Paint paint = Paint()
       ..color = color
       ..strokeCap = StrokeCap.butt
