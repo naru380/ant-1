@@ -1,3 +1,6 @@
+import 'dart:typed_data';
+import 'dart:ui' as ui;
+
 import 'package:ant_1/domain/dao/logic_puzzle_dao.dart';
 import 'package:ant_1/domain/entities/logic_puzzle.dart';
 import 'package:flutter/foundation.dart';
@@ -15,13 +18,24 @@ class PlayViewModel with ChangeNotifier {
   LogicPuzzleDao logicPuzzleDao;
   ValueNotifier<List<int>> notifier;
   bool isShouldrepaint = false;
+  ByteData puzzleBytes;
+  ui.Image puzzleImage;
+  int tappedSquaeIndex;
+  bool isBuildedOnce;
+  bool isDrawImage;
   final List<int> checkedList = [];
   void init() {
+    print('provider init.');
     offset = Offset.zero;
     initialFocalPoint = Offset.zero;
     sessionOffset = Offset.zero;
     scale = 0.9;
     operationMethodIndex = 0;
+    puzzleBytes = null;
+    puzzleImage = null;
+    tappedSquaeIndex = null;
+    isBuildedOnce = false;
+    isDrawImage= false;
     logicPuzzleDao = LogicPuzzleDao();
     checkedList.removeWhere((_) => true);
     logicPuzzle.lastState.asMap().forEach((int i, int value) {

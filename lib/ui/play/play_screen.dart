@@ -1,4 +1,6 @@
 import 'dart:math';
+import 'dart:typed_data';
+import 'dart:ui' as ui;
 
 import 'package:ant_1/domain/entities/logic_puzzle.dart';
 import 'package:ant_1/ui/play/play_view_model.dart';
@@ -7,8 +9,42 @@ import 'package:provider/provider.dart';
 import 'package:flutter/foundation.dart';
 
 class PlayScreen extends StatelessWidget {
+  void afterBuild(){
+
+    print("builded");
+  }
   @override
   Widget build(BuildContext context) {
+    // WidgetsBinding.instance.addPostFrameCallback((_) => showDialog(
+    //     context: context, 
+    //     builder: (_) {
+    //       return AlertDialog(
+    //         title: Center(child: Text("タイトル"),),
+    //         content: Text("ここにメッセージが表示される"),
+    //         actions: <Widget>[
+    //           FlatButton(
+    //             child: Text("キャンセル"),
+    //             onPressed: () => Navigator.pop(context),
+    //           ),
+    //           FlatButton(
+    //             child: Text("OK"),
+    //             onPressed: () => Navigator.pop(context),
+    //           ),
+    //         ],
+    //       );
+    //     }
+    //   )
+    // );
+
+    // WidgetsBinding.instance.addPostFrameCallback((_) => afterBuild());
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<PlayViewModel>().isBuildedOnce = true;
+      print("first builded.");
+    });
+
+
+    final GlobalKey customPaintWidgetKey = GlobalKey();
+    final GlobalKey customPaintWidgetKey2 = GlobalKey();
     LogicPuzzle logicPuzzle = context.read<PlayViewModel>().logicPuzzle;
     // LogicPuzzle logicPuzzle = Provider.of(context, listen: false);
     var width = MediaQuery.of(context).size.width;
@@ -16,7 +52,7 @@ class PlayScreen extends StatelessWidget {
     // print('width: $width');
     // print('height: $height');
 
-    final GlobalKey customPaintWidgetKey = GlobalKey();
+    print(context.read<PlayViewModel>().logicPuzzle.lastState);
 
     return Scaffold(
       appBar: AppBar(
@@ -53,8 +89,14 @@ class PlayScreen extends StatelessWidget {
               // model.isShouldrepaint = true;
               // model.notify();
               Offset tapOffset = details.globalPosition;
-              RenderBox box = customPaintWidgetKey.currentContext.findRenderObject();
+              RenderBox box;
+              if (!model.isDrawImage) {
+                box = customPaintWidgetKey.currentContext.findRenderObject();
+              } else {
+                box = customPaintWidgetKey2.currentContext.findRenderObject();
+              }
               Offset customPaintOffset = box.localToGlobal(Offset.zero);
+
               for (int index = 0; index < logicPuzzle.dots.length; index++) {
                 Offset upperLeftOffset = model.inputSquareLocalPointsList[index][0] * model.scale + customPaintOffset;
                 Offset lowerRightOffset = model.inputSquareLocalPointsList[index][1] * model.scale + customPaintOffset;
@@ -71,6 +113,7 @@ class PlayScreen extends StatelessWidget {
                   } else {
                     model.logicPuzzle.lastState[index] = 0;
                   }
+                  model.tappedSquaeIndex = index;
                   model.save();
                   model.notifier = ValueNotifier(model.logicPuzzle.lastState);
                   model.notify();
@@ -79,6 +122,7 @@ class PlayScreen extends StatelessWidget {
                 }
               }
               print(model.logicPuzzle.lastState);
+              print('isBuildOnce: ${model.isBuildedOnce}');
               // model.isShouldrepaint = false;
               // model.notify();
             },
@@ -88,12 +132,28 @@ class PlayScreen extends StatelessWidget {
                 Expanded(
                   child: Container(
                     child: Transform.translate(
-                      // offset: model.offset,
-                      offset: Offset(0,0),
+                      offset: model.offset,
+                      // offset: Offset(0,0),
                       child: Transform.scale(
                         scale: 0.9,
                         // scale: model.scale,
                         child: child,
+        //                 Stack(
+        //   children: [
+        //     buildPuzzleBackground(context, customPaintWidgetKey),
+        //     buildPuzzleState(context),
+        //     Consumer<PlayViewModel>(
+        //       builder: (context, model, _) {
+        //         return Row(
+        //           children: [
+        //             // Text('${model.logicPuzzle.lastState}'),
+        //             //Text('${model.logicPuzzle.lastState[1]}'),
+        //           ]
+        //         );
+        //       }
+        //     )
+        //   ],
+        // ),
                       ),
                     ),
                   ),
@@ -102,29 +162,53 @@ class PlayScreen extends StatelessWidget {
             ),
           );
         },
-        child: Stack(
+        child:
+                  Consumer<PlayViewModel>(
+              builder: (context, model, _) {
+                return 
+        Stack(
+
           children: [
-            // buildPuzzleBackground(context, customPaintWidgetKey),
-            buildPuzzleState(context,customPaintWidgetKey),
+            if(!model.isBuildedOnce) buildPuzzleBackground(context, customPaintWidgetKey),
+            // if(!context.read<PlayViewModel>().isBuildedOnce) buildPuzzleBackground(context, customPaintWidgetKey),
+            // if(context.read<PlayViewModel>().puzzleBytes == null) buildPuzzleBackground(context, customPaintWidgetKey),
+            if(model.isBuildedOnce) buildPuzzleState(context, customPaintWidgetKey2),
+            // if(context.read<PlayViewModel>().isBuildedOnce) buildPuzzleState(context),
             Consumer<PlayViewModel>(
               builder: (context, model, _) {
-                return Text('${model.logicPuzzle.lastState[0]}');
+                return Row(
+                  children: [
+                    // Text('${model.logicPuzzle.lastState}'),
+                    //Text('${model.logicPuzzle.lastState[1]}'),
+                    //model.puzzleBytes!=null ? Image.memory(Uint8List.view(model.puzzleBytes.buffer)) : Text('aaa'),
+                    //Text('aaa')
+                  ]
+                );
               }
             )
           ],
         )
+        ;
+              }),
       ),
     );
   }
 
   Widget buildPuzzleBackground(BuildContext context, GlobalKey widgetKey) {
+    print('start buildPuzzleBackground');
+    Size size = Size(MediaQuery.of(context).size.width, MediaQuery.of(context).size.width);
+    PuzzlePainter painter = PuzzlePainter(
+      context: context,
+    );   
+    if(context.read<PlayViewModel>().puzzleBytes == null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) => save(context, painter, size));
+    }
+    
     return RepaintBoundary(
       key: widgetKey,
       child: CustomPaint(
-        size: Size(MediaQuery.of(context).size.width, MediaQuery.of(context).size.width),
-        painter: PuzzlePainter(
-          context: context
-        ),
+        size: size,
+        painter: painter,
         isComplex: true,
         willChange: false,
       ),
@@ -151,22 +235,67 @@ class PlayScreen extends StatelessWidget {
   //   );
   // }
 
+  void save(BuildContext context, CustomPainter painter, Size size) async {
+    print('start saved');
+    final ui.PictureRecorder recorder = ui.PictureRecorder();
+    painter.paint(Canvas(recorder), size);
+    final ui.Picture picture = recorder.endRecording();
+    final image = await picture.toImage(size.width.toInt(), size.height.toInt());
+    final pngBytes = await image.toByteData(format: ui.ImageByteFormat.png);
+    context.read<PlayViewModel>().puzzleBytes = pngBytes;
+    context.read<PlayViewModel>().puzzleImage = image;
+    //final image = await decodeImageFromList(Uint8List.view(pngBytes.buffer));
+
+    print('end saved');
+  }
+
+  void save2(BuildContext context, CustomPainter painter, Size size) async {
+    print('start saved2');
+    final ui.PictureRecorder recorder = ui.PictureRecorder();
+    painter.paint(Canvas(recorder), size);
+    final ui.Picture picture = recorder.endRecording();
+    final image = await picture.toImage(size.width.toInt(), size.height.toInt());
+    final pngBytes = await image.toByteData(format: ui.ImageByteFormat.png);
+    context.read<PlayViewModel>().puzzleBytes = pngBytes;
+    context.read<PlayViewModel>().puzzleImage = image;
+    // final image = await decodeImageFromList(Uint8List.view(pngBytes.buffer));
+    context.read<PlayViewModel>().tappedSquaeIndex = null;
+
+    print('end saved2');
+  }
+
   Widget buildPuzzleState(BuildContext context, GlobalKey widgetKey) {
-    return RepaintBoundary(child: 
+    print('start buildPuzzleState');
+    return 
     Consumer<PlayViewModel>(
       builder: (context, model, child) {
-        return CustomPaint(
+        Size size = Size(MediaQuery.of(context).size.width, MediaQuery.of(context).size.width);
+        PuzzleStatePainter painter = PuzzleStatePainter(
+          context: context,
+          notifier: model.notifier,
+          state: model.logicPuzzle.lastState
+        );
+        // if(context.read<PlayViewModel>().puzzleBytes != null && model.tappedSquaeIndex != null) {
+        // if(model.tappedSquaeIndex != null) {
+        if(context.read<PlayViewModel>().isBuildedOnce && model.tappedSquaeIndex != null) {
+          WidgetsBinding.instance.addPostFrameCallback((_) => save2(context, painter, size));
+        }
+        // return RepaintBoundary(child: 
+        return 
+        CustomPaint(
           key: widgetKey,
-          size: Size(MediaQuery.of(context).size.width, MediaQuery.of(context).size.width),
-          painter: PuzzleStatePainter(
-            context: context,
-            notifier: model.notifier,
-            state: model.logicPuzzle.lastState
-          ),
+          size: size,
+          // painter: PuzzleStatePainter(
+          //   context: context,
+          //   notifier: model.notifier,
+          //   state: model.logicPuzzle.lastState
+          // ),
+          painter: painter,
+          child: Center(),
           // isComplex: true,
+        // )
         );
       }
-    )
     );
   }
 
@@ -179,30 +308,92 @@ class PuzzleStatePainter extends PuzzlePainter {
   PuzzleStatePainter({this.context, this.notifier, this.state}): super(context: context, notifier: notifier);
 
   @override
-  void paint(Canvas canvas, Size size) {
+  void paint(Canvas canvas, Size size) async {
+    bool isBuildedOnce = context.read<PlayViewModel>().isBuildedOnce;
+    print('start PuzzleStatePainter.paint');
+    print('isBuildedOnce: $isBuildedOnce');
     // context.read<PlayViewModel>().isCorrect = isCorrect;
     // context.read<PlayViewModel>().inputSquareLocalPointsList = getInputSquareLocalPointsList();
     // drawSquare(canvas, Offset(10, -100), Size(200, 200), PaintingStyle.fill, markedColor, 0);
+    // final PictureRecorder recorder = PictureRecorder();
+    // Canvas rCanvas = Canvas(recorder);
+    List<int> lastState = context.read<PlayViewModel>().logicPuzzle.lastState;
+    print('lastState: $lastState');
+    print('state: $state');
+    int tappedSquareIndex = context.read<PlayViewModel>().tappedSquaeIndex;
+    print('tappedSquareIndex: $tappedSquareIndex');
 
-    drawBoardState(canvas);
+    ui.Image puzzleImage = context.read<PlayViewModel>().puzzleImage;
+    // if(puzzleImage != null) {
+
+
+    // if(!context.read<PlayViewModel>().isBuildedOnce) {
+    //   final paint = Paint();
+    //   canvas.drawImage(puzzleImage, Offset(0, 0), paint);
+    //   // drawBoardInitState(canvas);
+    // } else {
+    //   if (tappedSquareIndex!=null) {
+    //     print('call drawBoardState');
+    //     drawBoardState(canvas);
+    //   }
+    // }
+    final paint = Paint();
+    canvas.drawImage(puzzleImage, Offset(0, 0), paint);
+    if (tappedSquareIndex!=null) {
+      print('call drawBoardState');
+      drawBoardState(canvas);
+    }
+
+    context.read<PlayViewModel>().isDrawImage = true;
+    // canvas = rCanvas;
+    print('end PuzzleStatePainter.paint');
   }
 
   @override
   bool shouldRepaint(CustomPainter oldDelegate) {
-    return false;
-    // return true;
+    // return false;
+    return true;
   }
-
   void drawBoardState(Canvas canvas) {
+    print('exe drawBoardState');
+
     Size size = Size(squareSize, squareSize);
-    for (int i = 0; i < boardColumnsNum; i++) {
-      for (int j = 0; j < boardRowsNum; j++) {
+    int tappedSquareIndex = context.read<PlayViewModel>().tappedSquaeIndex;
+    int puzzleWidth = context.read<PlayViewModel>().logicPuzzle.width;
+
+    int i = tappedSquareIndex % puzzleWidth;
+    int j = tappedSquareIndex ~/ puzzleWidth;
+
+    Offset offset = Offset(
+      boardAreaLeftOffset + squareSize * i + borderWidth * (i - i ~/ boldBorderInterval) + boldBorderWidth * (i ~/ boldBorderInterval),
+      boardAreaTopOffset + squareSize * j + borderWidth * (j - j ~/ boldBorderInterval) + boldBorderWidth * (j ~/ boldBorderInterval)
+    );
+    
+    //if (tappedSquareIndex > 1) return;
+    // switch (context.read<PlayViewModel>().logicPuzzle.lastState[index]) {
+    switch (state[tappedSquareIndex]) {
+      case 0:
+        drawSquare(canvas, offset, size, PaintingStyle.fill, nonMarkedColor, 0);
+        break;
+      case 1:
+        drawSquare(canvas, offset, size, PaintingStyle.fill, markedColor, 0);
+        break;
+      case 2:
+        break;
+    }
+
+  }
+  void drawBoardInitState(Canvas canvas) {
+    print('exe drawBoardInitState');
+    Size size = Size(squareSize, squareSize);
+    for (int j = 0; j < boardRowsNum; j++) {
+      for (int i = 0; i < boardColumnsNum; i++) {
         Offset offset = Offset(
           boardAreaLeftOffset + squareSize * i + borderWidth * (i - i ~/ boldBorderInterval) + boldBorderWidth * (i ~/ boldBorderInterval),
           boardAreaTopOffset + squareSize * j + borderWidth * (j - j ~/ boldBorderInterval) + boldBorderWidth * (j ~/ boldBorderInterval)
         );
         int index = boardColumnsNum * j + i;
-        // if (index > 10) break;
+        //if (index > 10) return;
         // switch (context.read<PlayViewModel>().logicPuzzle.lastState[index]) {
         switch (state[index]) {
           case 0:
@@ -225,14 +416,17 @@ class PuzzlePainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
+    print('start PuzllePainter.paint');
     context.read<PlayViewModel>().isCorrect = isCorrect;
     context.read<PlayViewModel>().inputSquareLocalPointsList = getInputSquareLocalPointsList();
 
-    // drawBorderArea(canvas);
-    // drawViewArea(canvas);
-    // drawColumnHintsArea(canvas);
-    // drawRowHintsArea(canvas);
-    // drawBoardArea(canvas);
+    drawBorderArea(canvas);
+    drawViewArea(canvas);
+    drawColumnHintsArea(canvas);
+    drawRowHintsArea(canvas);
+    drawBoardArea(canvas);
+    drawState(canvas);
+    print('end PuzzlePainter.paint');
   }
 
   @override
@@ -459,6 +653,31 @@ class PuzzlePainter extends CustomPainter {
           boardAreaTopOffset + squareSize * j + borderWidth * (j - j ~/ boldBorderInterval) + boldBorderWidth * (j ~/ boldBorderInterval)
         );
         drawSquare(canvas, offset, size, PaintingStyle.fill, nonMarkedColor, 0);
+      }
+    }
+  }
+
+  void drawState(Canvas canvas) {
+    print('exe drawState');
+    List<int> state = context.read<PlayViewModel>().logicPuzzle.lastState;
+    Size size = Size(squareSize, squareSize);
+    for (int j = 0; j < boardRowsNum; j++) {
+      for (int i = 0; i < boardColumnsNum; i++) {
+        Offset offset = Offset(
+          boardAreaLeftOffset + squareSize * i + borderWidth * (i - i ~/ boldBorderInterval) + boldBorderWidth * (i ~/ boldBorderInterval),
+          boardAreaTopOffset + squareSize * j + borderWidth * (j - j ~/ boldBorderInterval) + boldBorderWidth * (j ~/ boldBorderInterval)
+        );
+        int index = boardColumnsNum * j + i;
+        // switch (context.read<PlayViewModel>().logicPuzzle.lastState[index]) {
+        switch (state[index]) {
+          case 0:
+            break;
+          case 1:
+            drawSquare(canvas, offset, size, PaintingStyle.fill, markedColor, 0);
+            break;
+          case 2:
+            break;
+        }
       }
     }
   }

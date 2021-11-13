@@ -34,6 +34,9 @@ class DBProvider {
     String path = join(await getDatabasesPath() , _databaseName);
     // ---
 
+    // Delete the db file.
+    //await deleteDatabase(path);
+
     return await openDatabase(
       path, 
       version: _databaseVersion,
@@ -59,6 +62,14 @@ class DBProvider {
   }
 
   Future<void> _createSampleData(Database database, int version) async {
+    await database.execute(
+      '''
+      INSERT INTO $tableName ('name', 'width', 'dots', 'last_state', 'is_clear')
+      values (?, ?, ?, ?, ?)
+      ''',
+      [SampleData2.name, SampleData2.width, SampleData2.dots, SampleData2.lastState, SampleData2.isClear]
+    );
+
     return await database.execute(
       '''
       INSERT INTO $tableName ('name', 'width', 'dots', 'last_state', 'is_clear')
@@ -83,6 +94,19 @@ class SampleData {
     1, 0, 1, 1, 1, 1, 0, 1, 1, 1,
     1, 1, 0, 0, 0, 0, 1, 0, 1, 1, 
     1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 
+  ];
+  static String dots = _dots.toString();
+  static List<int> _lastState = List.generate(_dots.length, (_) => 0);
+  static String lastState = _lastState.toString();
+  static const int isClear = 0;
+}
+
+class SampleData2 {
+  static const String name = 'sample2';
+  static const int width = 2;
+  static const List<int> _dots = [
+    0, 1,
+    1, 0
   ];
   static String dots = _dots.toString();
   static List<int> _lastState = List.generate(_dots.length, (_) => 0);
