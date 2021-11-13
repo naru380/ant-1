@@ -22,7 +22,6 @@ class PlayViewModel with ChangeNotifier {
   bool isDrawImage;
   final List<int> checkedList = [];
   void init() {
-    print('provider init.');
     offset = Offset.zero;
     initialFocalPoint = Offset.zero;
     sessionOffset = Offset.zero;

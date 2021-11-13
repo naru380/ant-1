@@ -172,6 +172,7 @@ class PuzzlePainter extends CustomPainter {
   Size get viewAreaSize => Size(viewAreaWidth, viewAreaHeight);
   void drawViewArea(Canvas canvas) {
     drawSquare(canvas, viewAreaOffset, viewAreaSize, PaintingStyle.fill, nonMarkedColor, 0);
+    drawLastStateInViewArea(canvas);
   }
 
   int get _columnHintsAreaBoldBorderNum => (boardColumnsNum - 1) ~/ boldBorderInterval;
@@ -276,6 +277,53 @@ class PuzzlePainter extends CustomPainter {
         break;
       case 2:
         drawMarked2(canvas, offset, size, markedColor, borderWidth);
+        break;
+    }
+  }
+
+  double get drawAreaInViewAreaWidth => min(viewAreaWidth, viewAreaHeight) * 0.9;
+  double get drawAreaInViewAreaHeight => min(viewAreaWidth, viewAreaHeight) * 0.9;
+  Size get drawAreaInViewAreaSize => Size(drawAreaInViewAreaWidth, drawAreaInViewAreaHeight);
+  double get drawAreaInViewAreaLeftOffset => viewAreaLeftOffset + (viewAreaWidth - drawAreaInViewAreaWidth) / 2;
+  double get drawAreaInViewAreaTopOffset => viewAreaTopOffset + (viewAreaHeight - drawAreaInViewAreaHeight) / 2;
+  Offset get drawAreaInViewAreaOffset => Offset(drawAreaInViewAreaLeftOffset, drawAreaInViewAreaTopOffset);
+  Size get drawAreaInViewAreaSquareSize => drawAreaInViewAreaSize / max(boardColumnsNum.toDouble(), boardRowsNum.toDouble());
+  void drawLastStateInViewArea(Canvas canvas) {
+    for (int i = 0; i < boardColumnsNum; i++) {
+      for (int j = 0; j < boardRowsNum; j++) {
+        int index = boardColumnsNum * j + i;
+        int state = logicPuzzle.lastState[index];
+        drawStateInViewArea(canvas, index, state);
+      }
+    }
+  }
+
+  void drawStateInViewArea(Canvas canvas, int index, int state) {
+    int puzzleWidth = logicPuzzle.width;
+    int i = index % puzzleWidth;
+    int j = index ~/ puzzleWidth;
+
+    Offset offset = Offset(
+      drawAreaInViewAreaLeftOffset + drawAreaInViewAreaSquareSize.width * i,
+      drawAreaInViewAreaTopOffset + drawAreaInViewAreaSquareSize.height * j
+    );
+    Size size = drawAreaInViewAreaSquareSize;
+
+    double padding1 = size.width * 0.01;
+    Offset offset1 = offset + Offset(padding1, padding1) / 2;
+    Size size1 = size * 0.99;
+    double padding2 = size.width * 0.1;
+    Offset offset2 = offset + Offset(padding2, padding2) / 2;
+    Size size2 = size * 0.9;
+
+    drawSquare(canvas, offset1, size1, PaintingStyle.fill, nonMarkedColor, 0);
+    switch (state) {
+      case 0:
+        break;
+      case 1:
+        drawSquare(canvas, offset2, size2, PaintingStyle.fill, markedColor, 0);
+        break;
+      case 2:
         break;
     }
   }

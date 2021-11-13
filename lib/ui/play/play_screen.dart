@@ -20,8 +20,6 @@ class PlayScreen extends StatelessWidget {
     final GlobalKey customPaintWidgetKey2 = GlobalKey();
     LogicPuzzle logicPuzzle = context.read<PlayViewModel>().logicPuzzle;
 
-    print(context.read<PlayViewModel>().logicPuzzle.lastState);
-
     return Scaffold(
       appBar: AppBar(
         title: Text('${logicPuzzle.name}'),
@@ -298,8 +296,6 @@ class PuzzleInitPainter extends PuzzlePainter {
     logicPuzzle.lastState.asMap().forEach((int i, int value) {
       if (value == 1) userCheckedList.add(i);
     });
-    print(answerCheckedList);
-    print(userCheckedList);
     answerCheckedList.sort((a, b) => a - b);
     userCheckedList.sort((a, b) => a - b);
     return listEquals(answerCheckedList, userCheckedList);
@@ -336,6 +332,7 @@ class PuzzleUpdatePainter extends PuzzlePainter {
     canvas.drawImage(puzzleImage, Offset(0, 0), paint);
     if (tappedSquareIndex!=null) {
       drawState(canvas, tappedSquareIndex, state[tappedSquareIndex]);
+      drawStateInViewArea(canvas, tappedSquareIndex, state[tappedSquareIndex]);
     }
 
     context.read<PlayViewModel>().isDrawImage = true;
