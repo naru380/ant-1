@@ -88,10 +88,8 @@ class PlayScreen extends StatelessWidget {
                   child: Container(
                     child: Transform.translate(
                       offset: model.offset,
-                      // offset: Offset(0,0),
                       child: Transform.scale(
-                        scale: 0.9,
-                        // scale: model.scale,
+                        scale: model.scale,
                         child: child,
                       ),
                     ),
