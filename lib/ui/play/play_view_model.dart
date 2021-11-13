@@ -16,9 +16,6 @@ class PlayViewModel with ChangeNotifier {
   List<List<Offset>> inputSquareLocalPointsList;
   Function isCorrect;
   LogicPuzzleDao logicPuzzleDao;
-  ValueNotifier<List<int>> notifier;
-  bool isShouldrepaint = false;
-  ByteData puzzleBytes;
   ui.Image puzzleImage;
   int tappedSquaeIndex;
   bool isBuildedOnce;
@@ -31,9 +28,6 @@ class PlayViewModel with ChangeNotifier {
     sessionOffset = Offset.zero;
     scale = 0.9;
     operationMethodIndex = 0;
-    puzzleBytes = null;
-    puzzleImage = null;
-    tappedSquaeIndex = null;
     isBuildedOnce = false;
     isDrawImage= false;
     logicPuzzleDao = LogicPuzzleDao();
@@ -41,7 +35,6 @@ class PlayViewModel with ChangeNotifier {
     logicPuzzle.lastState.asMap().forEach((int i, int value) {
       if (value == 1) checkedList.add(i);
     });
-    notifier = ValueNotifier(logicPuzzle.lastState);
   }
   void changeOperationMethod() {
     operationMethodIndex = (operationMethodIndex + 1) % 2;
