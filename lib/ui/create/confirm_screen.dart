@@ -44,11 +44,13 @@ class _ConfirmState extends State<ConfirmScreen> {
       body: Column(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          Center(
-            child: Image.memory(
-              dotImage,
-              width: size.width,
-              height: size.width * (imageSize[1] / imageSize[0]),
+          SizedBox(
+            width: size.width / 2,
+            height: size.width * (imageSize[1] / imageSize[0]) / 2,
+            child: Center(
+              child: Image.memory(
+                dotImage,
+              ),
             ),
           ),
           Center(
@@ -129,13 +131,13 @@ class _ConfirmState extends State<ConfirmScreen> {
         },
       ),
       bottomNavigationBar: AdmobBanner(
-            adUnitId: AdMobService().getBannerAdUnitId(),
-            adSize: AdmobBannerSize(
-              width: MediaQuery.of(context).size.width.toInt(),
-              height: AdMobService().getHeight(context).toInt(),
-              name: 'SMART_BANNER',
-            ),
-          ),
+        adUnitId: AdMobService().getBannerAdUnitId(),
+        adSize: AdmobBannerSize(
+          width: MediaQuery.of(context).size.width.toInt(),
+          height: AdMobService().getHeight(context).toInt(),
+          name: 'SMART_BANNER',
+        ),
+      ),
     );
   }
 }
