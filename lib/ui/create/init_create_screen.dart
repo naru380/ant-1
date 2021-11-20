@@ -54,17 +54,23 @@ void initCreate(BuildContext context, File tookImage) async {
   int originHeight =
       (originImage.height * (imageSize[1] / decodedImage.height)).round();
 
-  int magnificant = (containerSize[0] / originWidth).round() * 100;
+  int magnificant = (containerSize[0] / originWidth).round() * 400;
 
-  Uint8List compressedOriginList = await FlutterImageCompress.compressWithFile(
-    tookImage.path,
-    quality: magnificant,
-  );
+  // if(magnificant > 100){
+  //   magnificant = 100;
+  //   print('100');
+  // }
 
-  imgLib.Image compressedOrigin = imgLib.decodeImage(compressedOriginList);
+  // Uint8List compressedOriginList = await FlutterImageCompress.compressWithFile(
+  //   tookImage.path,
+  //   quality: magnificant,
+  // );
+
+  // imgLib.Image compressedOrigin = imgLib.decodeImage(compressedOriginList);
 
   imgLib.Image originCroppedImage = imgLib.copyCrop(
-    compressedOrigin,
+    // compressedOrigin,
+    originImage,
     0,
     0,
     originWidth,
@@ -73,7 +79,6 @@ void initCreate(BuildContext context, File tookImage) async {
 
   aveList = createAverageList(croppedImage, 1, imageSize, rectSize);
 
-  createModel.globalKey = GlobalKey();
   createModel.selectNum = 4;
   createModel.selectThr = 150;
   createModel.title = "タイトル";
@@ -95,10 +100,14 @@ void initCreate(BuildContext context, File tookImage) async {
     containerSize,
   );
 
+  List<int> jpg = imgLib.encodeJpg(originCroppedImage);
+  Uint8List byteList = Uint8List.fromList(jpg);
+  ui.Image compImage = await byte2Image(byteList, size);
+
   Navigator.of(context).pushNamed(
     '/create',
     arguments: {
-      'croppedImage': originCroppedImage,
+      'croppedImage': compImage,
       'rectSize': rectSize,
       'imageSize': imageSize,
       'rectNum': rectNum,
@@ -202,4 +211,14 @@ class OriginalPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant OriginalPainter oldDelegate) => false;
+}
+
+Future<ui.Image> byte2Image(Uint8List byte, Size size) async {
+  ui.Codec codecImage = await ui.instantiateImageCodec(
+    byte,
+    targetWidth: (size.width / 3).floor(),
+  );
+  ui.FrameInfo frame = await codecImage.getNextFrame();
+  ui.Image image = frame.image;
+  return image;
 }

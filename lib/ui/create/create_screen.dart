@@ -1,8 +1,8 @@
 import 'dart:ui' as ui;
 import 'package:ant_1/ui/create/init_create_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:image/image.dart' as imgLib;
 import 'dart:typed_data';
+import 'package:image/image.dart' as imgLib;
 import 'package:flutter/rendering.dart';
 import 'package:ant_1/ui/create/create_view_model.dart';
 import 'package:admob_flutter/admob_flutter.dart';
@@ -14,7 +14,9 @@ class CreateScreen extends StatelessWidget {
     final Size size = MediaQuery.of(context).size;
 
     Map<String, dynamic> args = ModalRoute.of(context).settings.arguments;
-    imgLib.Image croppedImage = args['croppedImage'];
+    ui.Image croppedImage = args['croppedImage'];
+    // imgLib.Image croppedImage = args['croppedImage'];
+    // Uint8List croppedImage = args['croppedImage'];
     double rectSize = args['rectSize'];
     List<double> imageSize = args['imageSize'];
     List<int> rectNum = args['rectNum'];
@@ -22,10 +24,13 @@ class CreateScreen extends StatelessWidget {
     List<List<DropdownMenuItem<int>>> itemList = setItems(imageSize, rectSize);
     List<DropdownMenuItem<int>> _nums = itemList[0];
     List<DropdownMenuItem<int>> _thrs = itemList[1];
-    List<int> containerSize = [
+    final List<int> containerSize = [
       (size.width / 3).floor(),
       (size.width / 3 * (imageSize[1] / imageSize[0])).floor()
     ];
+    // List<int> jpgImage = imgLib.encodeJpg(croppedImage);
+    // List<int> pngImage = imgLib.encodePng(croppedImage);
+    // final jpgImage = imgLib.encodeJpg(croppedImage);
 
     return Scaffold(
       appBar: AppBar(
@@ -44,10 +49,9 @@ class CreateScreen extends StatelessWidget {
                   SizedBox(
                     width: containerSize[0].toDouble(),
                     height: containerSize[1].toDouble(),
-                    child: Image.memory(
-                      imgLib.encodeJpg(croppedImage),
-                      width: 130,
-                    ),
+                    child: CustomPaint(painter: OriginalPainter(croppedImage)),
+                    // child: Image.memory(croppedImage),
+                    // child: Image.memory(jpgImage),
                   ),
                   Text(
                     '元画像',
@@ -111,19 +115,28 @@ class CreateScreen extends StatelessWidget {
                                 (imageSize[0] / (rectSize * model.selectNum))
                                     .round(),
                             model.interList = createInterList(
-                                aveList, rectNum, model.selectNum),
+                              aveList,
+                              rectNum,
+                              model.selectNum,
+                            ),
                             model.widthNum =
                                 (imageSize[0] / (rectSize * model.selectNum))
                                     .round(),
                             model.dotList = createDotList(
-                                model.interList,
-                                model.selectThr,
-                                model.selectNum,
-                                model.widthNum),
+                              model.interList,
+                              model.selectThr,
+                              model.selectNum,
+                              model.widthNum,
+                            ),
                             syncVariable(
-                                makeImage(model.dotList, rectNum[0], rectNum[1],
-                                    containerSize),
-                                model),
+                              makeImage(
+                                model.dotList,
+                                rectNum[0],
+                                rectNum[1],
+                                containerSize,
+                              ),
+                              model,
+                            ),
                             model.notify(),
                           },
                         ),
@@ -231,13 +244,13 @@ class CreateScreen extends StatelessWidget {
         ],
       ),
       bottomNavigationBar: AdmobBanner(
-            adUnitId: AdMobService().getBannerAdUnitId(),
-            adSize: AdmobBannerSize(
-              width: MediaQuery.of(context).size.width.toInt(),
-              height: AdMobService().getHeight(context).toInt(),
-              name: 'SMART_BANNER',
-            ),
-          ),
+        adUnitId: AdMobService().getBannerAdUnitId(),
+        adSize: AdmobBannerSize(
+          width: MediaQuery.of(context).size.width.toInt(),
+          height: AdMobService().getHeight(context).toInt(),
+          name: 'SMART_BANNER',
+        ),
+      ),
     );
   }
 }
