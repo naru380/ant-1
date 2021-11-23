@@ -32,7 +32,7 @@ dependencies:
   image_cropper: ^1.4.1
   provider: ^5.0.0
   camera: ^0.8.1+7
-  sqflite: any
+  sqflite: ^2.0.0+4
   path: any
   image: ^3.0.2
   image_gallery_saver: ^1.5.0

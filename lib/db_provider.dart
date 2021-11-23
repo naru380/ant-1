@@ -38,7 +38,7 @@ class DBProvider {
     //await deleteDatabase(path);
 
     return await openDatabase(
-      path, 
+      path,
       version: _databaseVersion,
       onCreate: (Database database, int version) async {
         _createTable(database, version);
@@ -56,7 +56,8 @@ class DBProvider {
         width INTEGER NOT NULL,
         dots TEXT NOT NULL,
         last_state TEXT NOT NULL,
-        is_clear INTEGER NOT NULL CHECK(is_clear = 0 OR is_clear = 1)
+        is_clear INTEGER NOT NULL CHECK(is_clear = 0 OR is_clear = 1),
+        imageList BLOB NOT NULL
       )
     ''');
   }
@@ -92,8 +93,8 @@ class SampleData {
     0, 1, 0, 0, 0, 0, 1, 1, 1, 0,
     1, 0, 1, 1, 1, 1, 0, 1, 1, 1,
     1, 0, 1, 1, 1, 1, 0, 1, 1, 1,
-    1, 1, 0, 0, 0, 0, 1, 0, 1, 1, 
-    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 
+    1, 1, 0, 0, 0, 0, 1, 0, 1, 1,
+    1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
   ];
   static String dots = _dots.toString();
   static List<int> _lastState = List.generate(_dots.length, (_) => 0);
