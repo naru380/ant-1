@@ -21,6 +21,7 @@ class CreateScreen extends StatelessWidget {
     List<double> imageSize = args['imageSize'];
     List<int> rectNum = args['rectNum'];
     List<double> aveList = args['aveList'];
+    List<double> thrList = args['thrList'];
     List<List<DropdownMenuItem<int>>> itemList = setItems(imageSize, rectSize);
     List<DropdownMenuItem<int>> _nums = itemList[0];
     List<DropdownMenuItem<int>> _thrs = itemList[1];
@@ -124,7 +125,7 @@ class CreateScreen extends StatelessWidget {
                                     .round(),
                             model.dotList = createDotList(
                               model.interList,
-                              model.selectThr,
+                              thrList[model.selectThr].round(),
                               model.selectNum,
                               model.widthNum,
                             ),
@@ -164,20 +165,26 @@ class CreateScreen extends StatelessWidget {
                           onChanged: (value) => {
                             model.selectThr = value,
                             model.dotList = createDotList(
-                                model.interList,
-                                model.selectThr,
-                                model.selectNum,
-                                model.widthNum),
+                              model.interList,
+                              thrList[model.selectThr].round(),
+                              model.selectNum,
+                              model.widthNum,
+                            ),
                             syncVariable(
-                                makeImage(model.dotList, rectNum[0], rectNum[1],
-                                    containerSize),
-                                model),
+                              makeImage(
+                                model.dotList,
+                                rectNum[0],
+                                rectNum[1],
+                                containerSize,
+                              ),
+                              model,
+                            ),
                             model.notify(),
                           },
                         ),
                       );
                     },
-                  )
+                  ),
                 ],
               ),
               Consumer<CreateViewModel>(
@@ -338,49 +345,276 @@ List<List<DropdownMenuItem<int>>> setItems(
       ),
     );
   _thrs
+    // ..add(
+    //   DropdownMenuItem(
+    //     child: Text(
+    //       '100',
+    //       style: TextStyle(fontSize: 20.0),
+    //     ),
+    //     value: 100,
+    //   ),
+    // )
+    // ..add(
+    //   DropdownMenuItem(
+    //     child: Text(
+    //       '125',
+    //       style: TextStyle(fontSize: 20.0),
+    //     ),
+    //     value: 125,
+    //   ),
+    // )
+    // ..add(
+    //   DropdownMenuItem(
+    //     child: Text(
+    //       '150',
+    //       style: TextStyle(fontSize: 20.0),
+    //     ),
+    //     value: 150,
+    //   ),
+    // )
+    // ..add(
+    //   DropdownMenuItem(
+    //     child: Text(
+    //       '175',
+    //       style: TextStyle(fontSize: 20.0),
+    //     ),
+    //     value: 175,
+    //   ),
+    // )
+    // ..add(
+    //   DropdownMenuItem(
+    //     child: Text(
+    //       '200',
+    //       style: TextStyle(fontSize: 20.0),
+    //     ),
+    //     value: 200,
+    //   ),
+    // );
+    // ..add(
+    //   DropdownMenuItem(
+    //     child: Text(
+    //       '20%',
+    //       style: TextStyle(fontSize: 20.0),
+    //     ),
+    //     value: 0,
+    //   ),
+    // )
+    // ..add(
+    //   DropdownMenuItem(
+    //     child: Text(
+    //       '30%',
+    //       style: TextStyle(fontSize: 20.0),
+    //     ),
+    //     value: 1,
+    //   ),
+    // )
+    // ..add(
+    //   DropdownMenuItem(
+    //     child: Text(
+    //       '40%',
+    //       style: TextStyle(fontSize: 20.0),
+    //     ),
+    //     value: 2,
+    //   ),
+    // )
+    // ..add(
+    //   DropdownMenuItem(
+    //     child: Text(
+    //       '50%',
+    //       style: TextStyle(fontSize: 20.0),
+    //     ),
+    //     value: 3,
+    //   ),
+    // )
+    // ..add(
+    //   DropdownMenuItem(
+    //     child: Text(
+    //       '60%',
+    //       style: TextStyle(fontSize: 20.0),
+    //     ),
+    //     value: 4,
+    //   ),
+    // )
+    // ..add(
+    //   DropdownMenuItem(
+    //     child: Text(
+    //       '70%',
+    //       style: TextStyle(fontSize: 20.0),
+    //     ),
+    //     value: 5,
+    //   ),
+    // )
+    // ..add(
+    //   DropdownMenuItem(
+    //     child: Text(
+    //       '80%',
+    //       style: TextStyle(fontSize: 20.0),
+    //     ),
+    //     value: 6,
+    //   ),
+    // );
+
+    // ..add(
+    //   DropdownMenuItem(
+    //     child: Text(
+    //       '30%',
+    //       style: TextStyle(fontSize: 20.0),
+    //     ),
+    //     value: 0,
+    //   ),
+    // )
+    // ..add(
+    //   DropdownMenuItem(
+    //     child: Text(
+    //       '35%',
+    //       style: TextStyle(fontSize: 20.0),
+    //     ),
+    //     value: 1,
+    //   ),
+    // )
+    // ..add(
+    //   DropdownMenuItem(
+    //     child: Text(
+    //       '40%',
+    //       style: TextStyle(fontSize: 20.0),
+    //     ),
+    //     value: 2,
+    //   ),
+    // )
+    // ..add(
+    //   DropdownMenuItem(
+    //     child: Text(
+    //       '45%',
+    //       style: TextStyle(fontSize: 20.0),
+    //     ),
+    //     value: 3,
+    //   ),
+    // )
+    // ..add(
+    //   DropdownMenuItem(
+    //     child: Text(
+    //       '50%',
+    //       style: TextStyle(fontSize: 20.0),
+    //     ),
+    //     value: 4,
+    //   ),
+    // )
+    // ..add(
+    //   DropdownMenuItem(
+    //     child: Text(
+    //       '55%',
+    //       style: TextStyle(fontSize: 20.0),
+    //     ),
+    //     value: 5,
+    //   ),
+    // )
+    // ..add(
+    //   DropdownMenuItem(
+    //     child: Text(
+    //       '60%',
+    //       style: TextStyle(fontSize: 20.0),
+    //     ),
+    //     value: 6,
+    //   ),
+    // )
+    // ..add(
+    //   DropdownMenuItem(
+    //     child: Text(
+    //       '65%',
+    //       style: TextStyle(fontSize: 20.0),
+    //     ),
+    //     value: 7,
+    //   ),
+    // )
+    // ..add(
+    //   DropdownMenuItem(
+    //     child: Text(
+    //       '70%',
+    //       style: TextStyle(fontSize: 20.0),
+    //     ),
+    //     value: 8,
+    //   ),
+    // );
+
     ..add(
       DropdownMenuItem(
         child: Text(
-          '100',
+          '40%',
           style: TextStyle(fontSize: 20.0),
         ),
-        value: 100,
+        value: 0,
       ),
     )
     ..add(
       DropdownMenuItem(
         child: Text(
-          '125',
+          '42.5%',
           style: TextStyle(fontSize: 20.0),
         ),
-        value: 125,
+        value: 1,
       ),
     )
     ..add(
       DropdownMenuItem(
         child: Text(
-          '150',
+          '45%',
           style: TextStyle(fontSize: 20.0),
         ),
-        value: 150,
+        value: 2,
       ),
     )
     ..add(
       DropdownMenuItem(
         child: Text(
-          '175',
+          '47.5%',
           style: TextStyle(fontSize: 20.0),
         ),
-        value: 175,
+        value: 3,
       ),
     )
     ..add(
       DropdownMenuItem(
         child: Text(
-          '200',
+          '50%',
           style: TextStyle(fontSize: 20.0),
         ),
-        value: 200,
+        value: 4,
+      ),
+    )
+    ..add(
+      DropdownMenuItem(
+        child: Text(
+          '52.5%',
+          style: TextStyle(fontSize: 20.0),
+        ),
+        value: 5,
+      ),
+    )
+    ..add(
+      DropdownMenuItem(
+        child: Text(
+          '55%',
+          style: TextStyle(fontSize: 20.0),
+        ),
+        value: 6,
+      ),
+    )
+    ..add(
+      DropdownMenuItem(
+        child: Text(
+          '57.5%',
+          style: TextStyle(fontSize: 20.0),
+        ),
+        value: 7,
+      ),
+    )
+    ..add(
+      DropdownMenuItem(
+        child: Text(
+          '60%',
+          style: TextStyle(fontSize: 20.0),
+        ),
+        value: 8,
       ),
     );
   return [_nums, _thrs];
