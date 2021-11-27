@@ -2,6 +2,7 @@ import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:ant_1/domain/entities/logic_puzzle.dart';
+import 'package:ant_1/ui/create/init_create_screen.dart';
 import 'package:ant_1/domain/dao/logic_puzzle_dao.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -26,11 +27,19 @@ class ConfirmScreen extends StatelessWidget {
 
     final Size size = MediaQuery.of(context).size;
 
+    // final LogicPuzzle compLogic = LogicPuzzle(
+    //   name: title,
+    //   width: width,
+    //   dots: dotList,
+    //   lastState: List.generate(dotList.length, (_) => 0),
+    //   isClear: false,
+    //   imageList: dotImage,
+    // );
     final LogicPuzzle compLogic = LogicPuzzle(
       name: title,
-      width: width,
-      dots: dotList,
-      lastState: List.generate(dotList.length, (_) => 0),
+      width: 2,
+      dots: [0, 1, 1, 0],
+      lastState: [0, 0, 0, 0],
       isClear: false,
       imageList: dotImage,
     );
@@ -82,10 +91,13 @@ class ConfirmScreen extends StatelessWidget {
                   borderRadius: const BorderRadius.all(Radius.circular(100))),
               child: GestureDetector(
                 onTap: () async {
+                  final ui.Image boardDao =
+                      await getImageFromPainter(boardPainter, boardSize);
+                  ByteData byte = await boardDao.toByteData();
+                  compLogic.imageList = byte.buffer.asUint8List();
                   LogicPuzzleDao logicPuzzleDao = LogicPuzzleDao();
+                  // await logicPuzzleDao.deleteDB();
                   await logicPuzzleDao.create(compLogic);
-                  // final ui.Image boardDao =
-                  //     await getImageFromPainter(boardPainter, boardSize);
                   Navigator.of(context)
                       .pushNamedAndRemoveUntil('/', (_) => false);
                 },
