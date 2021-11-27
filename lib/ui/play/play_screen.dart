@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'dart:ui' as ui;
 
 import 'package:ant_1/domain/entities/logic_puzzle.dart';
@@ -19,6 +20,7 @@ class PlayScreen extends StatelessWidget {
     final GlobalKey customPaintWidgetKey = GlobalKey();
     final GlobalKey customPaintWidgetKey2 = GlobalKey();
     LogicPuzzle logicPuzzle = context.read<PlayViewModel>().logicPuzzle;
+    double screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
       appBar: AppBar(
@@ -36,7 +38,12 @@ class PlayScreen extends StatelessWidget {
               model.initialFocalPoint = details.focalPoint;
               model.offset += model.sessionOffset;
 
-              model.scale *= details.scale;
+              model.offset = Offset(
+                min(max(-screenWidth*0.5, model.offset.dx), screenWidth*0.5), 
+                min(max(-screenWidth*0.5, model.offset.dy), screenWidth*0.5)
+              );
+
+              model.scale += (details.scale - 1.0) * 0.1;
               if (model.scale < 0.5) {
                 model.scale = 0.5;
               }
