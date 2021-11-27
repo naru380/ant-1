@@ -42,7 +42,6 @@ class PlayScreen extends StatelessWidget {
                 min(max(-screenWidth*0.5, model.offset.dx), screenWidth*0.5), 
                 min(max(-screenWidth*0.5, model.offset.dy), screenWidth*0.5)
               );
-              print(model.offset);
 
               model.scale += (details.scale - 1.0) * 0.1;
               if (model.scale < 0.5) {
