@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'dart:ui' as ui;
-
+import 'package:admob_flutter/admob_flutter.dart';
+import 'package:ant_1/service/admob.dart';
 import 'package:ant_1/domain/entities/logic_puzzle.dart';
 import 'package:ant_1/service/utils.dart';
 import 'package:ant_1/service/puzzle_painter.dart';
@@ -70,7 +71,7 @@ class PlayScreen extends StatelessWidget {
                 Offset upperLeftOffset = model.inputSquareLocalPointsList[index][0] * model.scale + customPaintOffset;
                 Offset lowerRightOffset = model.inputSquareLocalPointsList[index][1] * model.scale + customPaintOffset;
                 if (upperLeftOffset <= tapOffset && tapOffset <= lowerRightOffset) {
-                  if (model.logicPuzzle.lastState[index] == 0) {                
+                  if (model.logicPuzzle.lastState[index] == 0) {
                     switch (model.operationMethodIndex) {
                       case 0:
                         model.logicPuzzle.lastState[index] = 1;
@@ -120,6 +121,14 @@ class PlayScreen extends StatelessWidget {
           },
         ),
       ),
+      bottomNavigationBar: AdmobBanner(
+            adUnitId: AdMobService().getBannerAdUnitId(),
+            adSize: AdmobBannerSize(
+              width: MediaQuery.of(context).size.width.toInt(),
+              height: AdMobService().getHeight(context).toInt(),
+              name: 'SMART_BANNER',
+            ),
+          ),
     );
   }
 
@@ -128,12 +137,12 @@ class PlayScreen extends StatelessWidget {
     PuzzleInitPainter painter = PuzzleInitPainter(
       context: context,
       state: context.read<PlayViewModel>().logicPuzzle.lastState,
-    );   
+    );
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       context.read<PlayViewModel>().puzzleImage = await getImageFromPainter(painter, size);
     });
-    
+
     return RepaintBoundary(
       key: widgetKey,
       child: CustomPaint(
@@ -174,7 +183,7 @@ class PlayScreen extends StatelessWidget {
 class OperationBar extends StatelessWidget {
   final BuildContext context;
   OperationBar({this.context});
-  
+
   @override
   Widget build(BuildContext context) {
     return Consumer<PlayViewModel>(builder: (context, model, _) {
@@ -263,7 +272,7 @@ class OperationBar extends StatelessWidget {
               },
               child: Icon(
                 IconData(
-                  57846, 
+                  57846,
                   fontFamily: 'MaterialIcons'
                 ),
                 color: Colors.white
@@ -279,7 +288,7 @@ class OperationBar extends StatelessWidget {
 class PuzzleInitPainter extends PuzzlePainter {
   final BuildContext context;
   final List<int> state;
-  PuzzleInitPainter({this.context, this.state}) : super(context: context, logicPuzzle: context.read<PlayViewModel>().logicPuzzle); 
+  PuzzleInitPainter({this.context, this.state}) : super(context: context, logicPuzzle: context.read<PlayViewModel>().logicPuzzle);
 
   @override
   void paint(Canvas canvas, Size size) {
