@@ -123,11 +123,12 @@ class CreateScreen extends StatelessWidget {
                             model.widthNum =
                                 (imageSize[0] / (rectSize * model.selectNum))
                                     .round(),
-                            model.dotList = createDotList(
+                            createDotList(
                               model.interList,
                               thrList[model.selectThr].round(),
                               model.selectNum,
                               model.widthNum,
+                              model,
                             ),
                             syncVariable(
                               makeImage(
@@ -164,11 +165,12 @@ class CreateScreen extends StatelessWidget {
                           value: model.selectThr,
                           onChanged: (value) => {
                             model.selectThr = value,
-                            model.dotList = createDotList(
+                            createDotList(
                               model.interList,
                               thrList[model.selectThr].round(),
                               model.selectNum,
                               model.widthNum,
+                              model,
                             ),
                             syncVariable(
                               makeImage(
@@ -228,7 +230,7 @@ class CreateScreen extends StatelessWidget {
                       '/confirm',
                       arguments: {
                         'title': model.title,
-                        'dotList': model.dotList,
+                        'dotList': model.dots,
                         'width': model.widthNum,
                         'dotImage': dotImage,
                         'imageSize': imageSize,
@@ -262,9 +264,10 @@ class CreateScreen extends StatelessWidget {
   }
 }
 
-List<int> createDotList(
-    List<double> interList, int thresh, int num, int widthNum) {
+void createDotList(List<double> interList, int thresh, int num,
+    int widthNum, CreateViewModel model) {
   List<int> result = [];
+  List<int> boardDots = [];
   List<int> tmp;
   int p = 0;
   for (int i = 0; i < (interList.length / widthNum); i++) {
@@ -274,10 +277,12 @@ List<int> createDotList(
         for (int n = 0; n < num; n++) {
           tmp.add(0);
         }
+        boardDots.add(0);
       } else {
         for (int n = 0; n < num; n++) {
           tmp.add(1);
         }
+        boardDots.add(1);
       }
       p++;
     }
@@ -285,7 +290,8 @@ List<int> createDotList(
       result += tmp;
     }
   }
-  return result;
+  model.dotList = result;
+  model.dots = boardDots;
 }
 
 // List<int> createDotList(

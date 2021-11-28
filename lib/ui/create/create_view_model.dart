@@ -8,6 +8,7 @@ class CreateViewModel with ChangeNotifier {
   int selectThr;
   String title;
   List<int> dotList;
+  List<int> dots;
   int rectWidth;
   List<double> interList;
   List<List<DropdownMenuItem<int>>> itemList;
