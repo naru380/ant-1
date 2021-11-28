@@ -71,6 +71,7 @@ class _ConfirmState extends State<ConfirmScreen> {
               child: GestureDetector(
                 onTap: () async {
                   LogicPuzzleDao logicPuzzleDao = LogicPuzzleDao();
+                  print(dotList.length);
                   var logicPuzzle = LogicPuzzle(
                       name: title,
                       width: width,

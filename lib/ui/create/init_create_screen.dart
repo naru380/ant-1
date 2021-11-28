@@ -19,6 +19,7 @@ void initCreate(BuildContext context, File tookImage) async {
   double rectSize;
   List<double> imageSize = [0, 0];
   List<double> aveList = [0, 0];
+  List<int> dots;
   CreateViewModel createModel = context.read<CreateViewModel>();
 
   final Size size = MediaQuery.of(context).size;
@@ -91,8 +92,8 @@ void initCreate(BuildContext context, File tookImage) async {
   );
   createModel.widthNum =
       (imageSize[0] / (rectSize * createModel.selectNum)).round();
-  createModel.dotList =
-      createDotList(createModel.interList, aveList[4].round(), 4, createModel.widthNum);
+  createDotList(createModel.interList, aveList[4].round(), 4,
+      createModel.widthNum, createModel);
 
   createModel.compImage = await makeImage(
     createModel.dotList,
