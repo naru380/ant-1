@@ -216,7 +216,7 @@ class PuzzlePainter extends CustomPainter {
           rowHintsAreaTopOffset + squareSize * j + borderWidth * (j - j ~/ boldBorderInterval) + boldBorderWidth * (j ~/ boldBorderInterval)
         );
         drawSquare(canvas, offset, size, PaintingStyle.fill, hintBackgroundColor, 0);
-        int hintNum = hintsInEachRow[maxNumOfHintsInEachColumn * j + i];
+        int hintNum = hintsInEachRow[maxNumOfHintsInEachRow * j + i];
         String hintText = hintNum > 0 ? '$hintNum' : ''; 
         drawHintText(canvas, offset, size, hintText);
       }

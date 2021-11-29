@@ -11,10 +11,12 @@ class DBProvider {
   static const int _databaseVersion = 1;
   static const String tableName = 'logic_puzzles';
 
+  static const bool INIT_MODE = false;
+
   Database _database;
 
   Future<Database> get database async {
-    if (_database != null) {
+    if (_database != null && !INIT_MODE) {
       return _database;
     } else {
       _database = await _initDB();
@@ -35,7 +37,8 @@ class DBProvider {
     // ---
 
     // Delete the db file.
-    //await deleteDatabase(path);
+    if (INIT_MODE)
+      await deleteDatabase(path);
 
     return await openDatabase(
       path, 
