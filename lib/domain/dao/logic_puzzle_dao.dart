@@ -1,6 +1,7 @@
 import 'package:ant_1/domain/entities/logic_puzzle.dart';
 import 'package:ant_1/db_provider.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:path/path.dart';
 
 class LogicPuzzleDao {
   final DBProvider _dbProvider = DBProvider();
@@ -44,5 +45,12 @@ class LogicPuzzleDao {
   void deleteElement(int id) async {
     Database db = await _dbProvider.database;
     await db.delete('$_tbName', where: "id=?", whereArgs: [id]);
+  }
+
+  Future<void> deleteDB() async {
+    var databasesPath = await getDatabasesPath();
+    String path = join(databasesPath, 'myDatabase.db');
+    await deleteDatabase(path);
+    print(_tbName);
   }
 }

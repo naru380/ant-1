@@ -1,20 +1,18 @@
 import 'dart:typed_data';
-import 'dart:ui';
+import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:ant_1/domain/entities/logic_puzzle.dart';
+import 'package:ant_1/ui/create/init_create_screen.dart';
 import 'package:ant_1/domain/dao/logic_puzzle_dao.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:admob_flutter/admob_flutter.dart';
 import 'package:ant_1/service/admob.dart';
 import 'package:esys_flutter_share/esys_flutter_share.dart';
+import 'package:ant_1/service/puzzle_painter.dart';
+import 'package:ant_1/service/utils.dart';
 
-class ConfirmScreen extends StatefulWidget {
-  @override
-  _ConfirmState createState() => _ConfirmState();
-}
-
-class _ConfirmState extends State<ConfirmScreen> {
+class ConfirmScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Map<String, dynamic> args = ModalRoute.of(context).settings.arguments;
@@ -28,6 +26,29 @@ class _ConfirmState extends State<ConfirmScreen> {
     }
 
     final Size size = MediaQuery.of(context).size;
+
+    // final LogicPuzzle compLogic = LogicPuzzle(
+    //   name: title,
+    //   width: width,
+    //   dots: dotList,
+    //   lastState: List.generate(dotList.length, (_) => 0),
+    //   isClear: false,
+    //   imageList: dotImage,
+    // );
+    final LogicPuzzle compLogic = LogicPuzzle(
+      name: title,
+      width: 2,
+      dots: [0, 1, 1, 0],
+      lastState: [0, 0, 0, 0],
+      isClear: false,
+      imageList: dotImage,
+    );
+
+    final Size boardSize = Size(size.width, size.width);
+    CustomPainter boardPainter = PuzzlePainter(
+      context: context,
+      logicPuzzle: compLogic,
+    );
 
     Future _saveImage(Uint8List dotImage) async {
       await ImageGallerySaver.saveImage(dotImage);
@@ -70,15 +91,13 @@ class _ConfirmState extends State<ConfirmScreen> {
                   borderRadius: const BorderRadius.all(Radius.circular(100))),
               child: GestureDetector(
                 onTap: () async {
+                  final ui.Image boardDao =
+                      await getImageFromPainter(boardPainter, boardSize);
+                  ByteData byte = await boardDao.toByteData();
+                  compLogic.imageList = byte.buffer.asUint8List();
                   LogicPuzzleDao logicPuzzleDao = LogicPuzzleDao();
-                  print(dotList.length);
-                  var logicPuzzle = LogicPuzzle(
-                      name: title,
-                      width: width,
-                      dots: dotList,
-                      lastState: List.generate(dotList.length, (_) => 0),
-                      isClear: false);
-                  await logicPuzzleDao.create(logicPuzzle);
+                  // await logicPuzzleDao.deleteDB();
+                  await logicPuzzleDao.create(compLogic);
                   Navigator.of(context)
                       .pushNamedAndRemoveUntil('/', (_) => false);
                 },
