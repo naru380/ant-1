@@ -21,6 +21,7 @@ class CreateScreen extends StatelessWidget {
     List<double> imageSize = args['imageSize'];
     List<int> rectNum = args['rectNum'];
     List<double> aveList = args['aveList'];
+    List<double> thrList = args['thrList'];
     List<List<DropdownMenuItem<int>>> itemList = setItems(imageSize, rectSize);
     List<DropdownMenuItem<int>> _nums = itemList[0];
     List<DropdownMenuItem<int>> _thrs = itemList[1];
@@ -122,11 +123,12 @@ class CreateScreen extends StatelessWidget {
                             model.widthNum =
                                 (imageSize[0] / (rectSize * model.selectNum))
                                     .round(),
-                            model.dotList = createDotList(
+                            createDotList(
                               model.interList,
-                              model.selectThr,
+                              thrList[model.selectThr].round(),
                               model.selectNum,
                               model.widthNum,
+                              model,
                             ),
                             syncVariable(
                               makeImage(
@@ -163,21 +165,28 @@ class CreateScreen extends StatelessWidget {
                           value: model.selectThr,
                           onChanged: (value) => {
                             model.selectThr = value,
-                            model.dotList = createDotList(
-                                model.interList,
-                                model.selectThr,
-                                model.selectNum,
-                                model.widthNum),
+                            createDotList(
+                              model.interList,
+                              thrList[model.selectThr].round(),
+                              model.selectNum,
+                              model.widthNum,
+                              model,
+                            ),
                             syncVariable(
-                                makeImage(model.dotList, rectNum[0], rectNum[1],
-                                    containerSize),
-                                model),
+                              makeImage(
+                                model.dotList,
+                                rectNum[0],
+                                rectNum[1],
+                                containerSize,
+                              ),
+                              model,
+                            ),
                             model.notify(),
                           },
                         ),
                       );
                     },
-                  )
+                  ),
                 ],
               ),
               Consumer<CreateViewModel>(
@@ -221,7 +230,7 @@ class CreateScreen extends StatelessWidget {
                       '/confirm',
                       arguments: {
                         'title': model.title,
-                        'dotList': model.dotList,
+                        'dotList': model.dots,
                         'width': model.widthNum,
                         'dotImage': dotImage,
                         'imageSize': imageSize,
@@ -255,9 +264,10 @@ class CreateScreen extends StatelessWidget {
   }
 }
 
-List<int> createDotList(
-    List<double> interList, int thresh, int num, int widthNum) {
+void createDotList(List<double> interList, int thresh, int num,
+    int widthNum, CreateViewModel model) {
   List<int> result = [];
+  List<int> boardDots = [];
   List<int> tmp;
   int p = 0;
   for (int i = 0; i < (interList.length / widthNum); i++) {
@@ -267,10 +277,12 @@ List<int> createDotList(
         for (int n = 0; n < num; n++) {
           tmp.add(0);
         }
+        boardDots.add(0);
       } else {
         for (int n = 0; n < num; n++) {
           tmp.add(1);
         }
+        boardDots.add(1);
       }
       p++;
     }
@@ -278,7 +290,8 @@ List<int> createDotList(
       result += tmp;
     }
   }
-  return result;
+  model.dotList = result;
+  model.dots = boardDots;
 }
 
 // List<int> createDotList(
@@ -338,49 +351,276 @@ List<List<DropdownMenuItem<int>>> setItems(
       ),
     );
   _thrs
+    // ..add(
+    //   DropdownMenuItem(
+    //     child: Text(
+    //       '100',
+    //       style: TextStyle(fontSize: 20.0),
+    //     ),
+    //     value: 100,
+    //   ),
+    // )
+    // ..add(
+    //   DropdownMenuItem(
+    //     child: Text(
+    //       '125',
+    //       style: TextStyle(fontSize: 20.0),
+    //     ),
+    //     value: 125,
+    //   ),
+    // )
+    // ..add(
+    //   DropdownMenuItem(
+    //     child: Text(
+    //       '150',
+    //       style: TextStyle(fontSize: 20.0),
+    //     ),
+    //     value: 150,
+    //   ),
+    // )
+    // ..add(
+    //   DropdownMenuItem(
+    //     child: Text(
+    //       '175',
+    //       style: TextStyle(fontSize: 20.0),
+    //     ),
+    //     value: 175,
+    //   ),
+    // )
+    // ..add(
+    //   DropdownMenuItem(
+    //     child: Text(
+    //       '200',
+    //       style: TextStyle(fontSize: 20.0),
+    //     ),
+    //     value: 200,
+    //   ),
+    // );
+    // ..add(
+    //   DropdownMenuItem(
+    //     child: Text(
+    //       '20%',
+    //       style: TextStyle(fontSize: 20.0),
+    //     ),
+    //     value: 0,
+    //   ),
+    // )
+    // ..add(
+    //   DropdownMenuItem(
+    //     child: Text(
+    //       '30%',
+    //       style: TextStyle(fontSize: 20.0),
+    //     ),
+    //     value: 1,
+    //   ),
+    // )
+    // ..add(
+    //   DropdownMenuItem(
+    //     child: Text(
+    //       '40%',
+    //       style: TextStyle(fontSize: 20.0),
+    //     ),
+    //     value: 2,
+    //   ),
+    // )
+    // ..add(
+    //   DropdownMenuItem(
+    //     child: Text(
+    //       '50%',
+    //       style: TextStyle(fontSize: 20.0),
+    //     ),
+    //     value: 3,
+    //   ),
+    // )
+    // ..add(
+    //   DropdownMenuItem(
+    //     child: Text(
+    //       '60%',
+    //       style: TextStyle(fontSize: 20.0),
+    //     ),
+    //     value: 4,
+    //   ),
+    // )
+    // ..add(
+    //   DropdownMenuItem(
+    //     child: Text(
+    //       '70%',
+    //       style: TextStyle(fontSize: 20.0),
+    //     ),
+    //     value: 5,
+    //   ),
+    // )
+    // ..add(
+    //   DropdownMenuItem(
+    //     child: Text(
+    //       '80%',
+    //       style: TextStyle(fontSize: 20.0),
+    //     ),
+    //     value: 6,
+    //   ),
+    // );
+
+    // ..add(
+    //   DropdownMenuItem(
+    //     child: Text(
+    //       '30%',
+    //       style: TextStyle(fontSize: 20.0),
+    //     ),
+    //     value: 0,
+    //   ),
+    // )
+    // ..add(
+    //   DropdownMenuItem(
+    //     child: Text(
+    //       '35%',
+    //       style: TextStyle(fontSize: 20.0),
+    //     ),
+    //     value: 1,
+    //   ),
+    // )
+    // ..add(
+    //   DropdownMenuItem(
+    //     child: Text(
+    //       '40%',
+    //       style: TextStyle(fontSize: 20.0),
+    //     ),
+    //     value: 2,
+    //   ),
+    // )
+    // ..add(
+    //   DropdownMenuItem(
+    //     child: Text(
+    //       '45%',
+    //       style: TextStyle(fontSize: 20.0),
+    //     ),
+    //     value: 3,
+    //   ),
+    // )
+    // ..add(
+    //   DropdownMenuItem(
+    //     child: Text(
+    //       '50%',
+    //       style: TextStyle(fontSize: 20.0),
+    //     ),
+    //     value: 4,
+    //   ),
+    // )
+    // ..add(
+    //   DropdownMenuItem(
+    //     child: Text(
+    //       '55%',
+    //       style: TextStyle(fontSize: 20.0),
+    //     ),
+    //     value: 5,
+    //   ),
+    // )
+    // ..add(
+    //   DropdownMenuItem(
+    //     child: Text(
+    //       '60%',
+    //       style: TextStyle(fontSize: 20.0),
+    //     ),
+    //     value: 6,
+    //   ),
+    // )
+    // ..add(
+    //   DropdownMenuItem(
+    //     child: Text(
+    //       '65%',
+    //       style: TextStyle(fontSize: 20.0),
+    //     ),
+    //     value: 7,
+    //   ),
+    // )
+    // ..add(
+    //   DropdownMenuItem(
+    //     child: Text(
+    //       '70%',
+    //       style: TextStyle(fontSize: 20.0),
+    //     ),
+    //     value: 8,
+    //   ),
+    // );
+
     ..add(
       DropdownMenuItem(
         child: Text(
-          '100',
+          '40%',
           style: TextStyle(fontSize: 20.0),
         ),
-        value: 100,
+        value: 0,
       ),
     )
     ..add(
       DropdownMenuItem(
         child: Text(
-          '125',
+          '42.5%',
           style: TextStyle(fontSize: 20.0),
         ),
-        value: 125,
+        value: 1,
       ),
     )
     ..add(
       DropdownMenuItem(
         child: Text(
-          '150',
+          '45%',
           style: TextStyle(fontSize: 20.0),
         ),
-        value: 150,
+        value: 2,
       ),
     )
     ..add(
       DropdownMenuItem(
         child: Text(
-          '175',
+          '47.5%',
           style: TextStyle(fontSize: 20.0),
         ),
-        value: 175,
+        value: 3,
       ),
     )
     ..add(
       DropdownMenuItem(
         child: Text(
-          '200',
+          '50%',
           style: TextStyle(fontSize: 20.0),
         ),
-        value: 200,
+        value: 4,
+      ),
+    )
+    ..add(
+      DropdownMenuItem(
+        child: Text(
+          '52.5%',
+          style: TextStyle(fontSize: 20.0),
+        ),
+        value: 5,
+      ),
+    )
+    ..add(
+      DropdownMenuItem(
+        child: Text(
+          '55%',
+          style: TextStyle(fontSize: 20.0),
+        ),
+        value: 6,
+      ),
+    )
+    ..add(
+      DropdownMenuItem(
+        child: Text(
+          '57.5%',
+          style: TextStyle(fontSize: 20.0),
+        ),
+        value: 7,
+      ),
+    )
+    ..add(
+      DropdownMenuItem(
+        child: Text(
+          '60%',
+          style: TextStyle(fontSize: 20.0),
+        ),
+        value: 8,
       ),
     );
   return [_nums, _thrs];

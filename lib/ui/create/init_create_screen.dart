@@ -19,6 +19,7 @@ void initCreate(BuildContext context, File tookImage) async {
   double rectSize;
   List<double> imageSize = [0, 0];
   List<double> aveList = [0, 0];
+  List<int> dots;
   CreateViewModel createModel = context.read<CreateViewModel>();
 
   final Size size = MediaQuery.of(context).size;
@@ -54,7 +55,7 @@ void initCreate(BuildContext context, File tookImage) async {
   int originHeight =
       (originImage.height * (imageSize[1] / decodedImage.height)).round();
 
-  int magnificant = (containerSize[0] / originWidth).round() * 400;
+  // int magnificant = (containerSize[0] / originWidth).round() * 400;
 
   // if(magnificant > 100){
   //   magnificant = 100;
@@ -78,9 +79,10 @@ void initCreate(BuildContext context, File tookImage) async {
   );
 
   aveList = createAverageList(croppedImage, 1, imageSize, rectSize);
+  List<double> thrList = createThrList(aveList);
 
   createModel.selectNum = 4;
-  createModel.selectThr = 150;
+  createModel.selectThr = 4;
   createModel.title = "タイトル";
   createModel.rectWidth = rectNum[0];
   createModel.interList = createInterList(
@@ -90,8 +92,8 @@ void initCreate(BuildContext context, File tookImage) async {
   );
   createModel.widthNum =
       (imageSize[0] / (rectSize * createModel.selectNum)).round();
-  createModel.dotList =
-      createDotList(createModel.interList, 150, 4, createModel.widthNum);
+  createDotList(createModel.interList, aveList[4].round(), 4,
+      createModel.widthNum, createModel);
 
   createModel.compImage = await makeImage(
     createModel.dotList,
@@ -112,6 +114,7 @@ void initCreate(BuildContext context, File tookImage) async {
       'imageSize': imageSize,
       'rectNum': rectNum,
       'aveList': aveList,
+      'thrList': thrList,
     },
   );
 }
@@ -221,4 +224,27 @@ Future<ui.Image> byte2Image(Uint8List byte, Size size) async {
   ui.FrameInfo frame = await codecImage.getNextFrame();
   ui.Image image = frame.image;
   return image;
+}
+
+List<double> createThrList(List<double> aveList) {
+  double ave = 0;
+  for (int i = 0; i < aveList.length; i++) {
+    ave += aveList[i];
+  }
+  ave /= aveList.length;
+  double aveLow = ave / 20;
+  double aveHigh = (255 - ave) / 20;
+  List<double> thrList = [
+    ave - (aveLow * 4),
+    ave - (aveLow * 3),
+    ave - (aveLow * 2),
+    ave - aveLow,
+    ave,
+    ave + aveHigh,
+    ave + (aveHigh * 2),
+    ave + (aveHigh * 3),
+    ave + (aveHigh * 4),
+  ];
+
+  return thrList;
 }
