@@ -157,14 +157,43 @@ class CreateScreen extends StatelessWidget {
                   ),
                   Consumer<CreateViewModel>(
                     builder: (context, model, _) {
+                      // return SizedBox(
+                      //   width: size.width / 4,
+                      //   height: size.width / 10,
+                      //   child: DropdownButton(
+                      //     items: _thrs,
+                      //     value: model.selectThr,
+                      //     onChanged: (value) => {
+                      //       model.selectThr = value,
+                      //       createDotList(
+                      //         model.interList,
+                      //         thrList[model.selectThr].round(),
+                      //         model.selectNum,
+                      //         model.widthNum,
+                      //         model,
+                      //       ),
+                      //       syncVariable(
+                      //         makeImage(
+                      //           model.dotList,
+                      //           rectNum[0],
+                      //           rectNum[1],
+                      //           containerSize,
+                      //         ),
+                      //         model,
+                      //       ),
+                      //       model.notify(),
+                      //     },
+                      //   ),
+                      // );
                       return SizedBox(
-                        width: size.width / 4,
-                        height: size.width / 10,
-                        child: DropdownButton(
-                          items: _thrs,
-                          value: model.selectThr,
+                        width: size.width / 1.2,
+                        child: Slider.adaptive(
+                          value: model.selectThr.toDouble(),
+                          min: 0,
+                          max: 8,
+                          divisions: 8,
                           onChanged: (value) => {
-                            model.selectThr = value,
+                            model.selectThr = value.round(),
                             createDotList(
                               model.interList,
                               thrList[model.selectThr].round(),
@@ -264,8 +293,8 @@ class CreateScreen extends StatelessWidget {
   }
 }
 
-void createDotList(List<double> interList, int thresh, int num,
-    int widthNum, CreateViewModel model) {
+void createDotList(List<double> interList, int thresh, int num, int widthNum,
+    CreateViewModel model) {
   List<int> result = [];
   List<int> boardDots = [];
   List<int> tmp;

@@ -32,9 +32,14 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: ThemeData(
-        primarySwatch: Colors.blue,
-        // visualDensity: VisualDensity.adaptivePlatformDensity,
-      ),
+          primarySwatch: Colors.blue,
+          sliderTheme: SliderThemeData(
+            // activeTickMarkColor: Colors.white,
+            // inactiveTickMarkColor: Colors.white,
+            // thumbColor: Colors.black,
+          )
+          // visualDensity: VisualDensity.adaptivePlatformDensity,
+          ),
       title: 'logicmaker',
       initialRoute: '/',
       onGenerateRoute: RouteGenerator.generateRoute,
