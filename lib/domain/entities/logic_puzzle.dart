@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'dart:typed_data';
 
 class LogicPuzzle {
@@ -10,18 +9,31 @@ class LogicPuzzle {
   List<int> lastState;
   bool isClear;
   Uint8List imageList;
+  Uint8List stateList;
+  Uint8List compImage;
 
-  LogicPuzzle({this.id, this.name, this.width, this.dots, this.lastState, this.isClear, this.imageList});
+  LogicPuzzle(
+      {this.id,
+      this.name,
+      this.width,
+      this.dots,
+      this.lastState,
+      this.isClear,
+      this.imageList,
+      this.stateList,
+      this.compImage});
 
   Map<String, dynamic> toMap() => {
-    if(id != null) 'id': id,
-    if(name != null) 'name': name,
-    if(width != null) 'width': width,
-    if(dots != null) 'dots': dots.toString(),
-    if(lastState != null) 'last_state': lastState.toString(),
-    if(isClear != null) 'is_clear': isClear ? 1 : 0,
-    if(imageList != null) 'imageList': imageList,
-  };
+        if (id != null) 'id': id,
+        if (name != null) 'name': name,
+        if (width != null) 'width': width,
+        if (dots != null) 'dots': dots.toString(),
+        if (lastState != null) 'last_state': lastState.toString(),
+        if (isClear != null) 'is_clear': isClear ? 1 : 0,
+        if (imageList != null) 'imageList': imageList,
+        if (stateList != null) 'stateList': stateList,
+        if (compImage != null) 'compImage': compImage,
+      };
 
   Map<String, dynamic> toMapExceptId() {
     Map<String, dynamic> cloneMap = {...toMap()};
@@ -29,12 +41,14 @@ class LogicPuzzle {
     return cloneMap;
   }
 
-  LogicPuzzle.fromMap(Map<String, dynamic> paramMap) :
-    this.id = paramMap['id'],
-    this.name = paramMap['name'],
-    this.width = paramMap['width'],
-    this.dots = jsonDecode(paramMap['dots']).cast<int>(),
-    this.lastState = jsonDecode(paramMap['last_state']).cast<int>(),
-    this.isClear = paramMap['is_clear'] == 0 ? false : true,
-    this.imageList = paramMap['imageList'];
+  LogicPuzzle.fromMap(Map<String, dynamic> paramMap)
+      : this.id = paramMap['id'],
+        this.name = paramMap['name'],
+        this.width = paramMap['width'],
+        this.dots = jsonDecode(paramMap['dots']).cast<int>(),
+        this.lastState = jsonDecode(paramMap['last_state']).cast<int>(),
+        this.isClear = paramMap['is_clear'] == 0 ? false : true,
+        this.imageList = paramMap['imageList'],
+        this.stateList = paramMap['stateList'],
+        this.compImage = paramMap['compImage'];
 }
