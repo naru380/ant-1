@@ -9,6 +9,7 @@ import 'package:provider/provider.dart';
 import 'package:admob_flutter/admob_flutter.dart';
 import 'package:ant_1/service/admob.dart';
 import 'dart:io';
+import 'package:ant_1/db_provider.dart';
 
 // class MyApp extends StatelessWidget {
 //   @override
@@ -73,7 +74,8 @@ class TopScreen extends StatelessWidget {
                   key: ObjectKey(model.logicPuzzles[index]),
                   direction: DismissDirection.endToStart,
                   onDismissed: (direction) {
-                    model.logicPuzzleDao.deleteElement(model.logicPuzzles[index].id);
+                    model.logicPuzzleDao
+                        .deleteElement(model.logicPuzzles[index].id);
                     model.logicPuzzles.removeAt(index);
                     model.notify();
                   },
@@ -151,13 +153,13 @@ class TopScreen extends StatelessWidget {
         },
       ),
       bottomNavigationBar: AdmobBanner(
-            adUnitId: AdMobService().getBannerAdUnitId(),
-            adSize: AdmobBannerSize(
-              width: MediaQuery.of(context).size.width.toInt(),
-              height: AdMobService().getHeight(context).toInt(),
-              name: 'SMART_BANNER',
-            ),
-          ),
+        adUnitId: AdMobService().getBannerAdUnitId(),
+        adSize: AdmobBannerSize(
+          width: MediaQuery.of(context).size.width.toInt(),
+          height: AdMobService().getHeight(context).toInt(),
+          name: 'SMART_BANNER',
+        ),
+      ),
     );
   }
 }

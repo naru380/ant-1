@@ -11,6 +11,8 @@ import 'package:ant_1/service/admob.dart';
 import 'package:esys_flutter_share/esys_flutter_share.dart';
 import 'package:ant_1/service/puzzle_painter.dart';
 import 'package:ant_1/service/utils.dart';
+import 'package:ant_1/db_provider.dart';
+import 'package:sqflite/sqlite_api.dart';
 
 class ConfirmScreen extends StatelessWidget {
   @override
@@ -34,6 +36,8 @@ class ConfirmScreen extends StatelessWidget {
     //   lastState: List.generate(dotList.length, (_) => 0),
     //   isClear: false,
     //   imageList: dotImage,
+    //   stateList: dotImage,
+    //   compImage: dotImage,
     // );
     final LogicPuzzle compLogic = LogicPuzzle(
       name: title,
@@ -42,6 +46,8 @@ class ConfirmScreen extends StatelessWidget {
       lastState: [0, 0, 0, 0],
       isClear: false,
       imageList: dotImage,
+      stateList: dotImage,
+      compImage: dotImage,
     );
 
     final Size boardSize = Size(size.width, size.width);
@@ -91,12 +97,19 @@ class ConfirmScreen extends StatelessWidget {
                   borderRadius: const BorderRadius.all(Radius.circular(100))),
               child: GestureDetector(
                 onTap: () async {
-                  final ui.Image boardDao =
-                      await getImageFromPainter(boardPainter, boardSize);
-                  ByteData byte = await boardDao.toByteData();
-                  compLogic.imageList = byte.buffer.asUint8List();
+                  // final ui.Image boardDao =
+                  //     await getImageFromPainter(boardPainter, boardSize);
+                  // ByteData byte = await boardDao.toByteData();
+                  // compLogic.imageList = byte.buffer.asUint8List();
+                  // compLogic.stateList = byte.buffer.asUint8List();
                   LogicPuzzleDao logicPuzzleDao = LogicPuzzleDao();
                   // await logicPuzzleDao.deleteDB();
+                  // print('object');
+                  // DBProvider db = new DBProvider();
+                  // Database database;
+                  // // print('object');
+                  // database = await db.initDB();
+
                   await logicPuzzleDao.create(compLogic);
                   Navigator.of(context)
                       .pushNamedAndRemoveUntil('/', (_) => false);

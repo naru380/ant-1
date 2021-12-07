@@ -51,6 +51,5 @@ class LogicPuzzleDao {
     var databasesPath = await getDatabasesPath();
     String path = join(databasesPath, 'myDatabase.db');
     await deleteDatabase(path);
-    print(_tbName);
   }
 }
