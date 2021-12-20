@@ -1,3 +1,4 @@
+import 'package:ant_1/domain/entities/logic_puzzle.dart';
 import 'package:ant_1/ui/create/init_create_screen.dart';
 import 'package:ant_1/ui/play/play_view_model.dart';
 import 'package:ant_1/ui/top/top_view_model.dart';
@@ -10,6 +11,8 @@ import 'package:admob_flutter/admob_flutter.dart';
 import 'package:ant_1/service/admob.dart';
 import 'dart:io';
 import 'package:ant_1/db_provider.dart';
+import 'dart:ui' as ui;
+
 
 // class MyApp extends StatelessWidget {
 //   @override
@@ -64,10 +67,17 @@ class TopScreen extends StatelessWidget {
             itemCount: model.numLogicPuzzle,
             itemBuilder: (BuildContext context, int index) {
               return GestureDetector(
-                onTap: () {
+                onTap: () async {
                   context.read<PlayViewModel>().logicPuzzle =
                       model.logicPuzzles[index];
                   context.read<PlayViewModel>().init();
+                  ui.Codec codecImage = await ui.instantiateImageCodec(
+                    model.logicPuzzles[index].stateList,
+                    targetWidth: (size.width).floor(),
+                  );
+                  ui.FrameInfo frame = await codecImage.getNextFrame();
+                  ui.Image image = frame.image;
+                  context.read<PlayViewModel>().puzzleImage = image;
                   Navigator.of(context).pushNamed('/play');
                 },
                 child: Dismissible(

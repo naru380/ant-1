@@ -8,6 +8,7 @@ import 'package:ant_1/service/puzzle_painter.dart';
 import 'package:ant_1/ui/play/play_view_model.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 
@@ -137,6 +138,7 @@ class PlayScreen extends StatelessWidget {
     PuzzleInitPainter painter = PuzzleInitPainter(
       context: context,
       state: context.read<PlayViewModel>().logicPuzzle.lastState,
+      puzzleImage: context.read<PlayViewModel>().puzzleImage
     );
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
@@ -162,10 +164,13 @@ class PlayScreen extends StatelessWidget {
           context: context,
           state: model.logicPuzzle.lastState
         );
-        if(context.read<PlayViewModel>().isBuildedOnce && model.tappedSquaeIndex != null) {
+        if (context.read<PlayViewModel>().isBuildedOnce && model.tappedSquaeIndex != null) {
           WidgetsBinding.instance.addPostFrameCallback((_) async {
             context.read<PlayViewModel>().puzzleImage = await getImageFromPainter(painter, size);
             context.read<PlayViewModel>().tappedSquaeIndex = null;
+            ByteData byteData = await context.read<PlayViewModel>().puzzleImage.toByteData(format: ui.ImageByteFormat.png);
+            context.read<PlayViewModel>().logicPuzzle.stateList = byteData.buffer.asUint8List();
+            context.read<PlayViewModel>().save();
           });
         }
 
@@ -288,11 +293,17 @@ class OperationBar extends StatelessWidget {
 class PuzzleInitPainter extends PuzzlePainter {
   final BuildContext context;
   final List<int> state;
-  PuzzleInitPainter({this.context, this.state}) : super(context: context, logicPuzzle: context.read<PlayViewModel>().logicPuzzle);
+  final ui.Image puzzleImage;
+  PuzzleInitPainter({this.context, this.state, this.puzzleImage}) : super(context: context, logicPuzzle: context.read<PlayViewModel>().logicPuzzle);
 
   @override
   void paint(Canvas canvas, Size size) {
-    super.paint(canvas, size);
+    if (puzzleImage == null) {
+      super.paint(canvas, size);
+    } else {
+      final paint = Paint();
+      canvas.drawImage(puzzleImage, Offset(0, 0), paint);
+    }
     context.read<PlayViewModel>().isCorrect = isCorrect;
     context.read<PlayViewModel>().inputSquareLocalPointsList = getInputSquareLocalPointsList();
   }
