@@ -186,7 +186,7 @@ Future<ui.Image> makeImage(List<int> listImage, int rectWidth, int rectHeight,
   final _image = Completer<ui.Image>();
   final pixels = Int32List(rectWidth * rectHeight);
   for (int i = 0; i < pixels.length; i++) {
-    pixels[i] = listImage[i] * 0xFF000000;
+    pixels[i] = 0xFFFFFFFF - (0x00FFFFFF * listImage[i]);
   }
   ui.decodeImageFromPixels(
     pixels.buffer.asUint8List(),

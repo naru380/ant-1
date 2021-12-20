@@ -57,7 +57,7 @@ class ConfirmScreen extends StatelessWidget {
     );
 
     Future _saveImage(Uint8List dotImage) async {
-      await ImageGallerySaver.saveImage(dotImage);
+      await ImageGallerySaver.saveImage(dotImage, quality: 100);
     }
 
     return Scaffold(
@@ -109,7 +109,6 @@ class ConfirmScreen extends StatelessWidget {
                   // Database database;
                   // // print('object');
                   // database = await db.initDB();
-
                   await logicPuzzleDao.create(compLogic);
                   Navigator.of(context)
                       .pushNamedAndRemoveUntil('/', (_) => false);
@@ -140,6 +139,7 @@ class ConfirmScreen extends StatelessWidget {
                     title + '.png',
                     dotImage,
                     'image/png',
+                    text: 'ドット絵を作成しました！！'
                   );
                 },
                 child: Center(
