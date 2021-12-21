@@ -113,12 +113,19 @@ class TopScreen extends StatelessWidget {
                                 itemCount: model.numLogicPuzzle,
                                 itemBuilder: (BuildContext context, int index) {
                                   return GestureDetector(
-                                    onTap: () {
+                                    onTap: () async {
                                       context
                                               .read<PlayViewModel>()
                                               .logicPuzzle =
                                           model.logicPuzzles[index];
                                       context.read<PlayViewModel>().init();
+                                        ui.Codec codecImage = await ui.instantiateImageCodec(
+                                        model.logicPuzzles[index].stateList,
+                                        targetWidth: (size.width).floor(),
+                                      );
+                                      ui.FrameInfo frame = await codecImage.getNextFrame();
+                                      ui.Image image = frame.image;
+                                      context.read<PlayViewModel>().puzzleImage = image;
                                       Navigator.of(context).pushNamed('/play');
                                     },
                                     child: Dismissible(
