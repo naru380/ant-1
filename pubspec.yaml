@@ -41,6 +41,7 @@ dependencies:
   flutter_image_compress: ^1.1.0
   font_awesome_flutter: ^9.2.0
   admob_flutter: ^1.0.1
+  flutter_screenutil: ^5.0.1+2
 
 dev_dependencies:
   flutter_test:
