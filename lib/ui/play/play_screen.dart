@@ -329,22 +329,29 @@ class OperationBar extends StatelessWidget {
                     ),
                     onPressed: () {
                       if (model.isCorrect()) {
-                        showDialog<int>(
-                            context: context,
-                            barrierDismissible: false,
-                            builder: (BuildContext context) {
-                              return AlertDialog(
-                                title: Text('COMPLETE'),
-                                content: Text('TOPページに戻ります。'),
-                                actions: <Widget>[
-                                  TextButton(
-                                    child: Text('OK'),
-                                    onPressed: () =>
-                                        Navigator.of(context).pushNamed('/'),
-                                  ),
-                                ],
-                              );
-                            });
+                        Navigator.of(context).pushNamed(
+                          '/clear',
+                            arguments: {
+                              'title': model.logicPuzzle.name,
+                              'image': model.logicPuzzle.compImage,
+                            },
+                          );
+                        // showDialog<int>(
+                        //     context: context,
+                        //     barrierDismissible: false,
+                        //     builder: (BuildContext context) {
+                        //       return AlertDialog(
+                        //         title: Text('COMPLETE'),
+                        //         content: Text('TOPページに戻ります。'),
+                        //         actions: <Widget>[
+                        //           TextButton(
+                        //             child: Text('OK'),
+                        //             onPressed: () =>
+                        //                 Navigator.of(context).pushNamed('/'),
+                        //           ),
+                        //         ],
+                        //       );
+                        //     });
                       } else {
                         showDialog<int>(
                           context: context,
