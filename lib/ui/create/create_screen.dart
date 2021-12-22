@@ -8,6 +8,7 @@ import 'package:ant_1/ui/create/create_view_model.dart';
 import 'package:admob_flutter/admob_flutter.dart';
 import 'package:ant_1/service/admob.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class CreateScreen extends StatelessWidget {
   Widget build(BuildContext context) {
@@ -26,8 +27,8 @@ class CreateScreen extends StatelessWidget {
     List<DropdownMenuItem<int>> _nums = itemList[0];
     List<DropdownMenuItem<int>> _thrs = itemList[1];
     final List<int> containerSize = [
-      (size.width / 3).floor(),
-      (size.width / 3 * (imageSize[1] / imageSize[0])).floor()
+      130.w.floor(),
+      (130.w * (imageSize[1] / imageSize[0])).floor()
     ];
     // List<int> jpgImage = imgLib.encodeJpg(croppedImage);
     // List<int> pngImage = imgLib.encodePng(croppedImage);
@@ -36,39 +37,44 @@ class CreateScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Create',
-          style: TextStyle(fontSize: 20),
+          'CREATE',
         ),
+        automaticallyImplyLeading: false,
       ),
       body: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        // mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          Row(
-            children: [
-              Column(
-                children: [
-                  SizedBox(
-                    width: containerSize[0].toDouble(),
-                    height: containerSize[1].toDouble(),
-                    child: CustomPaint(painter: OriginalPainter(croppedImage)),
-                    // child: Image.memory(croppedImage),
-                    // child: Image.memory(jpgImage),
-                  ),
-                  Text(
-                    '元画像',
-                    style: TextStyle(
-                      fontSize: 20,
+          SizedBox(
+            width: 500.w,
+            height: 260.w,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Padding(
+                  padding: EdgeInsets.fromLTRB(10.w, 30.h, 0, 0),
+                  child: Align(
+                    alignment: Alignment.center,
+                    child: SizedBox(
+                      width: containerSize[0].toDouble(),
+                      height: containerSize[1].toDouble(),
+                      child:
+                          CustomPaint(painter: OriginalPainter(croppedImage)),
+                      // child: Image.memory(croppedImage),
+                      // child: Image.memory(jpgImage),
                     ),
                   ),
-                ],
-              ),
-              Icon(
-                Icons.arrow_forward_ios,
-                size: size.width / 10,
-              ),
-              Column(
-                children: [
-                  FittedBox(
+                ),
+                Padding(
+                  padding: EdgeInsets.fromLTRB(0, 30.h, 0, 0),
+                  child: Icon(
+                    Icons.arrow_forward_outlined,
+                    size: 50.w,
+                    color: Color(0xFF5C4444),
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.fromLTRB(15.w, 30.h, 10.w, 0),
+                  child: FittedBox(
                     fit: BoxFit.contain,
                     child: Consumer<CreateViewModel>(
                       builder: (context, model, _) {
@@ -81,203 +87,302 @@ class CreateScreen extends StatelessWidget {
                       },
                     ),
                   ),
-                  Text(
-                    'ドット絵',
-                    style: TextStyle(
-                      fontSize: 20,
-                    ),
-                  ),
-                ],
-              ),
-            ],
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                ),
+              ],
+            ),
           ),
           Column(
             children: [
-              Row(
-                children: [
-                  Text(
-                    ' ドット幅: ',
-                    style: TextStyle(
-                      fontSize: 15,
-                    ),
-                  ),
-                  Consumer<CreateViewModel>(
-                    builder: (context, model, _) {
-                      return SizedBox(
-                        width: size.width / 3,
-                        height: size.width / 10,
-                        child: DropdownButton(
-                          items: _nums,
-                          value: model.selectNum,
-                          onChanged: (value) => {
-                            model.selectNum = value,
-                            model.rectWidth =
-                                (imageSize[0] / (rectSize * model.selectNum))
-                                    .round(),
-                            model.interList = createInterList(
-                              aveList,
-                              rectNum,
-                              model.selectNum,
-                            ),
-                            model.widthNum =
-                                (imageSize[0] / (rectSize * model.selectNum))
-                                    .round(),
-                            createDotList(
-                              model.interList,
-                              thrList[model.selectThr].round(),
-                              model.selectNum,
-                              model.widthNum,
-                              model,
-                            ),
-                            syncVariable(
-                              makeImage(
-                                model.dotList,
-                                rectNum[0],
-                                rectNum[1],
-                                containerSize,
-                              ),
-                              model,
-                            ),
-                            model.notify(),
-                          },
+              Padding(
+                padding: EdgeInsets.fromLTRB(30.w, 10.h, 0, 0),
+                child: Column(
+                  children: [
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        'ドット幅',
+                        style: TextStyle(
+                          fontSize: 15.sp,
+                          fontWeight: FontWeight.w800,
+                          color: Color(0xFF5C4444),
                         ),
-                      );
-                    },
-                  )
-                ],
-              ),
-              Row(
-                children: [
-                  Text(
-                    ' 閾値: ',
-                    style: TextStyle(
-                      fontSize: 15,
-                    ),
-                  ),
-                  Consumer<CreateViewModel>(
-                    builder: (context, model, _) {
-                      // return SizedBox(
-                      //   width: size.width / 4,
-                      //   height: size.width / 10,
-                      //   child: DropdownButton(
-                      //     items: _thrs,
-                      //     value: model.selectThr,
-                      //     onChanged: (value) => {
-                      //       model.selectThr = value,
-                      //       createDotList(
-                      //         model.interList,
-                      //         thrList[model.selectThr].round(),
-                      //         model.selectNum,
-                      //         model.widthNum,
-                      //         model,
-                      //       ),
-                      //       syncVariable(
-                      //         makeImage(
-                      //           model.dotList,
-                      //           rectNum[0],
-                      //           rectNum[1],
-                      //           containerSize,
-                      //         ),
-                      //         model,
-                      //       ),
-                      //       model.notify(),
-                      //     },
-                      //   ),
-                      // );
-                      return SizedBox(
-                        width: size.width / 1.2,
-                        child: Slider.adaptive(
-                          value: model.selectThr.toDouble(),
-                          min: 0,
-                          max: 8,
-                          divisions: 8,
-                          onChanged: (value) => {
-                            model.selectThr = value.round(),
-                            createDotList(
-                              model.interList,
-                              thrList[model.selectThr].round(),
-                              model.selectNum,
-                              model.widthNum,
-                              model,
-                            ),
-                            syncVariable(
-                              makeImage(
-                                model.dotList,
-                                rectNum[0],
-                                rectNum[1],
-                                containerSize,
-                              ),
-                              model,
-                            ),
-                            model.notify(),
-                          },
-                        ),
-                      );
-                    },
-                  ),
-                ],
-              ),
-              Consumer<CreateViewModel>(
-                builder: (context, model, _) {
-                  return TextField(
-                    maxLength: 20,
-                    maxLines: 1,
-                    decoration: InputDecoration(
-                      contentPadding: EdgeInsets.only(
-                        left: 20.0,
                       ),
-                      border: OutlineInputBorder(),
-                      hintText: 'タイトル',
                     ),
-                    style: TextStyle(
-                      fontSize: 25,
+                    Consumer<CreateViewModel>(
+                      builder: (context, model, _) {
+                        return Align(
+                          alignment: Alignment.centerLeft,
+                          child: SizedBox(
+                            width: 100.w,
+                            height: 35.h,
+                            child: DropdownButton(
+                              items: _nums,
+                              value: model.selectNum,
+                              style: TextStyle(
+                                fontSize: 20.sp,
+                                fontWeight: FontWeight.w700,
+                                color: Color(0xFF5C4444),
+                              ),
+                              dropdownColor: Color(0xFFFFFBE5),
+                              onChanged: (value) => {
+                                model.selectNum = value,
+                                model.rectWidth = (imageSize[0] /
+                                        (rectSize * model.selectNum))
+                                    .round(),
+                                model.interList = createInterList(
+                                  aveList,
+                                  rectNum,
+                                  model.selectNum,
+                                ),
+                                model.widthNum = (imageSize[0] /
+                                        (rectSize * model.selectNum))
+                                    .round(),
+                                createDotList(
+                                  model.interList,
+                                  thrList[model.selectThr].round(),
+                                  model.selectNum,
+                                  model.widthNum,
+                                  model,
+                                ),
+                                syncVariable(
+                                  makeImage(
+                                    model.dotList,
+                                    rectNum[0],
+                                    rectNum[1],
+                                    containerSize,
+                                  ),
+                                  model,
+                                ),
+                                model.notify(),
+                              },
+                            ),
+                          ),
+                        );
+                      },
+                    )
+                  ],
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.fromLTRB(30.w, 10.h, 0, 10.h),
+                child: Column(
+                  children: [
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        '閾値',
+                        style: TextStyle(
+                          fontSize: 15.sp,
+                          fontWeight: FontWeight.w800,
+                          color: Color(0xFF5C4444),
+                        ),
+                      ),
                     ),
-                    onChanged: (value) => {
-                      model.title = value,
+                    Consumer<CreateViewModel>(
+                      builder: (context, model, _) {
+                        return Align(
+                          alignment: Alignment.centerLeft,
+                          child: SizedBox(
+                            width: 100.w,
+                            height: 35.h,
+                            child: DropdownButton(
+                              items: _thrs,
+                              value: model.selectThr,
+                              dropdownColor: Color(0xFFFFFBE5),
+                              style: TextStyle(
+                                fontSize: 20.sp,
+                                fontWeight: FontWeight.w700,
+                                color: Color(0xFF5C4444),
+                              ),
+                              onChanged: (value) => {
+                                model.selectThr = value,
+                                createDotList(
+                                  model.interList,
+                                  thrList[model.selectThr].round(),
+                                  model.selectNum,
+                                  model.widthNum,
+                                  model,
+                                ),
+                                syncVariable(
+                                  makeImage(
+                                    model.dotList,
+                                    rectNum[0],
+                                    rectNum[1],
+                                    containerSize,
+                                  ),
+                                  model,
+                                ),
+                                model.notify(),
+                              },
+                            ),
+                          ),
+                        );
+                        // return SizedBox(
+                        //   width: size.width / 1.2,
+                        //   child: Slider.adaptive(
+                        //     value: model.selectThr.toDouble(),
+                        //     min: 0,
+                        //     max: 8,
+                        //     divisions: 8,
+                        //     onChanged: (value) => {
+                        //       model.selectThr = value.round(),
+                        //       createDotList(
+                        //         model.interList,
+                        //         thrList[model.selectThr].round(),
+                        //         model.selectNum,
+                        //         model.widthNum,
+                        //         model,
+                        //       ),
+                        //       syncVariable(
+                        //         makeImage(
+                        //           model.dotList,
+                        //           rectNum[0],
+                        //           rectNum[1],
+                        //           containerSize,
+                        //         ),
+                        //         model,
+                        //       ),
+                        //       model.notify(),
+                        //     },
+                        //   ),
+                        // );
+                      },
+                    ),
+                  ],
+                ),
+              ),
+              Column(
+                children: [
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Padding(
+                      padding: EdgeInsets.fromLTRB(15.w, 10.h, 0, 2.h),
+                      child: Text(
+                        'タイトル',
+                        style: TextStyle(
+                          fontSize: 20.sp,
+                          fontWeight: FontWeight.w800,
+                          color: Color(0xFF5C4444),
+                        ),
+                      ),
+                    ),
+                  ),
+                  Consumer<CreateViewModel>(
+                    builder: (context, model, _) {
+                      return Padding(
+                        padding: EdgeInsets.fromLTRB(0, 0, 0, 10.w),
+                        child: SizedBox(
+                          width: 335.w,
+                          child: TextField(
+                            maxLength: 20,
+                            maxLines: 1,
+                            cursorColor: Color(0xFF5C4444),
+                            decoration: InputDecoration(
+                              contentPadding: EdgeInsets.only(
+                                left: 20.w,
+                              ),
+                              border: OutlineInputBorder(),
+                            ),
+                            style: TextStyle(
+                              fontSize: 25.sp,
+                              fontWeight: FontWeight.w800,
+                              color: Color(0xFF5C4444),
+                            ),
+                            onChanged: (value) => {
+                              model.title = value,
+                            },
+                          ),
+                        ),
+                      );
                     },
-                  );
-                },
+                  ),
+                ],
               )
             ],
           ),
-          Consumer<CreateViewModel>(
-            builder: (context, model, _) {
-              return Container(
-                height: size.width / 8,
-                width: size.width / 3,
-                decoration: BoxDecoration(
-                  color: Colors.blue,
-                  borderRadius: const BorderRadius.all(Radius.circular(100)),
-                ),
-                child: GestureDetector(
-                  onTap: () async {
-                    ByteData byteData = await model.compImage
-                        .toByteData(format: ui.ImageByteFormat.png);
-                    var dotImage = byteData.buffer.asUint8List();
-                    Navigator.of(context).pushNamed(
-                      '/confirm',
-                      arguments: {
-                        'title': model.title,
-                        'dotList': model.dots,
-                        'width': model.widthNum,
-                        'dotImage': dotImage,
-                        'imageSize': imageSize,
-                      },
-                    );
-                  },
-                  child: Center(
-                    child: Text(
-                      'NEXT',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 20,
+          Padding(
+            padding: EdgeInsets.fromLTRB(30.w, 20.h, 40.w, 0),
+            child: Row(
+              children: [
+                SizedBox(
+                  width: 60.w,
+                  height: 40.h,
+                  child: GestureDetector(
+                    child: DecoratedBox(
+                      child: Icon(
+                        Icons.arrow_back_outlined,
+                        size: 45.w,
+                        color: Color(0xFF5C4444),
+                      ),
+                      decoration: BoxDecoration(
+                        color: Color(0xFF3D99E5),
+                        borderRadius:
+                            const BorderRadius.all(Radius.circular(15)),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black26,
+                            // spreadRadius: 1,
+                            blurRadius: 1,
+                            offset: Offset(3, 3),
+                          )
+                        ],
                       ),
                     ),
                   ),
                 ),
-              );
-            },
+                Consumer<CreateViewModel>(
+                  builder: (context, model, _) {
+                    return Padding(
+                      padding: EdgeInsets.fromLTRB(30.w, 0, 0, 0),
+                      child: Container(
+                        height: 40.h,
+                        width: 110.w,
+                        decoration: BoxDecoration(
+                          color: Color(0xFFFFD65A),
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(15)),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black26,
+                              // spreadRadius: 1,
+                              blurRadius: 1,
+                              offset: Offset(3, 3),
+                            )
+                          ],
+                        ),
+                        child: GestureDetector(
+                          onTap: () async {
+                            ByteData byteData = await model.compImage
+                                .toByteData(format: ui.ImageByteFormat.png);
+                            var dotImage = byteData.buffer.asUint8List();
+                            Navigator.of(context).pushNamed(
+                              '/confirm',
+                              arguments: {
+                                'title': model.title,
+                                'dotList': model.dots,
+                                'width': model.widthNum,
+                                'dotImage': dotImage,
+                                'imageSize': imageSize,
+                              },
+                            );
+                          },
+                          child: Center(
+                            child: Text(
+                              'NEXT',
+                              style: TextStyle(
+                                color: Color(0xFF5C4444),
+                                fontWeight: FontWeight.w800,
+                                fontSize: 30.sp,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ],
+            ),
           )
         ],
       ),

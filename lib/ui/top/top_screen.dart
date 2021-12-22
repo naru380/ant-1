@@ -57,19 +57,12 @@ class TopScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text(
           'MENU',
-          style: TextStyle(
-            fontSize: 30.sp,
-            fontWeight: FontWeight.w900,
-            color: textColor,
-          ),
         ),
-        centerTitle: false,
-        backgroundColor: appbarColor,
       ),
       body: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.all(5),
+            padding: EdgeInsets.all(5.h),
             child: DecoratedBox(
               decoration: BoxDecoration(
                 color: playColor,
