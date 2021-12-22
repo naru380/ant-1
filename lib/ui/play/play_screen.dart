@@ -10,9 +10,17 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 
 class PlayScreen extends StatelessWidget {
+  static const Color appBarColor = Color(0xFF3DEFE2);
+  static const Color backgroundColor = Color(0xFFFFFBE5);
+  Color textColor = Color(0xFF5C4444);
+  Color playColor = Color(0xFFFF595F);
+  Color playInnerColor = Color(0xFFFF9C94);
+  Color backColor = Color(0xFFFFFBE5);
+
   @override
   Widget build(BuildContext context) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -26,9 +34,19 @@ class PlayScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('${logicPuzzle.name}'),
+        title: Text(
+          '${logicPuzzle.name}',
+          style: TextStyle(
+            fontSize: 30.sp,
+            fontWeight: FontWeight.w900,
+            color: textColor,
+          ),
+        ),
+        centerTitle: false,
+        backgroundColor: appBarColor,
         automaticallyImplyLeading: false,
       ),
+      backgroundColor: backgroundColor,
       body: Consumer<PlayViewModel>(
         builder: (context, model, child) {
           return GestureDetector(
@@ -189,102 +207,193 @@ class OperationBar extends StatelessWidget {
   final BuildContext context;
   OperationBar({this.context});
 
+  static const Color backButtonColor = Color(0xFF3D99E5);
+  static const Color changeOprMethodButtonColor = Color(0xFFFF595F);
+  static const Color inactiveChangeOprMethodButtonStrokeColor = Color(0xFFFF9C94);
+  static const Color checkButtonColor = Color(0xFFFFD65A);
+  static const Color buttonFontColor = Color(0xFF5C4444);
+  static const Color backgroundColor = Color(0xFFFFFBE5);
+  final double operationBarHight = 60.h;
+  final double buttonWidth = 80.w;
+  final double buttonHeight = 40.h;
+  final double buttonMargin = 5.w;
+  double get buttonRadius => 10.r;
+  final double buttonFontSize = 35.sp;
+  ButtonStyle get activeButtonStyle => ElevatedButton.styleFrom(
+    primary: changeOprMethodButtonColor,
+    shadowColor: backgroundColor,
+    onPrimary: changeOprMethodButtonColor,
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(buttonRadius),
+    ),
+  );
+  ButtonStyle get inactiveButtonStyle => ElevatedButton.styleFrom(
+    primary: backgroundColor,
+    shadowColor: backgroundColor,
+    onPrimary: backgroundColor,
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(buttonRadius),
+    ),
+    side: BorderSide(
+      color: inactiveChangeOprMethodButtonStrokeColor,
+      width: 3.w,
+    ),
+  );
+
   @override
   Widget build(BuildContext context) {
+
     return Consumer<PlayViewModel>(builder: (context, model, _) {
-      return Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: <Widget>[
-          Container(
-            margin: EdgeInsets.all(10),
-            width: 100,
-            height: 40,
-            child: ElevatedButton(
-              onPressed: () => Navigator.of(context).pushNamedAndRemoveUntil('/', (_) => false),
-              child: Icon(
-                IconData(0xf82c, fontFamily: 'MaterialIcons'),
-                color: Colors.white
-              ),
-            ),
-          ),
-          Container(
-            margin: EdgeInsets.all(10),
-            width: 100,
-            height: 40,
-            child: ElevatedButton(
-              onPressed: () {
-                model.changeOperationMethod();
-                model.notify();
-              },
-              child: (() {
-                switch (model.operationMethodIndex) {
-                  case 0:
-                    return Icon(
-                      IconData(59563, fontFamily: 'MaterialIcons'),
-                      color: Colors.white
-                    );
-                  case 1:
-                    return Icon(
-                      IconData(57704, fontFamily: 'MaterialIcons'),
-                      color: Colors.white
-                    );
-                }
-              })(),
-            ),
-          ),
-          Container(
-            margin: EdgeInsets.all(10),
-            width: 100,
-            height: 40,
-            child: ElevatedButton(
-              onPressed: () {
-                if (model.isCorrect()) {
-                  showDialog<int>(
-                      context: context,
-                      barrierDismissible: false,
-                      builder: (BuildContext context) {
-                        return AlertDialog(
-                          title: Text('COMPLETE'),
-                          content: Text('TOPページに戻ります。'),
-                          actions: <Widget>[
-                            TextButton(
-                              child: Text('OK'),
-                              onPressed: () =>
-                                  Navigator.of(context).pushNamed('/'),
-                            ),
-                          ],
-                        );
-                      });
-                } else {
-                  showDialog<int>(
-                    context: context,
-                    barrierDismissible: false,
-                    builder: (BuildContext context) {
-                      return AlertDialog(
-                        title: Text('INCOMPLETE'),
-                        content: Text('解答を再度確認してください。'),
-                        actions: <Widget>[
-                          TextButton(
-                            child: Text('OK'),
-                            onPressed: () =>
-                                Navigator.of(context).pop(0),
-                          ),
-                        ],
-                      );
-                    }
-                  );
-                }
-              },
-              child: Icon(
-                IconData(
-                  57846,
-                  fontFamily: 'MaterialIcons'
+      return Container(
+        height: operationBarHight,
+        child: Stack(
+          alignment: AlignmentDirectional.center,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Container(
+                  margin: EdgeInsets.all(buttonMargin),
+                  width: buttonWidth,
+                  height: buttonHeight,
+                  child: ElevatedButton(
+                    onPressed: () => Navigator.of(context).pushNamedAndRemoveUntil('/', (_) => false),
+                    style: ElevatedButton.styleFrom(
+                      primary: backButtonColor,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(buttonRadius),
+                      ),
+                    ),
+                    child: Icon(
+                      IconData(0xee85, fontFamily: 'MaterialIcons', matchTextDirection: true),
+                      color: buttonFontColor,
+                      size: buttonFontSize,
+                    ),
+                  ),
                 ),
-                color: Colors.white
-              ),
+                Container(
+                  margin: EdgeInsets.all(buttonMargin),
+                  width: buttonWidth,
+                  height: buttonHeight,
+                  child: ElevatedButton(
+                    style: (() {
+                      if (model.operationMethodIndex == 1) {
+                        return activeButtonStyle;
+                      } else {
+                        return inactiveButtonStyle;
+                      }
+                    })(),
+                    onPressed: () {
+                    },
+                    child: Icon(
+                      IconData(0xefd2, fontFamily: 'MaterialIcons'),
+                      color: buttonFontColor,
+                      size: buttonFontSize,
+                    ),
+                  ),
+                ),
+                Container(
+                  margin: EdgeInsets.all(buttonMargin),
+                  width: buttonWidth,
+                  height: buttonHeight,
+                  child: ElevatedButton(
+                    style: (() {
+                      if (model.operationMethodIndex == 0) {
+                        return activeButtonStyle;
+                      } else {
+                        return inactiveButtonStyle;
+                      }
+                    })(),
+                    onPressed: () {
+                    },
+                    child: Container(
+                      width: buttonFontSize*0.7,
+                      height: buttonFontSize*0.7,
+                      decoration: BoxDecoration(
+                        color: buttonFontColor,
+                      ),
+                      child: Text(''),
+                    ),
+                  ),
+                ),
+                Container(
+                  margin: EdgeInsets.all(buttonMargin),
+                  width: buttonWidth,
+                  height: buttonHeight,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      primary: checkButtonColor,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(buttonRadius),
+                      ),
+                    ),
+                    onPressed: () {
+                      if (model.isCorrect()) {
+                        showDialog<int>(
+                            context: context,
+                            barrierDismissible: false,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: Text('COMPLETE'),
+                                content: Text('TOPページに戻ります。'),
+                                actions: <Widget>[
+                                  TextButton(
+                                    child: Text('OK'),
+                                    onPressed: () =>
+                                        Navigator.of(context).pushNamed('/'),
+                                  ),
+                                ],
+                              );
+                            });
+                      } else {
+                        showDialog<int>(
+                          context: context,
+                          barrierDismissible: false,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: Text('INCOMPLETE'),
+                              content: Text('解答を再度確認してください。'),
+                              actions: <Widget>[
+                                TextButton(
+                                  child: Text('OK'),
+                                  onPressed: () =>
+                                      Navigator.of(context).pop(0),
+                                ),
+                              ],
+                            );
+                          }
+                        );
+                      }
+                    },
+                    child: Icon(
+                      IconData(0xefe7, fontFamily: 'MaterialIcons'),
+                      color: buttonFontColor,
+                      size: buttonFontSize,
+                    ),
+                  ),
+                ),
+              ],
             ),
-          ),
-        ],
+            Positioned(
+              child: TextButton(
+                onPressed: () {
+                  model.changeOperationMethod();
+                  model.notify();
+                },
+                child: Icon(
+                  IconData(0xeeb1, fontFamily: 'MaterialIcons'),
+                  color: buttonFontColor,
+                  size: buttonFontSize,
+                ),
+                style: ElevatedButton.styleFrom(
+                  shape: CircleBorder(),
+                  padding: EdgeInsets.all(buttonMargin*2),
+                  primary: changeOprMethodButtonColor,
+                ),
+              ),
+            )
+          ],
+        ),
       );
     });
   }
