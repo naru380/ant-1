@@ -16,7 +16,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 class PlayScreen extends StatelessWidget {
   static const Color appBarColor = Color(0xFF3DEFE2);
   static const Color backgroundColor = Color(0xFFFFFBE5);
-  //static const Color buttonColor = Color(0xFFD65A);
   Color textColor = Color(0xFF5C4444);
   Color playColor = Color(0xFFFF595F);
   Color playInnerColor = Color(0xFFFF9C94);
@@ -285,8 +284,6 @@ class OperationBar extends StatelessWidget {
                       }
                     })(),
                     onPressed: () {
-                      // model.changeOperationMethod();
-                      // model.notify();
                     },
                     child: Icon(
                       IconData(0xefd2, fontFamily: 'MaterialIcons'),
@@ -308,8 +305,6 @@ class OperationBar extends StatelessWidget {
                       }
                     })(),
                     onPressed: () {
-                      // model.changeOperationMethod();
-                      // model.notify();
                     },
                     child: Container(
                       width: buttonFontSize*0.7,
@@ -393,182 +388,12 @@ class OperationBar extends StatelessWidget {
                 style: ElevatedButton.styleFrom(
                   shape: CircleBorder(),
                   padding: EdgeInsets.all(buttonMargin*2),
-                  primary: changeOprMethodButtonColor, // <-- Button color
+                  primary: changeOprMethodButtonColor,
                 ),
               ),
             )
-            // Positioned(
-            //     width: buttonWidth,
-            //     height: buttonHeight,
-            //     child: Container(
-            //       color: backButtonColor,
-            //     ),
-            //   ),
-            // GestureDetector(
-            //   // child: Positioned(
-            //   //   width: buttonWidth,
-            //   //   height: buttonHeight,
-            //   //   child: Container(
-            //   //     color: backButtonColor,
-            //   //   ),
-            //   // ),
-            // )
           ],
         ),
-      );
-
-      return Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: <Widget>[
-          Container(
-            margin: EdgeInsets.all(buttonMargin),
-            width: buttonWidth,
-            height: buttonHeight,
-            child: ElevatedButton(
-              onPressed: () => Navigator.of(context).pushNamedAndRemoveUntil('/', (_) => false),
-              style: ElevatedButton.styleFrom(
-                primary: backButtonColor
-              ),
-              child: Icon(
-                IconData(0xee85, fontFamily: 'MaterialIcons', matchTextDirection: true),
-                color: buttonFontColor,
-                size: buttonFontSize,
-              ),
-            ),
-          ),
-          Stack(),
-
-          // Stack(
-          //   children: [
-          //     Positioned(
-          //       left: 0,
-          //       child: Container(
-          //         margin: EdgeInsets.all(buttonMargin),
-          //         width: buttonWidth,
-          //         height: buttonHeight,
-          //         child: ElevatedButton(
-          //           style: ElevatedButton.styleFrom(
-          //             primary: changeOprMethodButtonColor
-          //           ),
-          //           onPressed: () {
-          //             // model.changeOperationMethod();
-          //             // model.notify();
-          //           },
-          //           child: (() {
-          //             switch (model.operationMethodIndex) {
-          //               case 0:
-          //                 return Icon(
-          //                   IconData(59563, fontFamily: 'MaterialIcons'),
-          //                   color: buttonFontColor,
-          //                   size: buttonFontSize,
-          //                 );
-          //               case 1:
-          //                 return Icon(
-          //                   IconData(0xefd2, fontFamily: 'MaterialIcons'),
-          //                   color: buttonFontColor,
-          //                   size: buttonFontSize,
-          //                 );
-          //             }
-          //           })(),
-          //         ),
-          //       ),
-          //     ),
-
-          //     // Container(
-          //     //   width: 30,
-          //     //   height: 30,
-          //     //   decoration: BoxDecoration(
-          //     //     color: Colors.blue,
-          //     //     shape: BoxShape.circle,
-          //     //   ),
-          //     // )
-          //   ],
-          // ),
-          /*
-          Container(
-            margin: EdgeInsets.all(buttonMargin),
-            width: buttonWidth,
-            height: buttonHeight,
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                primary: changeOprMethodButtonColor
-              ),
-              onPressed: () {
-                model.changeOperationMethod();
-                model.notify();
-              },
-              child: (() {
-                switch (model.operationMethodIndex) {
-                  case 0:
-                    return Icon(
-                      IconData(59563, fontFamily: 'MaterialIcons'),
-                      color: buttonFontColor,
-                      size: buttonFontSize,
-                    );
-                  case 1:
-                    return Icon(
-                      IconData(0xefd2, fontFamily: 'MaterialIcons'),
-                      color: buttonFontColor,
-                      size: buttonFontSize,
-                    );
-                }
-              })(),
-            ),
-          ),*/
-          // Container(
-          //   margin: EdgeInsets.all(buttonMargin),
-          //   width: buttonWidth,
-          //   height: buttonHeight,
-          //   child: ElevatedButton(
-          //     style: ElevatedButton.styleFrom(
-          //       primary: checkButtonColor,
-          //     ),
-          //     onPressed: () {
-          //       if (model.isCorrect()) {
-          //         showDialog<int>(
-          //             context: context,
-          //             barrierDismissible: false,
-          //             builder: (BuildContext context) {
-          //               return AlertDialog(
-          //                 title: Text('COMPLETE'),
-          //                 content: Text('TOPページに戻ります。'),
-          //                 actions: <Widget>[
-          //                   TextButton(
-          //                     child: Text('OK'),
-          //                     onPressed: () =>
-          //                         Navigator.of(context).pushNamed('/'),
-          //                   ),
-          //                 ],
-          //               );
-          //             });
-          //       } else {
-          //         showDialog<int>(
-          //           context: context,
-          //           barrierDismissible: false,
-          //           builder: (BuildContext context) {
-          //             return AlertDialog(
-          //               title: Text('INCOMPLETE'),
-          //               content: Text('解答を再度確認してください。'),
-          //               actions: <Widget>[
-          //                 TextButton(
-          //                   child: Text('OK'),
-          //                   onPressed: () =>
-          //                       Navigator.of(context).pop(0),
-          //                 ),
-          //               ],
-          //             );
-          //           }
-          //         );
-          //       }
-          //     },
-          //     child: Icon(
-          //       IconData(0xefe7, fontFamily: 'MaterialIcons'),
-          //       color: buttonFontColor,
-          //       size: buttonFontSize,
-          //     ),
-          //   ),
-          // ),
-        ],
       );
     });
   }
