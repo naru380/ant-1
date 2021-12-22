@@ -328,12 +328,15 @@ class CreateScreen extends StatelessWidget {
                         ],
                       ),
                     ),
+                    onTap: () {
+                      Navigator.pop(context);
+                    },
                   ),
                 ),
                 Consumer<CreateViewModel>(
                   builder: (context, model, _) {
                     return Padding(
-                      padding: EdgeInsets.fromLTRB(30.w, 0, 0, 0),
+                      padding: EdgeInsets.fromLTRB(40.w, 0, 0, 0),
                       child: Container(
                         height: 40.h,
                         width: 110.w,

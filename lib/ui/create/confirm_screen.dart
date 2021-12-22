@@ -13,6 +13,7 @@ import 'package:ant_1/service/puzzle_painter.dart';
 import 'package:ant_1/service/utils.dart';
 import 'package:ant_1/db_provider.dart';
 import 'package:sqflite/sqlite_api.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class ConfirmScreen extends StatelessWidget {
   @override
@@ -64,104 +65,202 @@ class ConfirmScreen extends StatelessWidget {
       appBar: AppBar(
         // backgroundColor: Colors.blue[900],
         title: Text(
-          'Confirm',
-          style: TextStyle(fontSize: 20),
+          'CONFIRM',
         ),
+        automaticallyImplyLeading: false,
       ),
       body: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        // mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          SizedBox(
-            width: size.width / 2,
-            height: size.width * (imageSize[1] / imageSize[0]) / 2,
-            child: Center(
-              child: Image.memory(
-                dotImage,
+          Padding(
+            padding: EdgeInsets.fromLTRB(25.w, 40.h, 25.w, 0),
+            child: SizedBox(
+              width: 250.w,
+              height: 300.h,
+              child: FittedBox(
+                fit: BoxFit.contain,
+                child: Column(
+                  children: [
+                    Center(
+                      child: Image.memory(
+                        dotImage,
+                      ),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.all(5.h),
+                      child: Center(
+                        child: Text(
+                          title,
+                          style: TextStyle(
+                            fontSize: 15.sp,
+                            fontWeight: FontWeight.w800,
+                            color: Color(0xFF5C4444),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
           Center(
-            child: Text(
-              title,
-              style: TextStyle(
-                fontSize: 40,
-              ),
-            ),
-          ),
-          Center(
-            child: Container(
-              height: size.width / 8,
-              width: size.width / 3,
-              decoration: BoxDecoration(
-                  color: Colors.blue,
-                  borderRadius: const BorderRadius.all(Radius.circular(100))),
-              child: GestureDetector(
-                onTap: () async {
-                  // final ui.Image boardDao =
-                  //     await getImageFromPainter(boardPainter, boardSize);
-                  // ByteData byte = await boardDao.toByteData();
-                  // compLogic.imageList = byte.buffer.asUint8List();
-                  // compLogic.stateList = byte.buffer.asUint8List();
-                  LogicPuzzleDao logicPuzzleDao = LogicPuzzleDao();
-                  // await logicPuzzleDao.deleteDB();
-                  // print('object');
-                  // DBProvider db = new DBProvider();
-                  // Database database;
-                  // // print('object');
-                  // database = await db.initDB();
-                  await logicPuzzleDao.create(compLogic);
-                  Navigator.of(context)
-                      .pushNamedAndRemoveUntil('/', (_) => false);
-                },
-                child: Center(
-                  child: Text(
-                    'FINISH',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 20,
+            child: Padding(
+              padding: EdgeInsets.fromLTRB(0, 70.h, 0, 30.h),
+              child: Container(
+                height: 40.h,
+                width: 130.w,
+                decoration: BoxDecoration(
+                  color: Color(0xFFFFD65A),
+                  borderRadius: const BorderRadius.all(Radius.circular(15)),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black26,
+                      // spreadRadius: 1,
+                      blurRadius: 1,
+                      offset: Offset(3, 3),
+                    )
+                  ],
+                ),
+                child: GestureDetector(
+                  onTap: () async {
+                    await Share.file(title, title + '.png', dotImage, 'image/png',
+                        text: 'ドット絵を作成しました！！');
+                  },
+                  child: Center(
+                    child: Text(
+                      'POST',
+                      style: TextStyle(
+                        fontSize: 30.sp,
+                        fontWeight: FontWeight.w800,
+                        color: Color(0xFF5C4444),
+                      ),
                     ),
                   ),
                 ),
               ),
             ),
           ),
-          Center(
-            child: Container(
-              height: size.width / 8,
-              width: size.width / 3,
-              decoration: BoxDecoration(
-                  color: Colors.blue,
-                  borderRadius: const BorderRadius.all(Radius.circular(100))),
-              child: GestureDetector(
-                onTap: () async {
-                  await Share.file(
-                    title,
-                    title + '.png',
-                    dotImage,
-                    'image/png',
-                    text: 'ドット絵を作成しました！！'
-                  );
-                },
+          Row(
+            children: [
+              Padding(
+                padding: EdgeInsets.fromLTRB(30.w, 0, 10.w, 0),
+                child: SizedBox(
+                  width: 60.w,
+                  height: 40.h,
+                  child: GestureDetector(
+                    child: DecoratedBox(
+                      child: Icon(
+                        Icons.arrow_back_outlined,
+                        size: 45.w,
+                        color: Color(0xFF5C4444),
+                      ),
+                      decoration: BoxDecoration(
+                        color: Color(0xFF3D99E5),
+                        borderRadius: const BorderRadius.all(Radius.circular(15)),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black26,
+                            // spreadRadius: 1,
+                            blurRadius: 1,
+                            offset: Offset(3, 3),
+                          )
+                        ],
+                      ),
+                    ),
+                    onTap: (){
+                      Navigator.pop(context);
+                    },
+                  ),
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.fromLTRB(15.w, 0, 15.w, 0),
                 child: Center(
-                  child: Text(
-                    'POST',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 20,
+                  child: Container(
+                    height: 40.h,
+                    width: 130.w,
+                    decoration: BoxDecoration(
+                      color: Color(0xFFFF595F),
+                      borderRadius: const BorderRadius.all(Radius.circular(15)),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black26,
+                          // spreadRadius: 1,
+                          blurRadius: 1,
+                          offset: Offset(3, 3),
+                        )
+                      ],
+                    ),
+                    child: GestureDetector(
+                      onTap: () async {
+                        // final ui.Image boardDao =
+                        //     await getImageFromPainter(boardPainter, boardSize);
+                        // ByteData byte = await boardDao.toByteData();
+                        // compLogic.imageList = byte.buffer.asUint8List();
+                        // compLogic.stateList = byte.buffer.asUint8List();
+                        LogicPuzzleDao logicPuzzleDao = LogicPuzzleDao();
+                        // await logicPuzzleDao.deleteDB();
+                        // print('object');
+                        // DBProvider db = new DBProvider();
+                        // Database database;
+                        // // print('object');
+                        // database = await db.initDB();
+                        await logicPuzzleDao.create(compLogic);
+                        Navigator.of(context)
+                            .pushNamedAndRemoveUntil('/', (_) => false);
+                      },
+                      child: Center(
+                        child: Text(
+                          'FINISH',
+                          style: TextStyle(
+                            fontSize: 30.sp,
+                            fontWeight: FontWeight.w800,
+                            color: Color(0xFF5C4444),
+                          ),
+                        ),
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
+              Padding(
+                padding: EdgeInsets.fromLTRB(10.w, 0, 0, 0),
+                child: Center(
+                  child: Container(
+                    height: 40.h,
+                    width: 60.w,
+                    decoration: BoxDecoration(
+                      color: Color(0xFFFFD65A),
+                      borderRadius: const BorderRadius.all(Radius.circular(15)),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black26,
+                          // spreadRadius: 1,
+                          blurRadius: 1,
+                          offset: Offset(3, 3),
+                        )
+                      ],
+                    ),
+                    child: GestureDetector(
+                      onTap: () async {
+                        await _saveImage(dotImage);
+                        Fluttertoast.showToast(msg: 'ダウンロードしました');
+                      },
+                      child: Center(
+                        child: Icon(
+                          Icons.file_download_outlined,
+                          size: 45.w,
+                          color:Color(0xFF5C4444),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
         ],
-      ),
-      floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.download_sharp),
-        onPressed: () async {
-          await _saveImage(dotImage);
-          Fluttertoast.showToast(msg: 'ダウンロードしました');
-        },
       ),
       bottomNavigationBar: AdmobBanner(
         adUnitId: AdMobService().getBannerAdUnitId(),
