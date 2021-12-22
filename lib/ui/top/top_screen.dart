@@ -97,7 +97,9 @@ class TopScreen extends StatelessWidget {
                     Padding(
                       padding: EdgeInsets.all(4.h),
                       child: DecoratedBox(
-                        decoration: BoxDecoration(color: playInnerColor,borderRadius: BorderRadius.circular(5)),
+                        decoration: BoxDecoration(
+                            color: playInnerColor,
+                            borderRadius: BorderRadius.circular(5)),
                         child: SizedBox(
                           height: 410.h,
                           child: Consumer<TopViewModel>(
@@ -112,13 +114,17 @@ class TopScreen extends StatelessWidget {
                                               .logicPuzzle =
                                           model.logicPuzzles[index];
                                       context.read<PlayViewModel>().init();
-                                        ui.Codec codecImage = await ui.instantiateImageCodec(
+                                      ui.Codec codecImage =
+                                          await ui.instantiateImageCodec(
                                         model.logicPuzzles[index].stateList,
                                         targetWidth: (size.width).floor(),
                                       );
-                                      ui.FrameInfo frame = await codecImage.getNextFrame();
+                                      ui.FrameInfo frame =
+                                          await codecImage.getNextFrame();
                                       ui.Image image = frame.image;
-                                      context.read<PlayViewModel>().puzzleImage = image;
+                                      context
+                                          .read<PlayViewModel>()
+                                          .puzzleImage = image;
                                       Navigator.of(context).pushNamed('/play');
                                     },
                                     child: Dismissible(
@@ -140,7 +146,8 @@ class TopScreen extends StatelessWidget {
                                         ),
                                       ),
                                       child: Padding(
-                                        padding: EdgeInsets.fromLTRB(5.h, 5.h, 5.h, 0),
+                                        padding: EdgeInsets.fromLTRB(
+                                            5.h, 5.h, 5.h, 0),
                                         child: SizedBox(
                                           width: 300.h,
                                           height: 45.h,
@@ -159,7 +166,8 @@ class TopScreen extends StatelessWidget {
                                               ],
                                             ),
                                             child: Padding(
-                                              padding: EdgeInsets.fromLTRB(10.h, 0, 0, 0),
+                                              padding: EdgeInsets.fromLTRB(
+                                                  10.h, 0, 0, 0),
                                               child: Align(
                                                 alignment: Alignment.centerLeft,
                                                 child: Text(
@@ -283,50 +291,7 @@ class TopScreen extends StatelessWidget {
       // floatingActionButton: FloatingActionButton(
       //   child: Icon(Icons.add),
       //   onPressed: () {
-      //     showCupertinoDialog<String>(
-      //       context: context,
-      //       builder: (BuildContext context) {
-      //         return CupertinoAlertDialog(
-      //           title: const Text('ドット絵作成'),
-      //           content: const Text('取り込み方を選択してください'),
-      //           actions: <Widget>[
-      //             CupertinoDialogAction(
-      //               child: const Text('カメラ'),
-      //               onPressed: () async {
-      //                 final pickedImage =
-      //                     await picker.pickImage(source: ImageSource.camera);
-      //                 if (pickedImage != null) {
-      //                   File tookImage = await cameraCrop(pickedImage);
-      //                   if (tookImage != null) {
-      //                     initCreate(context, tookImage);
-      //                   }
-      //                 }
-      //               },
-      //             ),
-      //             CupertinoDialogAction(
-      //               child: const Text('カメラロール'),
-      //               onPressed: () async {
-      //                 final pickedImage = await picker.pickImage(
-      //                   source: ImageSource.gallery,
-      //                 );
-      //                 if (pickedImage != null) {
-      //                   File tookImage = await cameraCrop(pickedImage);
-      //                   if (tookImage != null) {
-      //                     initCreate(context, tookImage);
-      //                   }
-      //                 }
-      //               },
-      //             ),
-      //             CupertinoDialogAction(
-      //               child: const Text('キャンセル'),
-      //               onPressed: () {
-      //                 Navigator.pop(context);
-      //               },
-      //             ),
-      //           ],
-      //         );
-      //       },
-      //     );
+      //     Navigator.of(context).pushNamed('/clear');
       //   },
       // ),
       bottomNavigationBar: AdmobBanner(
