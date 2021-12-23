@@ -124,7 +124,8 @@ class ConfirmScreen extends StatelessWidget {
                 ),
                 child: GestureDetector(
                   onTap: () async {
-                    await Share.file(title, title + '.png', dotImage, 'image/png',
+                    await Share.file(
+                        title, title + '.png', dotImage, 'image/png',
                         text: 'ドット絵を作成しました！！');
                   },
                   child: Center(
@@ -157,7 +158,8 @@ class ConfirmScreen extends StatelessWidget {
                       ),
                       decoration: BoxDecoration(
                         color: Color(0xFF3D99E5),
-                        borderRadius: const BorderRadius.all(Radius.circular(15)),
+                        borderRadius:
+                            const BorderRadius.all(Radius.circular(15)),
                         boxShadow: [
                           BoxShadow(
                             color: Colors.black26,
@@ -168,7 +170,7 @@ class ConfirmScreen extends StatelessWidget {
                         ],
                       ),
                     ),
-                    onTap: (){
+                    onTap: () {
                       Navigator.pop(context);
                     },
                   ),
@@ -193,22 +195,31 @@ class ConfirmScreen extends StatelessWidget {
                       ],
                     ),
                     child: GestureDetector(
-                      onTap: () async {
-                        // final ui.Image boardDao =
-                        //     await getImageFromPainter(boardPainter, boardSize);
-                        // ByteData byte = await boardDao.toByteData();
-                        // compLogic.imageList = byte.buffer.asUint8List();
-                        // compLogic.stateList = byte.buffer.asUint8List();
-                        LogicPuzzleDao logicPuzzleDao = LogicPuzzleDao();
-                        // await logicPuzzleDao.deleteDB();
-                        // print('object');
-                        // DBProvider db = new DBProvider();
-                        // Database database;
-                        // // print('object');
-                        // database = await db.initDB();
-                        await logicPuzzleDao.create(compLogic);
-                        Navigator.of(context)
-                            .pushNamedAndRemoveUntil('/', (_) => false);
+                      // onTap: () async {
+                      //   // final ui.Image boardDao =
+                      //   //     await getImageFromPainter(boardPainter, boardSize);
+                      //   // ByteData byte = await boardDao.toByteData();
+                      //   // compLogic.imageList = byte.buffer.asUint8List();
+                      //   // compLogic.stateList = byte.buffer.asUint8List();
+                      //   LogicPuzzleDao logicPuzzleDao = LogicPuzzleDao();
+                      //   // await logicPuzzleDao.deleteDB();
+                      //   // print('object');
+                      //   // DBProvider db = new DBProvider();
+                      //   // Database database;
+                      //   // // print('object');
+                      //   // database = await db.initDB();
+                      //   await logicPuzzleDao.create(compLogic);
+                      //   Navigator.of(context)
+                      //       .pushNamedAndRemoveUntil('/', (_) => false);
+                      // },
+                      onTap: () {
+                        Navigator.of(context).pushNamed(
+                          '/clear',
+                          arguments: {
+                            'image': dotImage,
+                            'title': title,
+                          },
+                        );
                       },
                       child: Center(
                         child: Text(
@@ -251,7 +262,7 @@ class ConfirmScreen extends StatelessWidget {
                         child: Icon(
                           Icons.file_download_outlined,
                           size: 45.w,
-                          color:Color(0xFF5C4444),
+                          color: Color(0xFF5C4444),
                         ),
                       ),
                     ),

@@ -4,6 +4,7 @@ import 'ui/create/create_screen.dart';
 import 'ui/setting/setting_screen.dart';
 import 'ui/top/top_screen.dart';
 import 'ui/play/play_screen.dart';
+import 'ui/play/clear_screen.dart';
 
 class RouteGenerator {
   // ignore: missing_return
@@ -31,6 +32,11 @@ class RouteGenerator {
         return MaterialPageRoute(
           settings: settings,
           builder: (_) => PlayScreen(),
+        );
+      case '/clear':
+        return MaterialPageRoute(
+          settings: settings,
+          builder: (_) => ClearScreen(),
         );
       }
     }
