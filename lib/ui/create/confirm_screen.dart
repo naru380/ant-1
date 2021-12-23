@@ -30,21 +30,11 @@ class ConfirmScreen extends StatelessWidget {
 
     final Size size = MediaQuery.of(context).size;
 
-    // final LogicPuzzle compLogic = LogicPuzzle(
-    //   name: title,
-    //   width: width,
-    //   dots: dotList,
-    //   lastState: List.generate(dotList.length, (_) => 0),
-    //   isClear: false,
-    //   imageList: dotImage,
-    //   stateList: dotImage,
-    //   compImage: dotImage,
-    // );
     final LogicPuzzle compLogic = LogicPuzzle(
       name: title,
-      width: 2,
-      dots: [0, 1, 1, 0],
-      lastState: [0, 0, 0, 0],
+      width: width,
+      dots: dotList,
+      lastState: List.generate(dotList.length, (_) => 0),
       isClear: false,
       imageList: dotImage,
       stateList: dotImage,
@@ -195,31 +185,15 @@ class ConfirmScreen extends StatelessWidget {
                       ],
                     ),
                     child: GestureDetector(
-                      // onTap: () async {
-                      //   // final ui.Image boardDao =
-                      //   //     await getImageFromPainter(boardPainter, boardSize);
-                      //   // ByteData byte = await boardDao.toByteData();
-                      //   // compLogic.imageList = byte.buffer.asUint8List();
-                      //   // compLogic.stateList = byte.buffer.asUint8List();
-                      //   LogicPuzzleDao logicPuzzleDao = LogicPuzzleDao();
-                      //   // await logicPuzzleDao.deleteDB();
-                      //   // print('object');
-                      //   // DBProvider db = new DBProvider();
-                      //   // Database database;
-                      //   // // print('object');
-                      //   // database = await db.initDB();
-                      //   await logicPuzzleDao.create(compLogic);
-                      //   Navigator.of(context)
-                      //       .pushNamedAndRemoveUntil('/', (_) => false);
-                      // },
-                      onTap: () {
-                        Navigator.of(context).pushNamed(
-                          '/clear',
-                          arguments: {
-                            'image': dotImage,
-                            'title': title,
-                          },
-                        );
+                      onTap: () async {
+                        final ui.Image boardDao = await getImageFromPainter(boardPainter, boardSize);
+                        ByteData byte = await boardDao.toByteData(format: ui.ImageByteFormat.png);
+                        compLogic.imageList = byte.buffer.asUint8List();
+                        compLogic.stateList = byte.buffer.asUint8List();
+                        LogicPuzzleDao logicPuzzleDao = LogicPuzzleDao();
+                        await logicPuzzleDao.create(compLogic);
+                        Navigator.of(context)
+                            .pushNamedAndRemoveUntil('/', (_) => false);
                       },
                       child: Center(
                         child: Text(
