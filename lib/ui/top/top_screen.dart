@@ -170,13 +170,26 @@ class TopScreen extends StatelessWidget {
                                                   10.h, 0, 0, 0),
                                               child: Align(
                                                 alignment: Alignment.centerLeft,
-                                                child: Text(
-                                                  '${model.logicPuzzles[index].name}',
-                                                  style: TextStyle(
-                                                    fontSize: 25.sp,
-                                                    fontWeight: FontWeight.w700,
-                                                    color: textColor,
-                                                  ),
+                                                child: Row(
+                                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                  children: [
+                                                    Text(
+                                                      '${model.logicPuzzles[index].name}',
+                                                      style: TextStyle(
+                                                        fontSize: 25.sp,
+                                                        fontWeight: FontWeight.w700,
+                                                        color: textColor,
+                                                      ),
+                                                    ),
+                                                    model.logicPuzzles[index].isClear ? Text(
+                                                      'CLEAR    ',
+                                                      style: TextStyle(
+                                                        fontSize: 10.sp,
+                                                        fontWeight: FontWeight.w700,
+                                                        color: playColor,
+                                                      ),
+                                                    ) : Text(''),
+                                                  ],
                                                 ),
                                               ),
                                             ),

@@ -329,6 +329,8 @@ class OperationBar extends StatelessWidget {
                     ),
                     onPressed: () {
                       if (model.isCorrect()) {
+                        model.logicPuzzle.isClear = true;
+                        model.save();
                         Navigator.of(context).pushNamed(
                           '/clear',
                             arguments: {
