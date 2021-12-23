@@ -33,59 +33,18 @@ class PuzzlePainter extends CustomPainter {
   int get _maxNumOfHintsInEachColumn => hintsInEachColumn.length ~/ boardColumnsNum;
   int get maxNumOfHintsInEachColumn => _maxNumOfHintsInEachColumn > 0 ? _maxNumOfHintsInEachColumn : 1;
 
-  List<int> _hintsInEachRow() {
+  List<int> _hintsInEachRow() { // left-area hints
     List<List<int>> hints = [];
     List<int> tmp;
     int pre;
     int n;
     int maxN = 0;
-    for (int i = 0; i < boardColumnsNum; i++) {
+    for (int j = 0; j < boardRowsNum; j++) {
       tmp = [];
       pre = 0;
       n = 0;
-      for (int j = 0; j < boardRowsNum; j++) {
-        int now = answer[boardRowsNum * i + j];
-        if (now == 0) {
-          if (pre == 1) {
-            tmp.add(n);
-          }
-          n = 0;
-          pre = 0;
-        } else {
-          n++;
-          pre = 1;
-        }
-      }
-      if (n != 0) {
-        tmp.add(n);
-      }
-      maxN = max(maxN, tmp.length);
-      hints.add(tmp.reversed.toList());
-    }
-
-    List<int> result = List.generate(maxN * boardColumnsNum, (_) => 0);
-    for (int i = 0; i < boardColumnsNum; i++) {
-      List<int> hint = hints[i];
-      for (int j = 0; j < hint.length; j++) {
-        result[maxN * (i + 1) - j - 1] = hint[j];
-      }
-    }
-
-    return result;
-  }
-
-  List<int> _hintsInEachColumn() {
-    List<List<int>> hints = [];
-    List<int> tmp;
-    int pre;
-    int n;
-    int maxN = 0;
-    for (int i = 0; i < boardRowsNum; i++) {
-      tmp = [];
-      pre = 0;
-      n = 0;
-      for (int j = 0; j < boardColumnsNum; j++) {
-        int now = answer[boardRowsNum * j + i];
+      for (int i = 0; i < boardColumnsNum; i++) {
+        int now = answer[boardColumnsNum * j + i];
         if (now == 0) {
           if (pre == 1) {
             tmp.add(n);
@@ -106,6 +65,47 @@ class PuzzlePainter extends CustomPainter {
 
     List<int> result = List.generate(maxN * boardRowsNum, (_) => 0);
     for (int i = 0; i < boardRowsNum; i++) {
+      List<int> hint = hints[i];
+      for (int j = 0; j < hint.length; j++) {
+        result[maxN * (i + 1) - j - 1] = hint[j];
+      }
+    }
+
+    return result;
+  }
+
+  List<int> _hintsInEachColumn() { // upper-area hints
+    List<List<int>> hints = [];
+    List<int> tmp;
+    int pre;
+    int n;
+    int maxN = 0;
+    for (int j = 0; j < boardColumnsNum; j++) {
+      tmp = [];
+      pre = 0;
+      n = 0;
+      for (int i = 0; i < boardRowsNum; i++) {
+        int now = answer[boardColumnsNum * i + j];
+        if (now == 0) {
+          if (pre == 1) {
+            tmp.add(n);
+          }
+          n = 0;
+          pre = 0;
+        } else {
+          n++;
+          pre = 1;
+        }
+      }
+      if (n != 0) {
+        tmp.add(n);
+      }
+      maxN = max(maxN, tmp.length);
+      hints.add(tmp.reversed.toList());
+    }
+
+    List<int> result = List.generate(maxN * boardColumnsNum, (_) => 0);
+    for (int i = 0; i < boardColumnsNum; i++) {
       List<int> hint = hints[i];
       for (int j = 0; j < hint.length; j++) {
         result[maxN * (i + 1) - j - 1] = hint[j];
@@ -209,8 +209,8 @@ class PuzzlePainter extends CustomPainter {
   Size get rowHintsAreaSize => Size(rowHintsAreaWidth, rowHintsAreaHeight);
   void drawRowHintsArea(Canvas canvas) {
     Size size = Size(squareSize, squareSize);
-    for (int i = 0; i < maxNumOfHintsInEachRow; i++) {
       for (int j = 0; j < boardRowsNum; j++) {
+    for (int i = 0; i < maxNumOfHintsInEachRow; i++) {
         Offset offset = Offset(
           rowHintsAreaLeftOffset + (squareSize + borderWidth) * i,
           rowHintsAreaTopOffset + squareSize * j + borderWidth * (j - j ~/ boldBorderInterval) + boldBorderWidth * (j ~/ boldBorderInterval)

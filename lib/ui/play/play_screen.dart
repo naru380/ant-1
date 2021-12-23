@@ -152,12 +152,12 @@ class PlayScreen extends StatelessWidget {
   }
 
   Widget buildInitPuzzle(BuildContext context, GlobalKey widgetKey) {
-    Size size = Size(MediaQuery.of(context).size.width, MediaQuery.of(context).size.width);
     PuzzleInitPainter painter = PuzzleInitPainter(
       context: context,
       state: context.read<PlayViewModel>().logicPuzzle.lastState,
       puzzleImage: context.read<PlayViewModel>().puzzleImage
     );
+    Size size = Size(painter.borderLayerWidth, painter.borderLayerHeight);
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       context.read<PlayViewModel>().puzzleImage = await getImageFromPainter(painter, size);
@@ -177,11 +177,11 @@ class PlayScreen extends StatelessWidget {
   Widget buildPuzzle(BuildContext context, GlobalKey widgetKey) {
     return Consumer<PlayViewModel>(
       builder: (context, model, child) {
-        Size size = Size(MediaQuery.of(context).size.width, MediaQuery.of(context).size.width);
         PuzzleUpdatePainter painter = PuzzleUpdatePainter(
           context: context,
           state: model.logicPuzzle.lastState
         );
+        Size size = Size(painter.borderLayerWidth, painter.borderLayerHeight);
         if (context.read<PlayViewModel>().isBuildedOnce && model.tappedSquaeIndex != null) {
           WidgetsBinding.instance.addPostFrameCallback((_) async {
             context.read<PlayViewModel>().puzzleImage = await getImageFromPainter(painter, size);

@@ -41,11 +41,12 @@ class ConfirmScreen extends StatelessWidget {
       compImage: dotImage,
     );
 
-    final Size boardSize = Size(size.width, size.width);
-    CustomPainter boardPainter = PuzzlePainter(
+    PuzzlePainter boardPainter = PuzzlePainter(
       context: context,
       logicPuzzle: compLogic,
     );
+    // final Size boardSize = Size(size.width, size.width);
+    Size boardSize = Size(boardPainter.borderLayerWidth, boardPainter.borderLayerHeight);
 
     Future _saveImage(Uint8List dotImage) async {
       await ImageGallerySaver.saveImage(dotImage, quality: 100);

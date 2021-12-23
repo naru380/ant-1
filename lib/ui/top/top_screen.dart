@@ -1,4 +1,5 @@
 import 'package:ant_1/domain/entities/logic_puzzle.dart';
+import 'package:ant_1/service/puzzle_painter.dart';
 import 'package:ant_1/ui/create/init_create_screen.dart';
 import 'package:ant_1/ui/play/play_view_model.dart';
 import 'package:ant_1/ui/top/top_view_model.dart';
@@ -114,17 +115,18 @@ class TopScreen extends StatelessWidget {
                                               .logicPuzzle =
                                           model.logicPuzzles[index];
                                       context.read<PlayViewModel>().init();
+                                      PuzzlePainter puzzlePainter = PuzzlePainter(context: context, logicPuzzle: model.logicPuzzles[index]);
                                       ui.Codec codecImage =
                                           await ui.instantiateImageCodec(
                                         model.logicPuzzles[index].stateList,
-                                        targetWidth: (size.width).floor(),
+                                        targetWidth: (puzzlePainter.borderLayerWidth).floor(),
+                                        targetHeight: (puzzlePainter.borderLayerHeight).floor(),
                                       );
                                       ui.FrameInfo frame =
                                           await codecImage.getNextFrame();
                                       ui.Image image = frame.image;
-                                      context
-                                          .read<PlayViewModel>()
-                                          .puzzleImage = image;
+                                      // context.read<PlayViewModel>().puzzleImage = null;
+                                      context.read<PlayViewModel>().puzzleImage = image;
                                       Navigator.of(context).pushNamed('/play');
                                     },
                                     child: Dismissible(
