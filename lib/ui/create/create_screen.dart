@@ -59,8 +59,6 @@ class CreateScreen extends StatelessWidget {
                       height: containerSize[1].toDouble(),
                       child:
                           CustomPaint(painter: OriginalPainter(croppedImage)),
-                      // child: Image.memory(croppedImage),
-                      // child: Image.memory(jpgImage),
                     ),
                   ),
                 ),

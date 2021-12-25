@@ -46,7 +46,8 @@ class ConfirmScreen extends StatelessWidget {
       logicPuzzle: compLogic,
     );
     // final Size boardSize = Size(size.width, size.width);
-    Size boardSize = Size(boardPainter.borderLayerWidth, boardPainter.borderLayerHeight);
+    Size boardSize =
+        Size(boardPainter.borderLayerWidth, boardPainter.borderLayerHeight);
 
     Future _saveImage(Uint8List dotImage) async {
       await ImageGallerySaver.saveImage(dotImage, quality: 100);
@@ -72,9 +73,21 @@ class ConfirmScreen extends StatelessWidget {
                 fit: BoxFit.contain,
                 child: Column(
                   children: [
-                    Center(
-                      child: Image.memory(
-                        dotImage,
+                    DecoratedBox(
+                      decoration: BoxDecoration(
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black26,
+                            // spreadRadius: 1,
+                            blurRadius: 1,
+                            offset: Offset(3, 3),
+                          )
+                        ],
+                      ),
+                      child: Center(
+                        child: Image.memory(
+                          dotImage,
+                        ),
                       ),
                     ),
                     Padding(
@@ -100,7 +113,7 @@ class ConfirmScreen extends StatelessWidget {
               padding: EdgeInsets.fromLTRB(0, 70.h, 0, 30.h),
               child: Container(
                 height: 40.h,
-                width: 130.w,
+                width: 110.w,
                 decoration: BoxDecoration(
                   color: Color(0xFFFFD65A),
                   borderRadius: const BorderRadius.all(Radius.circular(15)),
@@ -187,8 +200,10 @@ class ConfirmScreen extends StatelessWidget {
                     ),
                     child: GestureDetector(
                       onTap: () async {
-                        final ui.Image boardDao = await getImageFromPainter(boardPainter, boardSize);
-                        ByteData byte = await boardDao.toByteData(format: ui.ImageByteFormat.png);
+                        final ui.Image boardDao =
+                            await getImageFromPainter(boardPainter, boardSize);
+                        ByteData byte = await boardDao.toByteData(
+                            format: ui.ImageByteFormat.png);
                         compLogic.imageList = byte.buffer.asUint8List();
                         compLogic.stateList = byte.buffer.asUint8List();
                         LogicPuzzleDao logicPuzzleDao = LogicPuzzleDao();
