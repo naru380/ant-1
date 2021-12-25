@@ -78,7 +78,7 @@ class TopScreen extends StatelessWidget {
                 ],
               ),
               child: SizedBox(
-                height: 460.h,
+                height: 450.h,
                 child: Column(
                   children: [
                     Padding(
@@ -102,7 +102,7 @@ class TopScreen extends StatelessWidget {
                             color: playInnerColor,
                             borderRadius: BorderRadius.circular(5)),
                         child: SizedBox(
-                          height: 410.h,
+                          height: 400.h,
                           child: Consumer<TopViewModel>(
                               builder: (context, model, _) {
                             return ListView.builder(
