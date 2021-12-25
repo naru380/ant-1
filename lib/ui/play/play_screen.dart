@@ -273,6 +273,12 @@ class OperationBar extends StatelessWidget {
                 ),
                 Container(
                   margin: EdgeInsets.all(buttonMargin),
+                  // margin: EdgeInsets.only(
+                  //   top: buttonMargin,
+                  //   right: buttonMargin*2,
+                  //   bottom: buttonMargin,
+                  //   left: buttonMargin,
+                  // ),
                   width: buttonWidth,
                   height: buttonHeight,
                   child: ElevatedButton(
@@ -285,15 +291,24 @@ class OperationBar extends StatelessWidget {
                     })(),
                     onPressed: () {
                     },
-                    child: Icon(
+                    child: Row(mainAxisAlignment: MainAxisAlignment.start, children: [
+                    Icon(
                       IconData(0xefd2, fontFamily: 'MaterialIcons'),
                       color: buttonFontColor,
                       size: buttonFontSize,
+                    ),
+                    ]
                     ),
                   ),
                 ),
                 Container(
                   margin: EdgeInsets.all(buttonMargin),
+                  // margin: EdgeInsets.only(
+                  //   top: buttonMargin,
+                  //   right: buttonMargin,
+                  //   bottom: buttonMargin,
+                  //   left: buttonMargin*2,
+                  // ),
                   width: buttonWidth,
                   height: buttonHeight,
                   child: ElevatedButton(
@@ -306,7 +321,9 @@ class OperationBar extends StatelessWidget {
                     })(),
                     onPressed: () {
                     },
-                    child: Container(
+                    child: Row(mainAxisAlignment: MainAxisAlignment.end, children: [
+                    Container(
+                      margin: EdgeInsets.all(buttonMargin),
                       width: buttonFontSize*0.7,
                       height: buttonFontSize*0.7,
                       decoration: BoxDecoration(
@@ -314,6 +331,8 @@ class OperationBar extends StatelessWidget {
                       ),
                       child: Text(''),
                     ),
+                    ]
+                    )
                   ),
                 ),
                 Container(
