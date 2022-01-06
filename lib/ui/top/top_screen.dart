@@ -331,20 +331,14 @@ class TopScreen extends StatelessWidget {
           )
         ],
       ),
-      // floatingActionButton: FloatingActionButton(
-      //   child: Icon(Icons.add),
-      //   onPressed: () {
-      //     Navigator.of(context).pushNamed('/clear');
-      //   },
+      // bottomNavigationBar: AdmobBanner(
+      //   adUnitId: AdMobService().getBannerAdUnitId(),
+      //   adSize: AdmobBannerSize(
+      //     width: MediaQuery.of(context).size.width.toInt(),
+      //     height: AdMobService().getHeight(context).toInt(),
+      //     name: 'SMART_BANNER',
+      //   ),
       // ),
-      bottomNavigationBar: AdmobBanner(
-        adUnitId: AdMobService().getBannerAdUnitId(),
-        adSize: AdmobBannerSize(
-          width: MediaQuery.of(context).size.width.toInt(),
-          height: AdMobService().getHeight(context).toInt(),
-          name: 'SMART_BANNER',
-        ),
-      ),
     );
   }
 }
