@@ -115,18 +115,28 @@ class TopScreen extends StatelessWidget {
                                               .logicPuzzle =
                                           model.logicPuzzles[index];
                                       context.read<PlayViewModel>().init();
-                                      PuzzlePainter puzzlePainter = PuzzlePainter(context: context, logicPuzzle: model.logicPuzzles[index]);
+                                      PuzzlePainter puzzlePainter =
+                                          PuzzlePainter(
+                                              context: context,
+                                              logicPuzzle:
+                                                  model.logicPuzzles[index]);
                                       ui.Codec codecImage =
                                           await ui.instantiateImageCodec(
                                         model.logicPuzzles[index].stateList,
-                                        targetWidth: (puzzlePainter.borderLayerWidth).floor(),
-                                        targetHeight: (puzzlePainter.borderLayerHeight).floor(),
+                                        targetWidth:
+                                            (puzzlePainter.borderLayerWidth)
+                                                .floor(),
+                                        targetHeight:
+                                            (puzzlePainter.borderLayerHeight)
+                                                .floor(),
                                       );
                                       ui.FrameInfo frame =
                                           await codecImage.getNextFrame();
                                       ui.Image image = frame.image;
                                       // context.read<PlayViewModel>().puzzleImage = null;
-                                      context.read<PlayViewModel>().puzzleImage = image;
+                                      context
+                                          .read<PlayViewModel>()
+                                          .puzzleImage = image;
                                       Navigator.of(context).pushNamed('/play');
                                     },
                                     child: Dismissible(
@@ -173,24 +183,32 @@ class TopScreen extends StatelessWidget {
                                               child: Align(
                                                 alignment: Alignment.centerLeft,
                                                 child: Row(
-                                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceBetween,
                                                   children: [
                                                     Text(
                                                       '${model.logicPuzzles[index].name}',
                                                       style: TextStyle(
                                                         fontSize: 25.sp,
-                                                        fontWeight: FontWeight.w700,
+                                                        fontWeight:
+                                                            FontWeight.w700,
                                                         color: textColor,
                                                       ),
                                                     ),
-                                                    model.logicPuzzles[index].isClear ? Text(
-                                                      'CLEAR    ',
-                                                      style: TextStyle(
-                                                        fontSize: 10.sp,
-                                                        fontWeight: FontWeight.w700,
-                                                        color: playColor,
-                                                      ),
-                                                    ) : Text(''),
+                                                    model.logicPuzzles[index]
+                                                            .isClear
+                                                        ? Text(
+                                                            'CLEAR    ',
+                                                            style: TextStyle(
+                                                              fontSize: 10.sp,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w700,
+                                                              color: playColor,
+                                                            ),
+                                                          )
+                                                        : Text(''),
                                                   ],
                                                 ),
                                               ),
@@ -266,7 +284,12 @@ class TopScreen extends StatelessWidget {
                               final pickedImage = await picker.pickImage(
                                   source: ImageSource.camera);
                               if (pickedImage != null) {
-                                File tookImage = await cameraCrop(pickedImage);
+                                File tookImage;
+                                if (Platform.isIOS) {
+                                  tookImage = await cameraCrop(pickedImage);
+                                } else if (Platform.isAndroid) {
+                                  tookImage = File(pickedImage.path);
+                                }
                                 if (tookImage != null) {
                                   initCreate(context, tookImage);
                                 }
@@ -280,7 +303,12 @@ class TopScreen extends StatelessWidget {
                                 source: ImageSource.gallery,
                               );
                               if (pickedImage != null) {
-                                File tookImage = await cameraCrop(pickedImage);
+                                File tookImage;
+                                if (Platform.isIOS) {
+                                  tookImage = await cameraCrop(pickedImage);
+                                } else if (Platform.isAndroid) {
+                                  tookImage = File(pickedImage.path);
+                                }
                                 if (tookImage != null) {
                                   initCreate(context, tookImage);
                                 }
