@@ -59,7 +59,7 @@ class PlayScreen extends StatelessWidget {
               model.offset += model.sessionOffset;
 
               model.offset = Offset(
-                min(max(-screenWidth*0.5, model.offset.dx), screenWidth*0.5), 
+                min(max(-screenWidth*0.5, model.offset.dx), screenWidth*0.5),
                 min(max(-screenWidth*0.5, model.offset.dy), screenWidth*0.5)
               );
 
@@ -140,14 +140,14 @@ class PlayScreen extends StatelessWidget {
           },
         ),
       ),
-      bottomNavigationBar: AdmobBanner(
-            adUnitId: AdMobService().getBannerAdUnitId(),
-            adSize: AdmobBannerSize(
-              width: MediaQuery.of(context).size.width.toInt(),
-              height: AdMobService().getHeight(context).toInt(),
-              name: 'SMART_BANNER',
-            ),
-          ),
+      // bottomNavigationBar: AdmobBanner(
+      //       adUnitId: AdMobService().getBannerAdUnitId(),
+      //       adSize: AdmobBannerSize(
+      //         width: MediaQuery.of(context).size.width.toInt(),
+      //         height: AdMobService().getHeight(context).toInt(),
+      //         name: 'SMART_BANNER',
+      //       ),
+      //     ),
     );
   }
 
